@@ -49,5 +49,5 @@ go test ./pkg/vfs -count=1
 
 ## 作者
 
-Li Lingfeng <lilingfeng@sunrise-ai.com>
+Li Lingfeng <a1151488180@gmail.com>
 Assisted-by: DeepSeek <deepseek-v4-pro>
