@@ -1,0 +1,14 @@
+diff --git a/pkg/vfs/writer.go b/pkg/vfs/writer.go
+index 91297fa..9944855 100644
+--- a/pkg/vfs/writer.go
++++ b/pkg/vfs/writer.go
+@@ -94,6 +94,9 @@ func (s *sliceWriter) prepareID(ctx meta.Context, retry bool) {
+ 	}
+ 	if s.writer != nil && s.writer.ID() == 0 {
+ 		s.writer.SetID(s.id)
++		if !s.freezed && int(s.slen) >= f.w.blockSize {
++			s.writer.FlushTo(int(s.slen))
++		}
+ 	}
+ 	f.Unlock()
+ }

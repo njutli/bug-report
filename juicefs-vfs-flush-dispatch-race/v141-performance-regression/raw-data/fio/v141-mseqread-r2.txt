@@ -1,0 +1,29 @@
+mseqread: (g=0): rw=read, bs=(R) 256KiB-256KiB, (W) 256KiB-256KiB, (T) 256KiB-256KiB, ioengine=psync, iodepth=1
+...
+fio-3.28
+Starting 16 processes
+
+mseqread: (groupid=0, jobs=16): err= 0: pid=2324765: Mon Aug 24 22:30:14 2026
+  read: IOPS=21.9k, BW=5478MiB/s (5744MB/s)(963GiB/180005msec)
+    clat (usec): min=39, max=34200, avg=729.57, stdev=1413.90
+     lat (usec): min=39, max=34200, avg=729.62, stdev=1413.90
+    clat percentiles (usec):
+     |  1.00th=[   69],  5.00th=[   81], 10.00th=[   90], 20.00th=[  103],
+     | 30.00th=[  115], 40.00th=[  127], 50.00th=[  141], 60.00th=[  159],
+     | 70.00th=[  208], 80.00th=[  898], 90.00th=[ 2409], 95.00th=[ 3916],
+     | 99.00th=[ 6783], 99.50th=[ 7767], 99.90th=[10028], 99.95th=[10814],
+     | 99.99th=[12911]
+   bw (  MiB/s): min= 4510, max= 5914, per=100.00%, avg=5479.69, stdev=16.71, samples=2876
+   iops        : min=17248, max=24231, avg=21916.16, stdev=75.59, samples=5756
+  lat (usec)   : 50=0.01%, 100=17.65%, 250=53.85%, 500=3.96%, 750=2.99%
+  lat (usec)   : 1000=2.48%
+  lat (msec)   : 2=7.06%, 4=7.20%, 10=4.71%, 20=0.10%, 50=0.01%
+  cpu          : usr=0.21%, sys=1.36%, ctx=3951023, majf=1, minf=2103
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=3944275,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=5478MiB/s (5744MB/s), 5478MiB/s-5478MiB/s (5744MB/s-5744MB/s), io=963GiB (1034GB), run=180005-180005msec
