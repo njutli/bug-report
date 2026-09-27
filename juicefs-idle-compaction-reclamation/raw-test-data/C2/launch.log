@@ -1,0 +1,15 @@
+PLAN_PASS
+sudo -n env CEPH_ADMIN_SOCKET=none CEPH_LOG_FILE=none /RESULTS/20260927-LT002-C2/juicefs-lt002-idle-candidate mount -d --cache-size 0 --max-uploads 150 --backup-meta 0 --compact-interval 0 --subdir /TEST_SUBTREE/20260927-LT002-C2 --metrics 127.0.0.1:9569 --log=/RESULTS/20260927-LT002-C2/client-off.log -o allow_other,default_permissions tikv://STORAGE_A:2379,STORAGE_B:2379,STORAGE_C:2379/test-volume /RESULTS/20260927-LT002-C2/mnt
+sudo -n /usr/bin/fusermount3 -u /RESULTS/20260927-LT002-C2/mnt
+sudo -n env CEPH_ADMIN_SOCKET=none CEPH_LOG_FILE=none /RESULTS/20260927-LT002-C2/juicefs-lt002-idle-candidate mount -d --cache-size 0 --max-uploads 150 --backup-meta 0 --compact-interval 15s --subdir /TEST_SUBTREE/20260927-LT002-C2 --metrics 127.0.0.1:9569 --log=/RESULTS/20260927-LT002-C2/client-on.log -o allow_other,default_permissions tikv://STORAGE_A:2379,STORAGE_B:2379,STORAGE_C:2379/test-volume /RESULTS/20260927-LT002-C2/mnt
+sudo -n /usr/bin/fusermount3 -u /RESULTS/20260927-LT002-C2/mnt
+{"epoch": 1790490562.5321324, "event": "BEGIN", "binary_sha256": "09ea7095454f987e345eb4aa7f08f1b18c10868a7b6d5ddec248cd68d85cee8d", "original_mount": "110 /TEST_MOUNT JuiceFS:test-volume fuse.juicefs"}
+{"epoch": 1790490564.1463232, "event": "FAILED", "error": "no candidate process"}
+Traceback (most recent call last):
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 234, in <module>
+    run(original)
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 158, in run
+    frozen = mount(False)
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 121, in mount
+    raise RuntimeError("no candidate process")
+RuntimeError: no candidate process

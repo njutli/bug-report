@@ -1,0 +1,16 @@
+PLAN_PASS
+sudo -n env CEPH_ADMIN_SOCKET=none CEPH_LOG_FILE=none /RESULTS/20260927-LT002-C2/juicefs-lt002-idle-candidate mount -d --cache-size 0 --max-uploads 150 --backup-meta 0 --compact-interval 15s --subdir /TEST_SUBTREE/20260927-LT002-C2 --metrics 127.0.0.1:9569 --log=/RESULTS/20260927-LT002-C2/client-on.log -o allow_other,default_permissions tikv://STORAGE_A:2379,STORAGE_B:2379,STORAGE_C:2379/test-volume /RESULTS/20260927-LT002-C2/mnt
+sudo -n /usr/bin/fusermount3 -u /RESULTS/20260927-LT002-C2/mnt
+{"epoch": 1790491870.638316, "event": "RESUME_ON_AFTER_NORMAL_UNMOUNT", "reason": "process exited between ps and readlink; no extra mount or IO"}
+{"epoch": 1790491870.638532, "event": "UMOUNT_PASS", "mode": "off", "validated_after_process_exit": true}
+{"epoch": 1790491870.6405487, "event": "START", "label": "off-unmounted", "pid": 1000817}
+{"epoch": 1790491871.642505, "event": "FINISH", "label": "off-unmounted", "rc": 0, "start_epoch": 1790491870.6405437, "end_epoch": 1790491871.641999, "elapsed_s": 1.0014578549889848}
+{"epoch": 1790491871.7766852, "event": "FAILED", "error": "control changed during unmount; preserve before enabling scanner"}
+Traceback (most recent call last):
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 333, in <module>
+    resume_on(original)
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 318, in resume_on
+    run_on(original, initial, before_pool, off_start, off_end, high_pool, identity)
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 262, in run_on
+    raise RuntimeError("control changed during unmount; preserve before enabling scanner")
+RuntimeError: control changed during unmount; preserve before enabling scanner

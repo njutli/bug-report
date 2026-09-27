@@ -1,0 +1,434 @@
+From 09e24db2940d36143c04bfc972e8563af2c6edf7 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <lilingfeng@sunrise-ai.com>
+Date: Sun, 27 Sep 2026 13:58:25 +0800
+Subject: [PATCH 3/3] test: validate idle compaction content, restart and
+ cancellation boundaries
+
+---
+ cmd/idle_compaction_flag_test.go            |  46 +++
+ pkg/meta/idle_compaction_scheduler_test.go  |  45 +++
+ pkg/vfs/idle_compaction_integration_test.go | 306 ++++++++++++++++++++
+ 3 files changed, 397 insertions(+)
+ create mode 100644 cmd/idle_compaction_flag_test.go
+ create mode 100644 pkg/vfs/idle_compaction_integration_test.go
+
+diff --git a/cmd/idle_compaction_flag_test.go b/cmd/idle_compaction_flag_test.go
+new file mode 100644
+index 0000000..90ecb31
+--- /dev/null
++++ b/cmd/idle_compaction_flag_test.go
+@@ -0,0 +1,46 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package cmd
++
++import (
++	"flag"
++	"testing"
++	"time"
++
++	"github.com/urfave/cli/v2"
++)
++
++func TestIdleCompactionMountConfig(t *testing.T) {
++	for _, value := range []string{"0", "1h", "15s"} {
++		t.Run(value, func(t *testing.T) {
++			flags := flag.NewFlagSet("idle-compact", flag.ContinueOnError)
++			flags.Duration("compact-interval", 0, "")
++			flags.String("atime-mode", "noatime", "")
++			if err := flags.Parse([]string{"--compact-interval", value}); err != nil {
++				t.Fatal(err)
++			}
++			conf := getMetaConf(cli.NewContext(nil, flags, nil), "/scope", false)
++			want, err := time.ParseDuration(value)
++			if err != nil {
++				t.Fatal(err)
++			}
++			if conf.CompactInterval != want {
++				t.Fatalf("got %s, want %s", conf.CompactInterval, want)
++			}
++		})
++	}
++}
+diff --git a/pkg/meta/idle_compaction_scheduler_test.go b/pkg/meta/idle_compaction_scheduler_test.go
+index cbefb4f..3b3adde 100644
+--- a/pkg/meta/idle_compaction_scheduler_test.go
++++ b/pkg/meta/idle_compaction_scheduler_test.go
+@@ -122,3 +122,48 @@ func TestIdleCompactionThrottle(t *testing.T) {
+ 		})
+ 	}
+ }
++
++func TestIdleCompactionCancellationWaitsForInFlight(t *testing.T) {
++	m := idleTestMeta(t, "memkv")
++	_ = idleTestFile(t, m, RootInode, "a", 3)
++	_ = idleTestFile(t, m, RootInode, "b", 3)
++	m.conf.CompactInterval = time.Second
++	ctx := Background()
++	m.sessCtx = ctx
++	entered := make(chan struct{}, 2)
++	release := make(chan struct{})
++	m.OnMsg(CompactChunk, func(...interface{}) error {
++		entered <- struct{}{}
++		<-release
++		return nil
++	})
++	m.startIdleCompaction(ctx)
++	select {
++	case <-entered:
++	case <-time.After(5 * time.Second):
++		ctx.Cancel()
++		close(release)
++		m.sessWG.Wait()
++		t.Fatal("scheduler did not enter callback")
++	}
++	ctx.Cancel()
++	done := make(chan struct{})
++	go func() { m.sessWG.Wait(); close(done) }()
++	select {
++	case <-done:
++		t.Error("session task returned before its object callback finished")
++	case <-time.After(50 * time.Millisecond):
++		// Document the limitation: cancellation cannot interrupt the callback.
++	}
++	close(release)
++	select {
++	case <-done:
++	case <-time.After(5 * time.Second):
++		t.Fatal("task did not exit after callback returned")
++	}
++	select {
++	case <-entered:
++		t.Fatal("started another compact after cancellation")
++	default:
++	}
++}
+diff --git a/pkg/vfs/idle_compaction_integration_test.go b/pkg/vfs/idle_compaction_integration_test.go
+new file mode 100644
+index 0000000..535a394
+--- /dev/null
++++ b/pkg/vfs/idle_compaction_integration_test.go
+@@ -0,0 +1,306 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package vfs
++
++import (
++	"bytes"
++	"context"
++	"errors"
++	"fmt"
++	"hash/crc32"
++	"os"
++	"path/filepath"
++	"testing"
++	"time"
++
++	"github.com/juicedata/juicefs/pkg/chunk"
++	"github.com/juicedata/juicefs/pkg/meta"
++	"github.com/juicedata/juicefs/pkg/object"
++)
++
++const idleIntegrationSliceSize = 64 << 10
++
++type idleIntegrationVolume struct {
++	meta    meta.Meta
++	blob    object.ObjectStorage
++	store   chunk.ChunkStore
++	chunk   chunk.Config
++	started bool
++}
++
++func newIdleIntegrationVolume(t *testing.T, metaURI string, interval time.Duration, initialize bool, blob object.ObjectStorage) *idleIntegrationVolume {
++	t.Helper()
++
++	conf := meta.DefaultConf()
++	conf.MountPoint = t.TempDir()
++	conf.CompactInterval = interval
++	m := meta.NewClient(metaURI, conf)
++	if initialize {
++		format := &meta.Format{
++			Name:        "idle-compaction-integration",
++			UUID:        fmt.Sprintf("idle-compaction-%d", time.Now().UnixNano()),
++			Storage:     "mem",
++			BlockSize:   idleIntegrationSliceSize / 1024,
++			Compression: "lz4",
++			TrashDays:   0,
++		}
++		if err := m.Init(format, true); err != nil {
++			_ = m.Shutdown()
++			t.Fatalf("initialize metadata: %v", err)
++		}
++	} else if _, err := m.Load(true); err != nil {
++		_ = m.Shutdown()
++		t.Fatalf("load existing metadata: %v", err)
++	}
++
++	cconf := chunk.Config{
++		BlockSize:   idleIntegrationSliceSize,
++		Compress:    "lz4",
++		MaxUpload:   2,
++		MaxDownload: 2,
++		BufferSize:  8 << 20,
++		CacheDir:    "memory",
++	}
++	store := chunk.NewCachedStore(blob, cconf, nil)
++	m.OnMsg(meta.CompactChunk, func(args ...interface{}) error {
++		if len(args) != 3 {
++			return fmt.Errorf("CompactChunk callback got %d args, want 3", len(args))
++		}
++		slices, ok := args[0].([]meta.Slice)
++		if !ok {
++			return fmt.Errorf("CompactChunk slices have type %T", args[0])
++		}
++		id, ok := args[1].(uint64)
++		if !ok {
++			return fmt.Errorf("CompactChunk id has type %T", args[1])
++		}
++		tierID, ok := args[2].(uint8)
++		if !ok {
++			return fmt.Errorf("CompactChunk tier has type %T", args[2])
++		}
++		return Compact(cconf, store, slices, id, tierID)
++	})
++	m.OnMsg(meta.DeleteSlice, func(args ...interface{}) error {
++		if len(args) != 2 {
++			return fmt.Errorf("DeleteSlice callback got %d args, want 2", len(args))
++		}
++		id, ok := args[0].(uint64)
++		if !ok {
++			return fmt.Errorf("DeleteSlice id has type %T", args[0])
++		}
++		size, ok := args[1].(uint32)
++		if !ok {
++			return fmt.Errorf("DeleteSlice size has type %T", args[1])
++		}
++		return store.Remove(id, int(size))
++	})
++	return &idleIntegrationVolume{meta: m, blob: blob, store: store, chunk: cconf}
++}
++
++func (v *idleIntegrationVolume) start(t *testing.T) {
++	t.Helper()
++	if err := v.meta.NewSession(true); err != nil {
++		t.Fatalf("start metadata session: %v", err)
++	}
++	v.started = true
++}
++
++func (v *idleIntegrationVolume) close(t *testing.T) {
++	t.Helper()
++	if v.started {
++		if err := v.meta.CloseSession(); err != nil {
++			t.Errorf("close metadata session: %v", err)
++		}
++		v.started = false
++	}
++	if err := v.meta.Shutdown(); err != nil {
++		t.Errorf("shutdown metadata client: %v", err)
++	}
++}
++
++func writeIdleIntegrationHistory(t *testing.T, m meta.Meta, store chunk.ChunkStore, fileName string) (meta.Ino, []uint64, []byte) {
++	t.Helper()
++	ctx := meta.Background()
++	var inode meta.Ino
++	var attr meta.Attr
++	if st := m.Create(ctx, meta.RootInode, fileName, 0600, 0, 0, &inode, &attr); st != 0 {
++		t.Fatalf("create %s: %s", fileName, st)
++	}
++
++	payloads := [][]byte{
++		bytes.Repeat([]byte{0x13}, idleIntegrationSliceSize),
++		bytes.Repeat([]byte{0x57}, idleIntegrationSliceSize),
++		bytes.Repeat([]byte{0xA9}, idleIntegrationSliceSize),
++	}
++	// The writes overlap: write 1 is fully covered by write 2, then the last
++	// half of write 2 is covered by write 3. The resulting logical file is
++	// payloads[1][:32KiB] followed by all of payloads[2].
++	expected := append(append([]byte(nil), payloads[1][:idleIntegrationSliceSize/2]...), payloads[2]...)
++	ids := make([]uint64, 0, len(payloads))
++	offsets := []uint32{0, 0, idleIntegrationSliceSize / 2}
++	for i, payload := range payloads {
++		var id uint64
++		if st := m.NewSlice(ctx, &id); st != 0 {
++			t.Fatalf("allocate slice %d: %s", i, st)
++		}
++		writer := store.NewWriter(id, 0)
++		if n, err := writer.WriteAt(payload, 0); err != nil || n != len(payload) {
++			writer.Abort()
++			t.Fatalf("write object slice %d: n=%d err=%v", id, n, err)
++		}
++		if err := writer.Finish(len(payload)); err != nil {
++			writer.Abort()
++			t.Fatalf("finish object slice %d: %v", id, err)
++		}
++		if st := m.Write(ctx, inode, 0, offsets[i], meta.Slice{Id: id, Size: uint32(len(payload)), Len: uint32(len(payload))}, time.Now()); st != 0 {
++			t.Fatalf("write metadata slice %d: %s", id, st)
++		}
++		ids = append(ids, id)
++	}
++	return inode, ids, expected
++}
++
++func assertIdleIntegrationSlices(t *testing.T, m meta.Meta, inode meta.Ino, want int) []meta.Slice {
++	t.Helper()
++	var slices []meta.Slice
++	if st := m.Read(meta.Background(), inode, 0, &slices); st != 0 {
++		t.Fatalf("read chunk metadata: %s", st)
++	}
++	if len(slices) != want {
++		t.Fatalf("chunk has %d metadata slices, want %d: %+v", len(slices), want, slices)
++	}
++	return slices
++}
++
++func idleIntegrationObjectKey(id uint64, index int, blockSize int) string {
++	return fmt.Sprintf("chunks/%d/%d/%d_%d_%d", id/1000000, id/1000, id, index, blockSize)
++}
++
++func assertIdleIntegrationObject(t *testing.T, blob object.ObjectStorage, id uint64, size uint32, storeBlockSize int, wantExists bool) {
++	t.Helper()
++	for off, index := 0, 0; off < int(size); index++ {
++		blockSize := min(storeBlockSize, int(size)-off)
++		_, err := blob.Head(context.Background(), idleIntegrationObjectKey(id, index, blockSize))
++		if wantExists && err != nil {
++			t.Fatalf("expected slice object %d block %d to exist: %v", id, index, err)
++		}
++		if !wantExists && err == nil {
++			t.Fatalf("old slice object %d block %d still exists", id, index)
++		} else if !wantExists && !errors.Is(err, os.ErrNotExist) {
++			t.Fatalf("checking old slice object %d block %d: %v", id, index, err)
++		}
++		off += blockSize
++	}
++}
++
++func readIdleIntegrationSlice(t *testing.T, store chunk.ChunkStore, s meta.Slice) []byte {
++	t.Helper()
++	page := chunk.NewPage(make([]byte, s.Len))
++	defer page.Release()
++	n, err := store.NewReader(s.Id, int(s.Size)).ReadAt(context.Background(), page, int(s.Off))
++	if err != nil || n != int(s.Len) {
++		t.Fatalf("read compacted slice %d: n=%d len=%d err=%v", s.Id, n, s.Len, err)
++	}
++	return append([]byte(nil), page.Data...)
++}
++
++func waitForIdleIntegrationCompaction(t *testing.T, v *idleIntegrationVolume, inode meta.Ino, oldIDs []uint64, expected []byte) {
++	t.Helper()
++	deadline := time.Now().Add(20 * time.Second)
++	for time.Now().Before(deadline) {
++		var slices []meta.Slice
++		if st := v.meta.Read(meta.Background(), inode, 0, &slices); st != 0 {
++			t.Fatalf("read chunk metadata while waiting: %s", st)
++		}
++		// Meta.Read returns normalized/visible slices, not the raw historical
++		// record count. This fixture starts with three raw records but two
++		// visible slices after overwrite normalization.
++		if len(slices) != 2 && len(slices) != 1 {
++			t.Fatalf("unexpected chunk metadata during compaction: %d slices: %+v", len(slices), slices)
++		}
++		if len(slices) == 1 && slices[0].Id > 0 {
++			assertIdleIntegrationObject(t, v.blob, slices[0].Id, slices[0].Size, v.chunk.BlockSize, true)
++			oldObjectsGone := true
++			for _, id := range oldIDs {
++				if id == slices[0].Id {
++					t.Fatalf("compaction reused old object id %d", id)
++				}
++				_, err := v.blob.Head(context.Background(), idleIntegrationObjectKey(id, 0, idleIntegrationSliceSize))
++				if err == nil {
++					oldObjectsGone = false
++					break
++				} else if !errors.Is(err, os.ErrNotExist) {
++					t.Fatalf("check old slice object %d: %v", id, err)
++				}
++			}
++			if oldObjectsGone {
++				actual := readIdleIntegrationSlice(t, v.store, slices[0])
++				if crc32.ChecksumIEEE(actual) != crc32.ChecksumIEEE(expected) || !bytes.Equal(actual, expected) {
++					t.Fatalf("compacted content mismatch: got len=%d CRC=%08x samples=%x/%x/%x, want len=%d CRC=%08x samples=%x/%x/%x", len(actual), crc32.ChecksumIEEE(actual), actual[:1], actual[min(len(actual)-1, idleIntegrationSliceSize/2):min(len(actual), idleIntegrationSliceSize/2+1)], actual[len(actual)-1:], len(expected), crc32.ChecksumIEEE(expected), expected[:1], expected[min(len(expected)-1, idleIntegrationSliceSize/2):min(len(expected), idleIntegrationSliceSize/2+1)], expected[len(expected)-1:])
++				}
++				return
++			}
++		}
++		time.Sleep(100 * time.Millisecond)
++	}
++	t.Fatalf("timed out waiting for idle compaction of inode %d", inode)
++}
++
++func TestIdleCompactionRealObjectIntegration(t *testing.T) {
++	t.Run("first-automatic-sweep", func(t *testing.T) {
++		blob, err := object.CreateStorage("mem", t.Name(), "", "", "")
++		if err != nil {
++			t.Fatalf("create in-memory object storage: %v", err)
++		}
++		metaURI := "sqlite3://" + filepath.Join(t.TempDir(), "metadata.db")
++		v := newIdleIntegrationVolume(t, metaURI, time.Second, true, blob)
++		defer v.close(t)
++		inode, ids, expected := writeIdleIntegrationHistory(t, v.meta, v.store, "first")
++		if len(ids) != 3 {
++			t.Fatalf("fixture created %d slices, want 3", len(ids))
++		}
++		assertIdleIntegrationSlices(t, v.meta, inode, 2) // 3 raw records normalize to 2 visible slices, below read trigger
++		for _, id := range ids {
++			assertIdleIntegrationObject(t, blob, id, idleIntegrationSliceSize, idleIntegrationSliceSize, true)
++		}
++		// Start the timer only after the fixture is frozen, so a paused or
++		// slow CI worker cannot compact it before the initial assertions.
++		v.start(t)
++		waitForIdleIntegrationCompaction(t, v, inode, ids, expected)
++	})
++
++	t.Run("rediscovery-after-session-restart", func(t *testing.T) {
++		blob, err := object.CreateStorage("mem", t.Name(), "", "", "")
++		if err != nil {
++			t.Fatalf("create in-memory object storage: %v", err)
++		}
++		restartURI := "sqlite3://" + filepath.Join(t.TempDir(), "restart.db")
++		v1 := newIdleIntegrationVolume(t, restartURI, 0, true, blob)
++		v1.start(t)
++		inode, ids, expected := writeIdleIntegrationHistory(t, v1.meta, v1.store, "restart")
++		assertIdleIntegrationSlices(t, v1.meta, inode, 2)
++		for _, id := range ids {
++			assertIdleIntegrationObject(t, blob, id, idleIntegrationSliceSize, idleIntegrationSliceSize, true)
++		}
++		v1.close(t)
++
++		v2 := newIdleIntegrationVolume(t, restartURI, time.Second, false, blob)
++		defer v2.close(t)
++		v2.start(t)
++		waitForIdleIntegrationCompaction(t, v2, inode, ids, expected)
++	})
++}
+-- 
+2.53.0
+

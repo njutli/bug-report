@@ -1,0 +1,158 @@
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+2026/09/27 13:34:41.162447 juicefs[98] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+2026/09/27 13:34:41.177775 juicefs[98] <WARNING>: The latency to database is too high: 10.384915ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+2026/09/27 13:34:41.390178 juicefs[98] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+--- PASS: TestIdleCompactionMechanism (0.30s)
+    --- PASS: TestIdleCompactionMechanism/memkv (0.01s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.01s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- PASS: TestIdleCompactionMechanism/sqlite (0.30s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.04s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (0.22s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.01s)
+=== RUN   TestIdleCompactionSubdirAndCancellation
+=== RUN   TestIdleCompactionSubdirAndCancellation/memkv
+=== RUN   TestIdleCompactionSubdirAndCancellation/sqlite
+--- PASS: TestIdleCompactionSubdirAndCancellation (0.01s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/memkv (0.00s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/sqlite (0.01s)
+=== RUN   TestIdleCompactionScheduler
+=== RUN   TestIdleCompactionScheduler/disabled
+=== RUN   TestIdleCompactionScheduler/readonly
+=== RUN   TestIdleCompactionScheduler/no-bgjob
+=== RUN   TestIdleCompactionScheduler/enabled
+2026/09/27 13:34:46.714023 juicefs[98] <INFO>: Idle compaction traversal root=1 duration=121.248µs status=errno 0 [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionScheduler (5.24s)
+    --- PASS: TestIdleCompactionScheduler/disabled (1.40s)
+    --- PASS: TestIdleCompactionScheduler/readonly (1.40s)
+    --- PASS: TestIdleCompactionScheduler/no-bgjob (1.40s)
+    --- PASS: TestIdleCompactionScheduler/enabled (1.04s)
+=== RUN   TestIdleCompactionThrottle
+=== RUN   TestIdleCompactionThrottle/memkv
+=== RUN   TestIdleCompactionThrottle/sqlite
+--- PASS: TestIdleCompactionThrottle (0.01s)
+    --- PASS: TestIdleCompactionThrottle/memkv (0.00s)
+    --- PASS: TestIdleCompactionThrottle/sqlite (0.01s)
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+2026/09/27 13:34:46.729071 juicefs[98] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+2026/09/27 13:34:46.932385 juicefs[98] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+--- PASS: TestIdleCompactionMechanism (0.27s)
+    --- PASS: TestIdleCompactionMechanism/memkv (0.01s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- PASS: TestIdleCompactionMechanism/sqlite (0.26s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.03s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (0.20s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.01s)
+=== RUN   TestIdleCompactionSubdirAndCancellation
+=== RUN   TestIdleCompactionSubdirAndCancellation/memkv
+=== RUN   TestIdleCompactionSubdirAndCancellation/sqlite
+--- PASS: TestIdleCompactionSubdirAndCancellation (0.01s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/memkv (0.00s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/sqlite (0.01s)
+=== RUN   TestIdleCompactionScheduler
+=== RUN   TestIdleCompactionScheduler/disabled
+=== RUN   TestIdleCompactionScheduler/readonly
+=== RUN   TestIdleCompactionScheduler/no-bgjob
+=== RUN   TestIdleCompactionScheduler/enabled
+2026/09/27 13:34:52.176008 juicefs[98] <INFO>: Idle compaction traversal root=1 duration=115.804µs status=errno 0 [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionScheduler (5.17s)
+    --- PASS: TestIdleCompactionScheduler/disabled (1.40s)
+    --- PASS: TestIdleCompactionScheduler/readonly (1.40s)
+    --- PASS: TestIdleCompactionScheduler/no-bgjob (1.40s)
+    --- PASS: TestIdleCompactionScheduler/enabled (0.97s)
+=== RUN   TestIdleCompactionThrottle
+=== RUN   TestIdleCompactionThrottle/memkv
+=== RUN   TestIdleCompactionThrottle/sqlite
+--- PASS: TestIdleCompactionThrottle (0.01s)
+    --- PASS: TestIdleCompactionThrottle/memkv (0.00s)
+    --- PASS: TestIdleCompactionThrottle/sqlite (0.01s)
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+2026/09/27 13:34:52.192682 juicefs[98] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+2026/09/27 13:34:52.220695 juicefs[98] <WARNING>: The latency to database is too high: 5.022534ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+2026/09/27 13:34:52.390742 juicefs[98] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+--- PASS: TestIdleCompactionMechanism (0.27s)
+    --- PASS: TestIdleCompactionMechanism/memkv (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- PASS: TestIdleCompactionMechanism/sqlite (0.27s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.02s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (0.21s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.01s)
+=== RUN   TestIdleCompactionSubdirAndCancellation
+=== RUN   TestIdleCompactionSubdirAndCancellation/memkv
+=== RUN   TestIdleCompactionSubdirAndCancellation/sqlite
+--- PASS: TestIdleCompactionSubdirAndCancellation (0.01s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/memkv (0.00s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/sqlite (0.01s)
+=== RUN   TestIdleCompactionScheduler
+=== RUN   TestIdleCompactionScheduler/disabled
+=== RUN   TestIdleCompactionScheduler/readonly
+=== RUN   TestIdleCompactionScheduler/no-bgjob
+=== RUN   TestIdleCompactionScheduler/enabled
+2026/09/27 13:34:57.689463 juicefs[98] <INFO>: Idle compaction traversal root=1 duration=96.052µs status=errno 0 [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionScheduler (5.21s)
+    --- PASS: TestIdleCompactionScheduler/disabled (1.40s)
+    --- PASS: TestIdleCompactionScheduler/readonly (1.40s)
+    --- PASS: TestIdleCompactionScheduler/no-bgjob (1.40s)
+    --- PASS: TestIdleCompactionScheduler/enabled (1.01s)
+=== RUN   TestIdleCompactionThrottle
+=== RUN   TestIdleCompactionThrottle/memkv
+=== RUN   TestIdleCompactionThrottle/sqlite
+2026/09/27 13:34:57.697324 juicefs[98] <WARNING>: The latency to database is too high: 7.11738ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionThrottle (0.02s)
+    --- PASS: TestIdleCompactionThrottle/memkv (0.00s)
+    --- PASS: TestIdleCompactionThrottle/sqlite (0.01s)
+PASS
+ok  	github.com/juicedata/juicefs/pkg/meta	16.578s

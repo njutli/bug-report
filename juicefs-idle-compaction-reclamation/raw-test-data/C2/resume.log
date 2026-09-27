@@ -1,0 +1,32 @@
+PLAN_PASS
+sudo -n /usr/bin/fusermount3 -u /RESULTS/20260927-LT002-C2/mnt
+sudo -n env CEPH_ADMIN_SOCKET=none CEPH_LOG_FILE=none /RESULTS/20260927-LT002-C2/juicefs-lt002-idle-candidate mount -d --cache-size 0 --max-uploads 150 --backup-meta 0 --compact-interval 15s --subdir /TEST_SUBTREE/20260927-LT002-C2 --metrics 127.0.0.1:9569 --log=/RESULTS/20260927-LT002-C2/client-on.log -o allow_other,default_permissions tikv://STORAGE_A:2379,STORAGE_B:2379,STORAGE_C:2379/test-volume /RESULTS/20260927-LT002-C2/mnt
+sudo -n /usr/bin/fusermount3 -u /RESULTS/20260927-LT002-C2/mnt
+{"epoch": 1790490801.5974631, "event": "ADOPT_OFF_BEFORE_IO", "reason": "daemon title truncated; effective config and exe verified", "original_mount": "110 /TEST_MOUNT JuiceFS:test-volume fuse.juicefs"}
+{"epoch": 1790490801.6856458, "event": "START", "label": "layout", "pid": 996501}
+{"epoch": 1790490867.3241093, "event": "FINISH", "label": "layout", "rc": 0, "start_epoch": 1790490801.6856413, "end_epoch": 1790490867.3236258, "elapsed_s": 65.63798692799173}
+{"epoch": 1790490867.3265114, "event": "START", "label": "layout-verify", "pid": 996825}
+{"epoch": 1790490899.8655372, "event": "FINISH", "label": "layout-verify", "rc": 0, "start_epoch": 1790490867.3265061, "end_epoch": 1790490899.865131, "elapsed_s": 32.53862703003688}
+{"epoch": 1790490899.8675535, "event": "START", "label": "layout-meta", "pid": 997050}
+{"epoch": 1790490900.869446, "event": "FINISH", "label": "layout-meta", "rc": 0, "start_epoch": 1790490899.8675485, "end_epoch": 1790490900.8690016, "elapsed_s": 1.001455942983739}
+{"epoch": 1790490901.8290973, "event": "START", "label": "overwrite", "pid": 997123}
+{"epoch": 1790491416.8853447, "event": "FINISH", "label": "overwrite", "rc": 0, "start_epoch": 1790490901.8290935, "end_epoch": 1790491416.8849216, "elapsed_s": 515.0558297950192}
+{"epoch": 1790491416.8915339, "event": "START", "label": "off-idle-start", "pid": 999397}
+{"epoch": 1790491417.8934755, "event": "FINISH", "label": "off-idle-start", "rc": 0, "start_epoch": 1790491416.8915284, "end_epoch": 1790491417.8929963, "elapsed_s": 1.0014707299997099}
+{"epoch": 1790491598.1449, "event": "START", "label": "off-idle-end", "pid": 1000118}
+{"epoch": 1790491599.146885, "event": "FINISH", "label": "off-idle-end", "rc": 0, "start_epoch": 1790491598.1448932, "end_epoch": 1790491599.1463895, "elapsed_s": 1.0014996029785834}
+{"epoch": 1790491629.2947931, "event": "START", "label": "off-confirm-00", "pid": 1000297}
+{"epoch": 1790491630.2967827, "event": "FINISH", "label": "off-confirm-00", "rc": 0, "start_epoch": 1790491629.2947853, "end_epoch": 1790491630.296331, "elapsed_s": 1.0015487629570998}
+{"epoch": 1790491631.4964564, "event": "FAILED", "error": "command rc=1: sudo -n readlink /proc/996038/exe: "}
+Traceback (most recent call last):
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 272, in <module>
+    run(original, adopt)
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 226, in run
+    unmount(False, frozen)
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 177, in unmount
+    if not still_mounted and not candidates():
+  File "/RESULTS/20260927-LT002-C2/lt002-idle-canary.py", line 116, in candidates
+    exe = m.command(["sudo", "-n", "readlink", str(proc / "exe")]).strip()
+  File "/RESULTS/20260927-LT002-C2/lt002-maintenance-validation.py", line 47, in command
+    raise RuntimeError(f"command rc={result.returncode}: {shlex.join(map(str, cmd))}: {result.stderr[-1500:]}")
+RuntimeError: command rc=1: sudo -n readlink /proc/996038/exe: 

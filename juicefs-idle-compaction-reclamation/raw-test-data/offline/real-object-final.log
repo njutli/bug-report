@@ -1,0 +1,120 @@
+=== RUN   TestIdleCompactionRealObjectIntegration
+=== RUN   TestIdleCompactionRealObjectIntegration/first-automatic-sweep
+2026/09/27 13:56:52.983010 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationfirst-automatic-sweep823736294/001/metadata.db [NewClient@interface.go:643]
+2026/09/27 13:56:52.996953 juicefs[553] <WARNING>: The latency to database is too high: 13.774556ms [newSQLMeta@sql.go:513]
+2026/09/27 13:56:53.007613 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:53.013575 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:54.041849 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=3.360669ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:56:54.121302 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:56:54.121905 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+=== RUN   TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart
+2026/09/27 13:56:54.129085 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio480293251/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:56:54.137314 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:54.143753 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:54.150804 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:56:54.151256 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:56:54.157479 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio480293251/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:56:54.161948 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:54.165540 juicefs[553] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:55.128165 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=2.296974ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:56:55.174885 juicefs[553] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:56:55.175497 juicefs[553] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+--- PASS: TestIdleCompactionRealObjectIntegration (2.20s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/first-automatic-sweep (1.15s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart (1.05s)
+=== RUN   TestIdleCompactionRealObjectIntegration
+=== RUN   TestIdleCompactionRealObjectIntegration/first-automatic-sweep
+2026/09/27 13:56:55.179507 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationfirst-automatic-sweep3319770015/001/metadata.db [NewClient@interface.go:643]
+2026/09/27 13:56:55.191583 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:55.197488 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:56.224006 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=2.183294ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:56:56.305960 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:56:56.306798 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+=== RUN   TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart
+2026/09/27 13:56:56.313918 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio3863925082/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:56:56.320824 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:56.323684 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:56.327221 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:56:56.327568 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:56:56.332640 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio3863925082/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:56:56.335142 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:56.340361 juicefs[553] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:57.377257 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=2.066477ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:56:57.452684 juicefs[553] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:56:57.453151 juicefs[553] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+--- PASS: TestIdleCompactionRealObjectIntegration (2.28s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/first-automatic-sweep (1.13s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart (1.15s)
+=== RUN   TestIdleCompactionRealObjectIntegration
+=== RUN   TestIdleCompactionRealObjectIntegration/first-automatic-sweep
+2026/09/27 13:56:57.459661 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationfirst-automatic-sweep69938469/001/metadata.db [NewClient@interface.go:643]
+2026/09/27 13:56:57.469545 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:57.472975 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:58.500219 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=2.248287ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:56:58.580830 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:56:58.581723 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+=== RUN   TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart
+2026/09/27 13:56:58.587757 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio614046292/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:56:58.593396 juicefs[553] <WARNING>: The latency to database is too high: 5.522042ms [newSQLMeta@sql.go:513]
+2026/09/27 13:56:58.597973 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:58.600843 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:58.603591 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:56:58.604098 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:56:58.610744 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio614046292/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:56:58.614497 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:58.618612 juicefs[553] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:56:59.634433 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=2.370293ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:56:59.728979 juicefs[553] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:56:59.729574 juicefs[553] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+--- PASS: TestIdleCompactionRealObjectIntegration (2.28s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/first-automatic-sweep (1.13s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart (1.15s)
+=== RUN   TestIdleCompactionRealObjectIntegration
+=== RUN   TestIdleCompactionRealObjectIntegration/first-automatic-sweep
+2026/09/27 13:56:59.735237 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationfirst-automatic-sweep1135125370/001/metadata.db [NewClient@interface.go:643]
+2026/09/27 13:56:59.746713 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:56:59.750206 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:57:00.710934 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=1.899262ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:57:00.759618 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:57:00.760233 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+=== RUN   TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart
+2026/09/27 13:57:00.766771 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio4253423417/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:57:00.776931 juicefs[553] <WARNING>: The latency to database is too high: 10.068431ms [newSQLMeta@sql.go:513]
+2026/09/27 13:57:00.783346 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:57:00.786479 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:57:00.789421 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:57:00.789727 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:57:00.793733 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio4253423417/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:57:00.796317 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:57:00.799800 juicefs[553] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:57:01.799004 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=2.809276ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:57:01.809874 juicefs[553] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:57:01.810348 juicefs[553] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+--- PASS: TestIdleCompactionRealObjectIntegration (2.08s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/first-automatic-sweep (1.03s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart (1.05s)
+=== RUN   TestIdleCompactionRealObjectIntegration
+=== RUN   TestIdleCompactionRealObjectIntegration/first-automatic-sweep
+2026/09/27 13:57:01.814966 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationfirst-automatic-sweep3813233540/001/metadata.db [NewClient@interface.go:643]
+2026/09/27 13:57:01.825546 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:57:01.828991 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:57:02.819120 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=1.714096ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:57:02.835627 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:57:02.836062 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+=== RUN   TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart
+2026/09/27 13:57:02.842247 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio27059885/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:57:02.850047 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:57:02.854299 juicefs[553] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:57:02.858213 juicefs[553] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:57:02.858568 juicefs[553] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:57:02.862496 juicefs[553] <INFO>: Meta address: sqlite3:///LOCAL_BUILD/TestIdleCompactionRealObjectIntegrationrediscovery-after-sessio27059885/001/restart.db [NewClient@interface.go:643]
+2026/09/27 13:57:02.864916 juicefs[553] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:57:02.868258 juicefs[553] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:57:03.839245 juicefs[553] <INFO>: Idle compaction traversal root=1 duration=2.219811ms status=errno 0 [startIdleCompaction@base.go:2811]
+2026/09/27 13:57:03.877529 juicefs[553] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:57:03.878013 juicefs[553] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+--- PASS: TestIdleCompactionRealObjectIntegration (2.07s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/first-automatic-sweep (1.03s)
+    --- PASS: TestIdleCompactionRealObjectIntegration/rediscovery-after-session-restart (1.04s)
+PASS
+ok  	github.com/juicedata/juicefs/pkg/vfs	11.988s

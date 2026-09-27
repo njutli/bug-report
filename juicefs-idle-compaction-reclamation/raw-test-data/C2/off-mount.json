@@ -1,0 +1,25 @@
+{
+  "mount": "104 /RESULTS/20260927-LT002-C2/mnt JuiceFS:test-volume fuse.juicefs",
+  "processes": [
+    {
+      "pid": 996038,
+      "ppid": 1,
+      "starttime": "51578426",
+      "exe": "/RESULTS/20260927-LT002-C2/juicefs-lt002-idle-candidate"
+    },
+    {
+      "pid": 996063,
+      "ppid": 996038,
+      "starttime": "51578436",
+      "exe": "/RESULTS/20260927-LT002-C2/juicefs-lt002-idle-candidate"
+    }
+  ],
+  "safe_config": {
+    "pid": 996063,
+    "version": "1.4.1+2026-07-30.0b90c7d-lt002-idle",
+    "uuid": "REDACTED-UUID",
+    "subdir": "/TEST_SUBTREE/20260927-LT002-C2",
+    "interval_ns": 0,
+    "no_bgjob": false
+  }
+}

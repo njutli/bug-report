@@ -1,0 +1,40 @@
+{"epoch": 1790490562.5321324, "event": "BEGIN", "binary_sha256": "09ea7095454f987e345eb4aa7f08f1b18c10868a7b6d5ddec248cd68d85cee8d", "original_mount": "110 /TEST_MOUNT JuiceFS:test-volume fuse.juicefs"}
+{"epoch": 1790490564.1463232, "event": "FAILED", "error": "no candidate process"}
+{"epoch": 1790490801.5974631, "event": "ADOPT_OFF_BEFORE_IO", "reason": "daemon title truncated; effective config and exe verified", "original_mount": "110 /TEST_MOUNT JuiceFS:test-volume fuse.juicefs"}
+{"epoch": 1790490801.6856458, "event": "START", "label": "layout", "pid": 996501}
+{"epoch": 1790490867.3241093, "event": "FINISH", "label": "layout", "rc": 0, "start_epoch": 1790490801.6856413, "end_epoch": 1790490867.3236258, "elapsed_s": 65.63798692799173}
+{"epoch": 1790490867.3265114, "event": "START", "label": "layout-verify", "pid": 996825}
+{"epoch": 1790490899.8655372, "event": "FINISH", "label": "layout-verify", "rc": 0, "start_epoch": 1790490867.3265061, "end_epoch": 1790490899.865131, "elapsed_s": 32.53862703003688}
+{"epoch": 1790490899.8675535, "event": "START", "label": "layout-meta", "pid": 997050}
+{"epoch": 1790490900.869446, "event": "FINISH", "label": "layout-meta", "rc": 0, "start_epoch": 1790490899.8675485, "end_epoch": 1790490900.8690016, "elapsed_s": 1.001455942983739}
+{"epoch": 1790490901.8290973, "event": "START", "label": "overwrite", "pid": 997123}
+{"epoch": 1790491416.8853447, "event": "FINISH", "label": "overwrite", "rc": 0, "start_epoch": 1790490901.8290935, "end_epoch": 1790491416.8849216, "elapsed_s": 515.0558297950192}
+{"epoch": 1790491416.8915339, "event": "START", "label": "off-idle-start", "pid": 999397}
+{"epoch": 1790491417.8934755, "event": "FINISH", "label": "off-idle-start", "rc": 0, "start_epoch": 1790491416.8915284, "end_epoch": 1790491417.8929963, "elapsed_s": 1.0014707299997099}
+{"epoch": 1790491598.1449, "event": "START", "label": "off-idle-end", "pid": 1000118}
+{"epoch": 1790491599.146885, "event": "FINISH", "label": "off-idle-end", "rc": 0, "start_epoch": 1790491598.1448932, "end_epoch": 1790491599.1463895, "elapsed_s": 1.0014996029785834}
+{"epoch": 1790491629.2947931, "event": "START", "label": "off-confirm-00", "pid": 1000297}
+{"epoch": 1790491630.2967827, "event": "FINISH", "label": "off-confirm-00", "rc": 0, "start_epoch": 1790491629.2947853, "end_epoch": 1790491630.296331, "elapsed_s": 1.0015487629570998}
+{"epoch": 1790491631.4964564, "event": "FAILED", "error": "command rc=1: sudo -n readlink /proc/996038/exe: "}
+{"epoch": 1790491870.638316, "event": "RESUME_ON_AFTER_NORMAL_UNMOUNT", "reason": "process exited between ps and readlink; no extra mount or IO"}
+{"epoch": 1790491870.638532, "event": "UMOUNT_PASS", "mode": "off", "validated_after_process_exit": true}
+{"epoch": 1790491870.6405487, "event": "START", "label": "off-unmounted", "pid": 1000817}
+{"epoch": 1790491871.642505, "event": "FINISH", "label": "off-unmounted", "rc": 0, "start_epoch": 1790491870.6405437, "end_epoch": 1790491871.641999, "elapsed_s": 1.0014578549889848}
+{"epoch": 1790491871.7766852, "event": "FAILED", "error": "control changed during unmount; preserve before enabling scanner"}
+{"epoch": 1790492058.1315107, "event": "RESUME_ON_AFTER_NORMAL_UNMOUNT", "reason": "process exited between ps and readlink; no extra mount or IO"}
+{"epoch": 1790492058.1317286, "event": "UMOUNT_PASS", "mode": "off", "validated_after_process_exit": true}
+{"epoch": 1790492058.132981, "event": "START", "label": "off-unmounted-recheck", "pid": 1001142}
+{"epoch": 1790492059.134822, "event": "FINISH", "label": "off-unmounted-recheck", "rc": 0, "start_epoch": 1790492058.132976, "end_epoch": 1790492059.13439, "elapsed_s": 1.00141586601967}
+{"epoch": 1790492061.185128, "event": "MOUNT_PASS", "mode": "on", "mount": "104 /RESULTS/20260927-LT002-C2/mnt JuiceFS:test-volume fuse.juicefs"}
+{"epoch": 1790492061.1865096, "event": "START", "label": "on-observe-00", "pid": 1001361}
+{"epoch": 1790492062.1876519, "event": "FINISH", "label": "on-observe-00", "rc": 0, "start_epoch": 1790492061.1865044, "end_epoch": 1790492062.1871514, "elapsed_s": 1.000649300054647}
+{"epoch": 1790492093.6000261, "event": "START", "label": "on-observe-01", "pid": 1001602}
+{"epoch": 1790492094.6019726, "event": "FINISH", "label": "on-observe-01", "rc": 0, "start_epoch": 1790492093.600019, "end_epoch": 1790492094.601524, "elapsed_s": 1.001508729008492}
+{"epoch": 1790492125.7210786, "event": "START", "label": "on-observe-02", "pid": 1001774}
+{"epoch": 1790492126.723102, "event": "FINISH", "label": "on-observe-02", "rc": 0, "start_epoch": 1790492125.7210712, "end_epoch": 1790492126.7225895, "elapsed_s": 1.0015210009878501}
+{"epoch": 1790492157.9057314, "event": "START", "label": "on-observe-03", "pid": 1002009}
+{"epoch": 1790492158.9076831, "event": "FINISH", "label": "on-observe-03", "rc": 0, "start_epoch": 1790492157.9057238, "end_epoch": 1790492158.9072204, "elapsed_s": 1.001499614038039}
+{"epoch": 1790492192.9524186, "event": "START", "label": "final-verify", "pid": 1002221}
+{"epoch": 1790492226.1732087, "event": "FINISH", "label": "final-verify", "rc": 0, "start_epoch": 1790492192.9524145, "end_epoch": 1790492226.1728423, "elapsed_s": 33.220428909000475}
+{"epoch": 1790492226.3151512, "event": "UMOUNT_PASS", "mode": "on"}
+{"epoch": 1790492227.6082792, "event": "COMPLETE", "result": "IDLE_C2_CANARY_COMPLETE", "on_elapsed_s": 98.68975767499069}

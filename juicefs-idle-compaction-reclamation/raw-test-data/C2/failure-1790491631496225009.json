@@ -1,0 +1,5 @@
+{
+  "error": "command rc=1: sudo -n readlink /proc/996038/exe: ",
+  "epoch": 1790491631.4962392,
+  "action": "preserve private mount/data"
+}

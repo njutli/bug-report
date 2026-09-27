@@ -1,0 +1,82 @@
+{"epoch": 1790486514.9569697, "event": "BEGIN", "host": "test-client", "run": "20260927-LT002-C1"}
+{"epoch": 1790486516.0798883, "event": "START", "label": "old-before", "pid": 978110}
+{"epoch": 1790486518.0830166, "event": "FINISH", "label": "old-before", "rc": 0, "start_epoch": 1790486516.0798821, "end_epoch": 1790486518.0824451, "elapsed_s": 2.002564185997471}
+{"epoch": 1790486536.3935125, "event": "START", "label": "read-before", "pid": 978141}
+{"epoch": 1790486657.7498574, "event": "FINISH", "label": "read-before", "rc": 0, "start_epoch": 1790486536.3935087, "end_epoch": 1790486657.7493758, "elapsed_s": 121.3558686930337}
+{"epoch": 1790486657.7524238, "event": "START", "label": "read-during", "pid": 978710}
+{"epoch": 1790486659.0971632, "event": "START", "label": "old-compact-00", "pid": 978823}
+{"epoch": 1790486745.3124175, "event": "FINISH", "label": "old-compact-00", "rc": 0, "start_epoch": 1790486659.0971582, "end_epoch": 1790486745.311902, "elapsed_s": 86.21474524098448}
+{"epoch": 1790486746.7136564, "event": "START", "label": "old-compact-01", "pid": 979196}
+{"epoch": 1790486869.4785886, "event": "FINISH", "label": "old-compact-01", "rc": 0, "start_epoch": 1790486746.7136407, "end_epoch": 1790486869.4781294, "elapsed_s": 122.76448986498872}
+{"epoch": 1790486870.584115, "event": "START", "label": "old-compact-02", "pid": 979719}
+{"epoch": 1790486967.5594647, "event": "FINISH", "label": "old-compact-02", "rc": 0, "start_epoch": 1790486870.5841115, "end_epoch": 1790486967.5590687, "elapsed_s": 96.97495862701908}
+{"epoch": 1790486968.5544343, "event": "START", "label": "old-compact-03", "pid": 980130}
+{"epoch": 1790487062.8618517, "event": "FINISH", "label": "old-compact-03", "rc": 0, "start_epoch": 1790486968.5544295, "end_epoch": 1790487062.8613267, "elapsed_s": 94.30689938599244}
+{"epoch": 1790487063.8935094, "event": "START", "label": "old-compact-04", "pid": 980563}
+{"epoch": 1790487161.6767604, "event": "FINISH", "label": "old-compact-04", "rc": 0, "start_epoch": 1790487063.8935041, "end_epoch": 1790487161.6762784, "elapsed_s": 97.78277592599625}
+{"epoch": 1790487162.6319356, "event": "START", "label": "old-compact-05", "pid": 980974}
+{"epoch": 1790487266.7373474, "event": "FINISH", "label": "old-compact-05", "rc": 0, "start_epoch": 1790487162.6319315, "end_epoch": 1790487266.7368162, "elapsed_s": 104.10488571802853}
+{"epoch": 1790487267.8098502, "event": "START", "label": "old-compact-06", "pid": 981452}
+{"epoch": 1790487425.717865, "event": "FINISH", "label": "old-compact-06", "rc": 0, "start_epoch": 1790487267.809845, "end_epoch": 1790487425.7173264, "elapsed_s": 157.90748267201707}
+{"epoch": 1790487426.778046, "event": "START", "label": "old-compact-07", "pid": 982084}
+{"epoch": 1790487521.2276578, "event": "FINISH", "label": "old-compact-07", "rc": 0, "start_epoch": 1790487426.7780406, "end_epoch": 1790487521.2271411, "elapsed_s": 94.44910194596741}
+{"epoch": 1790487521.2404208, "event": "FINISH", "label": "read-during", "rc": 0, "start_epoch": 1790486657.752418, "end_epoch": 1790487521.2401137, "elapsed_s": 863.4876969549805}
+{"epoch": 1790487570.5580862, "event": "START", "label": "old-after", "pid": 982724}
+{"epoch": 1790487572.5612113, "event": "FINISH", "label": "old-after", "rc": 0, "start_epoch": 1790487570.5580802, "end_epoch": 1790487572.5606885, "elapsed_s": 2.002610242983792}
+{"epoch": 1790487589.742445, "event": "START", "label": "read-after", "pid": 982756}
+{"epoch": 1790487710.6067913, "event": "FINISH", "label": "read-after", "rc": 0, "start_epoch": 1790487589.7424414, "end_epoch": 1790487710.6063879, "elapsed_s": 120.8639480349957}
+{"epoch": 1790487710.6092565, "event": "START", "label": "old-verify-00", "pid": 983325}
+{"epoch": 1790487743.5672033, "event": "FINISH", "label": "old-verify-00", "rc": 0, "start_epoch": 1790487710.609251, "end_epoch": 1790487743.566544, "elapsed_s": 32.95729451900115}
+{"epoch": 1790487743.5695977, "event": "START", "label": "old-verify-01", "pid": 983485}
+{"epoch": 1790487776.5282273, "event": "FINISH", "label": "old-verify-01", "rc": 0, "start_epoch": 1790487743.5695922, "end_epoch": 1790487776.5276961, "elapsed_s": 32.958105348050594}
+{"epoch": 1790487776.530882, "event": "START", "label": "old-verify-02", "pid": 983714}
+{"epoch": 1790487809.690641, "event": "FINISH", "label": "old-verify-02", "rc": 0, "start_epoch": 1790487776.530876, "end_epoch": 1790487809.6901338, "elapsed_s": 33.15925912797684}
+{"epoch": 1790487809.693068, "event": "START", "label": "old-verify-03", "pid": 983873}
+{"epoch": 1790487842.7618473, "event": "FINISH", "label": "old-verify-03", "rc": 0, "start_epoch": 1790487809.693063, "end_epoch": 1790487842.7613118, "elapsed_s": 33.068250595999416}
+{"epoch": 1790487842.7644038, "event": "START", "label": "old-verify-04", "pid": 984096}
+{"epoch": 1790487875.8396823, "event": "FINISH", "label": "old-verify-04", "rc": 0, "start_epoch": 1790487842.764398, "end_epoch": 1790487875.8391519, "elapsed_s": 33.074755495996214}
+{"epoch": 1790487875.8421247, "event": "START", "label": "old-verify-05", "pid": 984257}
+{"epoch": 1790487909.157942, "event": "FINISH", "label": "old-verify-05", "rc": 0, "start_epoch": 1790487875.842119, "end_epoch": 1790487909.1574147, "elapsed_s": 33.31529708200833}
+{"epoch": 1790487909.1603887, "event": "START", "label": "old-verify-06", "pid": 984484}
+{"epoch": 1790487942.2698863, "event": "FINISH", "label": "old-verify-06", "rc": 0, "start_epoch": 1790487909.1603835, "end_epoch": 1790487942.2693827, "elapsed_s": 33.10900157195283}
+{"epoch": 1790487942.2722125, "event": "START", "label": "old-verify-07", "pid": 984647}
+{"epoch": 1790487975.5524418, "event": "FINISH", "label": "old-verify-07", "rc": 0, "start_epoch": 1790487942.2722073, "end_epoch": 1790487975.551891, "elapsed_s": 33.279685077955946}
+{"epoch": 1790487975.5531957, "event": "BATCH_PASS", "freed_stored": 9543876608, "freed_objects": 37740}
+{"epoch": 1790487975.5808563, "event": "START", "label": "cycle-layout", "pid": 984871}
+{"epoch": 1790488041.5601158, "event": "FINISH", "label": "cycle-layout", "rc": 0, "start_epoch": 1790487975.5808506, "end_epoch": 1790488041.559621, "elapsed_s": 65.97877234197222}
+{"epoch": 1790488041.56237, "event": "START", "label": "cycle-layout-verify", "pid": 985231}
+{"epoch": 1790488074.6486366, "event": "FINISH", "label": "cycle-layout-verify", "rc": 0, "start_epoch": 1790488041.5623653, "end_epoch": 1790488074.6482463, "elapsed_s": 33.08588260097895}
+{"epoch": 1790488107.9141972, "event": "START", "label": "cycle-1-write", "pid": 985597}
+{"epoch": 1790488622.4918883, "event": "FINISH", "label": "cycle-1-write", "rc": 0, "start_epoch": 1790488107.9141917, "end_epoch": 1790488622.4913285, "elapsed_s": 514.5771390500013}
+{"epoch": 1790488622.4940484, "event": "START", "label": "cycle-1-before", "pid": 987619}
+{"epoch": 1790488623.4959931, "event": "FINISH", "label": "cycle-1-before", "rc": 0, "start_epoch": 1790488622.4940429, "end_epoch": 1790488623.4954977, "elapsed_s": 1.0014571200008504}
+{"epoch": 1790488625.8246534, "event": "START", "label": "cycle-1-compact", "pid": 987768}
+{"epoch": 1790488780.822301, "event": "FINISH", "label": "cycle-1-compact", "rc": 0, "start_epoch": 1790488625.8246489, "end_epoch": 1790488780.8217793, "elapsed_s": 154.99713127902942}
+{"epoch": 1790488830.2411745, "event": "START", "label": "cycle-1-after", "pid": 988624}
+{"epoch": 1790488831.2431295, "event": "FINISH", "label": "cycle-1-after", "rc": 0, "start_epoch": 1790488830.2411695, "end_epoch": 1790488831.2425954, "elapsed_s": 1.001428374031093}
+{"epoch": 1790488831.2467551, "event": "START", "label": "cycle-1-verify", "pid": 988651}
+{"epoch": 1790488864.3600714, "event": "FINISH", "label": "cycle-1-verify", "rc": 0, "start_epoch": 1790488831.2467496, "end_epoch": 1790488864.3596907, "elapsed_s": 33.11294280400034}
+{"epoch": 1790488864.3607423, "event": "CYCLE_PASS", "cycle": 1, "raw_before": 4303355904, "stored_high": 346756128172, "stored_low": 342023380396, "stored_vs_baseline": -327680}
+{"epoch": 1790488864.3625603, "event": "START", "label": "cycle-2-write", "pid": 988813}
+{"epoch": 1790489378.0109458, "event": "FINISH", "label": "cycle-2-write", "rc": 0, "start_epoch": 1790488864.362555, "end_epoch": 1790489378.0105357, "elapsed_s": 513.6479820240056}
+{"epoch": 1790489378.0130775, "event": "START", "label": "cycle-2-before", "pid": 990919}
+{"epoch": 1790489379.0149693, "event": "FINISH", "label": "cycle-2-before", "rc": 0, "start_epoch": 1790489378.013072, "end_epoch": 1790489379.0145104, "elapsed_s": 1.0014406890259124}
+{"epoch": 1790489381.2605834, "event": "START", "label": "cycle-2-compact", "pid": 991036}
+{"epoch": 1790489526.610351, "event": "FINISH", "label": "cycle-2-compact", "rc": 0, "start_epoch": 1790489381.2605796, "end_epoch": 1790489526.6099842, "elapsed_s": 145.34940579795511}
+{"epoch": 1790489575.9775298, "event": "START", "label": "cycle-2-after", "pid": 991853}
+{"epoch": 1790489576.9794588, "event": "FINISH", "label": "cycle-2-after", "rc": 0, "start_epoch": 1790489575.9775183, "end_epoch": 1790489576.9790049, "elapsed_s": 1.0014890019665472}
+{"epoch": 1790489576.9829745, "event": "START", "label": "cycle-2-verify", "pid": 991878}
+{"epoch": 1790489609.412962, "event": "FINISH", "label": "cycle-2-verify", "rc": 0, "start_epoch": 1790489576.9829698, "end_epoch": 1790489609.412595, "elapsed_s": 32.42962707998231}
+{"epoch": 1790489609.4136171, "event": "CYCLE_PASS", "cycle": 2, "raw_before": 4113825792, "stored_high": 348579798444, "stored_low": 342023380396, "stored_vs_baseline": -327680}
+{"epoch": 1790489609.415515, "event": "START", "label": "cycle-3-write", "pid": 992037}
+{"epoch": 1790490182.2888134, "event": "FINISH", "label": "cycle-3-write", "rc": 0, "start_epoch": 1790489609.4155095, "end_epoch": 1790490182.2883117, "elapsed_s": 572.8728044650052}
+{"epoch": 1790490182.290817, "event": "START", "label": "cycle-3-before", "pid": 994334}
+{"epoch": 1790490183.29279, "event": "FINISH", "label": "cycle-3-before", "rc": 0, "start_epoch": 1790490182.2908123, "end_epoch": 1790490183.292296, "elapsed_s": 1.0014859969960526}
+{"epoch": 1790490186.0191355, "event": "START", "label": "cycle-3-compact", "pid": 994452}
+{"epoch": 1790490350.611602, "event": "FINISH", "label": "cycle-3-compact", "rc": 0, "start_epoch": 1790490186.0191298, "end_epoch": 1790490350.6111894, "elapsed_s": 164.5920607150183}
+{"epoch": 1790490399.4634666, "event": "START", "label": "cycle-3-after", "pid": 995340}
+{"epoch": 1790490400.4653108, "event": "FINISH", "label": "cycle-3-after", "rc": 0, "start_epoch": 1790490399.463463, "end_epoch": 1790490400.4648182, "elapsed_s": 1.0013568870490417}
+{"epoch": 1790490400.4688957, "event": "START", "label": "cycle-3-verify", "pid": 995366}
+{"epoch": 1790490433.6133893, "event": "FINISH", "label": "cycle-3-verify", "rc": 0, "start_epoch": 1790490400.4688904, "end_epoch": 1790490433.612872, "elapsed_s": 33.14398306404473}
+{"epoch": 1790490433.6141326, "event": "CYCLE_PASS", "cycle": 3, "raw_before": 3747348480, "stored_high": 347112578476, "stored_low": 342023380396, "stored_vs_baseline": -327680}
+{"epoch": 1790490434.5653827, "event": "COMPLETE", "result": "MAINTENANCE_C1_COMPLETE", "baseline": {"stored": 342023708076, "stored_data": 342023700480, "stored_omap": 7596, "objects": 1329334, "kb_used": 501011316, "bytes_used": 513035586690, "data_bytes_used": 513035575296, "omap_bytes_used": 11394, "percent_used": 0.28240516781806946, "max_avail": 869086330880, "quota_objects": 0, "quota_bytes": 0, "dirty": 0, "rd": 74038151, "rd_bytes": 6067735967744, "wr": 23791301, "wr_bytes": 3231897689088, "compress_bytes_used": 0, "compress_under_bytes": 0, "stored_raw": 513035534336, "avail_raw": 1303629581884}, "cycle_lows": [{"stored": 342023380396, "stored_data": 342023372800, "stored_omap": 7596, "objects": 1329334, "kb_used": 501010788, "bytes_used": 513035046018, "data_bytes_used": 513035034624, "omap_bytes_used": 11394, "percent_used": 0.2824004292488098, "max_avail": 869105664000, "quota_objects": 0, "quota_bytes": 0, "dirty": 0, "rd": 74096058, "rd_bytes": 6075319269376, "wr": 23914701, "wr_bytes": 3248077460480, "compress_bytes_used": 0, "compress_under_bytes": 0, "stored_raw": 513035075584, "avail_raw": 1303658532411}, {"stored": 342023380396, "stored_data": 342023372800, "stored_omap": 7596, "objects": 1329334, "kb_used": 501010788, "bytes_used": 513035046018, "data_bytes_used": 513035034624, "omap_bytes_used": 11394, "percent_used": 0.28266817331314087, "max_avail": 867958521856, "quota_objects": 0, "quota_bytes": 0, "dirty": 0, "rd": 74150334, "rd_bytes": 6082432808960, "wr": 24026319, "wr_bytes": 3262707192832, "compress_bytes_used": 0, "compress_under_bytes": 0, "stored_raw": 513035075584, "avail_raw": 1301937794671}, {"stored": 342023380396, "stored_data": 342023372800, "stored_omap": 7596, "objects": 1329334, "kb_used": 501010788, "bytes_used": 513035046018, "data_bytes_used": 513035034624, "omap_bytes_used": 11394, "percent_used": 0.28247523307800293, "max_avail": 868784996352, "quota_objects": 0, "quota_bytes": 0, "dirty": 0, "rd": 74219460, "rd_bytes": 6091492505600, "wr": 24152787, "wr_bytes": 3279283082240, "compress_bytes_used": 0, "compress_under_bytes": 0, "stored_raw": 513035075584, "avail_raw": 1303177457226}], "low_water_spread_bytes": 0, "scope": "8 existing files and 3x8GiB overwrite/maintenance cycles; foreground readonly 8MiB/s", "note": "not native automatic recovery or continuous-full-load acceptance"}

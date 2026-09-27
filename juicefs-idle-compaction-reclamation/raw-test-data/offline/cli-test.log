@@ -1,0 +1,10 @@
+=== RUN   TestIdleCompactionMountConfig
+=== RUN   TestIdleCompactionMountConfig/0
+=== RUN   TestIdleCompactionMountConfig/1h
+=== RUN   TestIdleCompactionMountConfig/15s
+--- PASS: TestIdleCompactionMountConfig (0.00s)
+    --- PASS: TestIdleCompactionMountConfig/0 (0.00s)
+    --- PASS: TestIdleCompactionMountConfig/1h (0.00s)
+    --- PASS: TestIdleCompactionMountConfig/15s (0.00s)
+PASS
+ok  	github.com/juicedata/juicefs/cmd	0.030s

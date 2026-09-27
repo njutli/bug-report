@@ -1,0 +1,605 @@
+# HELP juicefs_blockcache_blocks number of cached blocks
+# TYPE juicefs_blockcache_blocks gauge
+juicefs_blockcache_blocks{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_bytes number of cached bytes
+# TYPE juicefs_blockcache_bytes gauge
+juicefs_blockcache_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_drops dropped block
+# TYPE juicefs_blockcache_drops counter
+juicefs_blockcache_drops{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_evicts evicted cache blocks
+# TYPE juicefs_blockcache_evicts counter
+juicefs_blockcache_evicts{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_hit_bytes read bytes from cached block
+# TYPE juicefs_blockcache_hit_bytes counter
+juicefs_blockcache_hit_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_hits read from cached block
+# TYPE juicefs_blockcache_hits counter
+juicefs_blockcache_hits{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_miss missed read from cached block
+# TYPE juicefs_blockcache_miss counter
+juicefs_blockcache_miss{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 29451
+# HELP juicefs_blockcache_miss_bytes missed bytes from cached block
+# TYPE juicefs_blockcache_miss_bytes counter
+juicefs_blockcache_miss_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 7.71751936e+09
+# HELP juicefs_blockcache_read_hist_seconds read cached block latency distribution
+# TYPE juicefs_blockcache_read_hist_seconds histogram
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1e-05"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2e-05"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="4e-05"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8e-05"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00016"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00032"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00064"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00128"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00256"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00512"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.01024"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.02048"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.04096"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.08192"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.16384"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.32768"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.65536"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.31072"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2.62144"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="5.24288"} 0
+juicefs_blockcache_read_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 0
+juicefs_blockcache_read_hist_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+juicefs_blockcache_read_hist_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_write_bytes write bytes of cached block
+# TYPE juicefs_blockcache_write_bytes counter
+juicefs_blockcache_write_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_write_hist_seconds write cached block latency distribution
+# TYPE juicefs_blockcache_write_hist_seconds histogram
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="4e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00016"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00032"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00064"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00128"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00256"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00512"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.01024"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.02048"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.04096"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.08192"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.16384"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.32768"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.65536"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.31072"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2.62144"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="5.24288"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 0
+juicefs_blockcache_write_hist_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+juicefs_blockcache_write_hist_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_blockcache_writes written cached block
+# TYPE juicefs_blockcache_writes counter
+juicefs_blockcache_writes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_compact_size_histogram_bytes Distribution of size of compacted data in bytes.
+# TYPE juicefs_compact_size_histogram_bytes histogram
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1024"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2048"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="4096"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8192"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="16384"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="32768"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="65536"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="131072"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="262144"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="524288"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.048576e+06"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2.097152e+06"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="4.194304e+06"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8.388608e+06"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.6777216e+07"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="3.3554432e+07"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 99
+juicefs_compact_size_histogram_bytes_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 6.643777536e+09
+juicefs_compact_size_histogram_bytes_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 99
+# HELP juicefs_cpu_usage Accumulated CPU usage in seconds.
+# TYPE juicefs_cpu_usage gauge
+juicefs_cpu_usage{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 351.706608
+# HELP juicefs_fuse_open_handlers number of open files and directories.
+# TYPE juicefs_fuse_open_handlers gauge
+juicefs_fuse_open_handlers{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_fuse_ops_durations_histogram_seconds Operations latency distributions.
+# TYPE juicefs_fuse_ops_durations_histogram_seconds histogram
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1e-05"} 289
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.8e-05"} 360
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="3.24e-05"} 522
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="5.8320000000000004e-05"} 9417
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.000104976"} 74606
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00018895680000000003"} 81795
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00034012224000000006"} 82270
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0006122200320000001"} 82369
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0011019960576000001"} 82792
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0019835929036800004"} 83051
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0035704672266240007"} 83138
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.006426841007923201"} 83154
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.011568313814261762"} 83173
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.020822964865671173"} 83213
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.03748133675820811"} 83227
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0674664061647746"} 83244
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.12143953109659429"} 83266
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.21859115597386972"} 83299
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.3934640807529655"} 83309
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.7082353453553379"} 83318
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.2748236216396083"} 83321
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2.294682518951295"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="4.1304285341123315"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="7.434771361402197"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="13.382588450523954"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="24.088659210943117"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="43.35958657969761"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="78.0472558434557"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="140.48506051822028"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 83322
+juicefs_fuse_ops_durations_histogram_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 28.692379912999932
+juicefs_fuse_ops_durations_histogram_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 83322
+# HELP juicefs_fuse_ops_durations_seconds Operations latency in seconds.
+# TYPE juicefs_fuse_ops_durations_seconds counter
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="create",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.010193793
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="flush",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.8060555230000003
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="fsync",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 17.168288940000004
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="getattr",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.5133574230000004
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="lookup",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.198666752
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="open",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.310527168
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="opendir",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 5.273e-06
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="read",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.0108183710000063
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="readdir",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.002638331
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="release",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.5120289040000001
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="releasedir",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 9.33e-06
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="setattr",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.008827282
+juicefs_fuse_ops_durations_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="write",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 8.150962823
+# HELP juicefs_fuse_ops_io_errors Number of IO errors.
+# TYPE juicefs_fuse_ops_io_errors counter
+juicefs_fuse_ops_io_errors{errno="ENOENT",instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 4
+# HELP juicefs_fuse_ops_total Total number of operations.
+# TYPE juicefs_fuse_ops_total counter
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="create",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="flush",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 232
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="fsync",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 129
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="getattr",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 444
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="lookup",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 115
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="open",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 231
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="opendir",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="read",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 8205
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="readdir",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 2
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="release",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 232
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="releasedir",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="setattr",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1
+juicefs_fuse_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="write",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 73728
+# HELP juicefs_fuse_read_size_bytes size of read distributions.
+# TYPE juicefs_fuse_read_size_bytes histogram
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="4096"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8192"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="12288"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="16384"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="20480"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="24576"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="28672"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="32768"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="36864"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="40960"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="45056"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="49152"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="53248"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="57344"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="61440"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="65536"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="69632"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="73728"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="77824"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="81920"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="86016"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="90112"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="94208"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="98304"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="102400"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="106496"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="110592"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="114688"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="118784"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="122880"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="126976"} 0
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="131072"} 8192
+juicefs_fuse_read_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 8192
+juicefs_fuse_read_size_bytes_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.073741824e+09
+juicefs_fuse_read_size_bytes_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 8192
+# HELP juicefs_fuse_written_size_bytes size of write distributions.
+# TYPE juicefs_fuse_written_size_bytes histogram
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="4096"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8192"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="12288"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="16384"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="20480"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="24576"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="28672"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="32768"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="36864"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="40960"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="45056"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="49152"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="53248"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="57344"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="61440"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="65536"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="69632"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="73728"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="77824"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="81920"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="86016"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="90112"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="94208"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="98304"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="102400"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="106496"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="110592"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="114688"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="118784"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="122880"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="126976"} 0
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="131072"} 73728
+juicefs_fuse_written_size_bytes_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 73728
+juicefs_fuse_written_size_bytes_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 9.663676416e+09
+juicefs_fuse_written_size_bytes_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 73728
+# HELP juicefs_go_build_info Build information about the main Go module.
+# TYPE juicefs_go_build_info gauge
+juicefs_go_build_info{checksum="",instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",path="github.com/juicedata/juicefs",version="v0.0.0-20260927053152-f0a2390edc23+dirty",vol_name="test-volume"} 1
+# HELP juicefs_go_gc_duration_seconds A summary of the wall-time pause (stop-the-world) duration in garbage collection cycles.
+# TYPE juicefs_go_gc_duration_seconds summary
+juicefs_go_gc_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",quantile="0"} 0.000124403
+juicefs_go_gc_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",quantile="0.25"} 0.000311799
+juicefs_go_gc_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",quantile="0.5"} 0.000340366
+juicefs_go_gc_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",quantile="0.75"} 0.0004091
+juicefs_go_gc_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",quantile="1"} 0.003300717
+juicefs_go_gc_duration_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.067932787
+juicefs_go_gc_duration_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 144
+# HELP juicefs_go_gc_gogc_percent Heap size target percentage configured by the user, otherwise 100. This value is set by the GOGC environment variable, and the runtime/debug.SetGCPercent function. Sourced from /gc/gogc:percent.
+# TYPE juicefs_go_gc_gogc_percent gauge
+juicefs_go_gc_gogc_percent{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 100
+# HELP juicefs_go_gc_gomemlimit_bytes Go runtime memory limit configured by the user, otherwise math.MaxInt64. This value is set by the GOMEMLIMIT environment variable, and the runtime/debug.SetMemoryLimit function. Sourced from /gc/gomemlimit:bytes.
+# TYPE juicefs_go_gc_gomemlimit_bytes gauge
+juicefs_go_gc_gomemlimit_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 9.223372036854776e+18
+# HELP juicefs_go_goroutines Number of goroutines that currently exist.
+# TYPE juicefs_go_goroutines gauge
+juicefs_go_goroutines{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 192
+# HELP juicefs_go_info Information about the Go environment.
+# TYPE juicefs_go_info gauge
+juicefs_go_info{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",version="go1.26.0",vol_name="test-volume"} 1
+# HELP juicefs_go_memstats_alloc_bytes Number of bytes allocated in heap and currently in use. Equals to /memory/classes/heap/objects:bytes.
+# TYPE juicefs_go_memstats_alloc_bytes gauge
+juicefs_go_memstats_alloc_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 3.2844616e+07
+# HELP juicefs_go_memstats_alloc_bytes_total Total number of bytes allocated in heap until now, even if released already. Equals to /gc/heap/allocs:bytes.
+# TYPE juicefs_go_memstats_alloc_bytes_total counter
+juicefs_go_memstats_alloc_bytes_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 6.205936304e+09
+# HELP juicefs_go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table. Equals to /memory/classes/profiling/buckets:bytes.
+# TYPE juicefs_go_memstats_buck_hash_sys_bytes gauge
+juicefs_go_memstats_buck_hash_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.747146e+06
+# HELP juicefs_go_memstats_frees_total Total number of heap objects frees. Equals to /gc/heap/frees:objects + /gc/heap/tiny/allocs:objects.
+# TYPE juicefs_go_memstats_frees_total counter
+juicefs_go_memstats_frees_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 3.3735789e+07
+# HELP juicefs_go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata. Equals to /memory/classes/metadata/other:bytes.
+# TYPE juicefs_go_memstats_gc_sys_bytes gauge
+juicefs_go_memstats_gc_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 6.42128e+06
+# HELP juicefs_go_memstats_heap_alloc_bytes Number of heap bytes allocated and currently in use, same as go_memstats_alloc_bytes. Equals to /memory/classes/heap/objects:bytes.
+# TYPE juicefs_go_memstats_heap_alloc_bytes gauge
+juicefs_go_memstats_heap_alloc_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 3.2844616e+07
+# HELP juicefs_go_memstats_heap_idle_bytes Number of heap bytes waiting to be used. Equals to /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE juicefs_go_memstats_heap_idle_bytes gauge
+juicefs_go_memstats_heap_idle_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.95969024e+08
+# HELP juicefs_go_memstats_heap_inuse_bytes Number of heap bytes that are in use. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes
+# TYPE juicefs_go_memstats_heap_inuse_bytes gauge
+juicefs_go_memstats_heap_inuse_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 4.4908544e+07
+# HELP juicefs_go_memstats_heap_objects Number of currently allocated objects. Equals to /gc/heap/objects:objects.
+# TYPE juicefs_go_memstats_heap_objects gauge
+juicefs_go_memstats_heap_objects{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 80977
+# HELP juicefs_go_memstats_heap_released_bytes Number of heap bytes released to OS. Equals to /memory/classes/heap/released:bytes.
+# TYPE juicefs_go_memstats_heap_released_bytes gauge
+juicefs_go_memstats_heap_released_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.84762368e+08
+# HELP juicefs_go_memstats_heap_sys_bytes Number of heap bytes obtained from system. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes + /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE juicefs_go_memstats_heap_sys_bytes gauge
+juicefs_go_memstats_heap_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 2.40877568e+08
+# HELP juicefs_go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+# TYPE juicefs_go_memstats_last_gc_time_seconds gauge
+juicefs_go_memstats_last_gc_time_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.7904915621186633e+09
+# HELP juicefs_go_memstats_mallocs_total Total number of heap objects allocated, both live and gc-ed. Semantically a counter version for go_memstats_heap_objects gauge. Equals to /gc/heap/allocs:objects + /gc/heap/tiny/allocs:objects.
+# TYPE juicefs_go_memstats_mallocs_total counter
+juicefs_go_memstats_mallocs_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 3.3816766e+07
+# HELP juicefs_go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures. Equals to /memory/classes/metadata/mcache/inuse:bytes.
+# TYPE juicefs_go_memstats_mcache_inuse_bytes gauge
+juicefs_go_memstats_mcache_inuse_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 146944
+# HELP juicefs_go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system. Equals to /memory/classes/metadata/mcache/inuse:bytes + /memory/classes/metadata/mcache/free:bytes.
+# TYPE juicefs_go_memstats_mcache_sys_bytes gauge
+juicefs_go_memstats_mcache_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 160720
+# HELP juicefs_go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures. Equals to /memory/classes/metadata/mspan/inuse:bytes.
+# TYPE juicefs_go_memstats_mspan_inuse_bytes gauge
+juicefs_go_memstats_mspan_inuse_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 922240
+# HELP juicefs_go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system. Equals to /memory/classes/metadata/mspan/inuse:bytes + /memory/classes/metadata/mspan/free:bytes.
+# TYPE juicefs_go_memstats_mspan_sys_bytes gauge
+juicefs_go_memstats_mspan_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 2.04e+06
+# HELP juicefs_go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place. Equals to /gc/heap/goal:bytes.
+# TYPE juicefs_go_memstats_next_gc_bytes gauge
+juicefs_go_memstats_next_gc_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 6.2425362e+07
+# HELP juicefs_go_memstats_other_sys_bytes Number of bytes used for other system allocations. Equals to /memory/classes/other:bytes.
+# TYPE juicefs_go_memstats_other_sys_bytes gauge
+juicefs_go_memstats_other_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.046547e+07
+# HELP juicefs_go_memstats_stack_inuse_bytes Number of bytes obtained from system for stack allocator in non-CGO environments. Equals to /memory/classes/heap/stacks:bytes.
+# TYPE juicefs_go_memstats_stack_inuse_bytes gauge
+juicefs_go_memstats_stack_inuse_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.0780672e+07
+# HELP juicefs_go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator. Equals to /memory/classes/heap/stacks:bytes + /memory/classes/os-stacks:bytes.
+# TYPE juicefs_go_memstats_stack_sys_bytes gauge
+juicefs_go_memstats_stack_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.0780672e+07
+# HELP juicefs_go_memstats_sys_bytes Number of bytes obtained from system. Equals to /memory/classes/total:byte.
+# TYPE juicefs_go_memstats_sys_bytes gauge
+juicefs_go_memstats_sys_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 2.72492856e+08
+# HELP juicefs_go_sched_gomaxprocs_threads The current runtime.GOMAXPROCS setting, or the number of operating system threads that can execute user-level Go code simultaneously. Sourced from /sched/gomaxprocs:threads.
+# TYPE juicefs_go_sched_gomaxprocs_threads gauge
+juicefs_go_sched_gomaxprocs_threads{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 64
+# HELP juicefs_go_threads Number of OS threads created.
+# TYPE juicefs_go_threads gauge
+juicefs_go_threads{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 204
+# HELP juicefs_memory Used memory in bytes.
+# TYPE juicefs_memory gauge
+juicefs_memory{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 2.62914048e+08
+# HELP juicefs_meta_ops_duration_seconds Meta operation duration in seconds.
+# TYPE juicefs_meta_ops_duration_seconds counter
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GetAttr",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.9199301759999999
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Lookup",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.20456968400000006
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Mknod",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.010124005
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="NewDirHandler",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.001661954
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Read",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.023210233999999996
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="StatFS",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.2943000800000001
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Truncate",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0.008788337
+juicefs_meta_ops_duration_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Write",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1695.6307452039982
+# HELP juicefs_meta_ops_durations_histogram_seconds Operation latency distributions.
+# TYPE juicefs_meta_ops_durations_histogram_seconds histogram
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0001"} 0
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00015000000000000001"} 0
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00022500000000000002"} 0
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0003375"} 0
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00050625"} 14
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.000759375"} 239
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0011390624999999999"} 587
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0017085937499999998"} 788
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0025628906249999996"} 942
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0038443359374999994"} 992
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00576650390625"} 1903
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.008649755859375"} 4598
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0129746337890625"} 6986
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.01946195068359375"} 10300
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.029192926025390625"} 14877
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.043789389038085935"} 21334
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0656840835571289"} 28521
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.09852612533569335"} 30640
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.14778918800354002"} 31089
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.22168378200531003"} 31665
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.33252567300796504"} 32722
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.49878850951194753"} 32982
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.7481827642679213"} 33094
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.122274146401882"} 33195
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.683411219602823"} 33195
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2.5251168294042348"} 33195
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="3.787675244106352"} 33195
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="5.681512866159528"} 33195
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8.52226929923929"} 33195
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="12.783403948858936"} 33195
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 33195
+juicefs_meta_ops_durations_histogram_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1697.0933296739988
+juicefs_meta_ops_durations_histogram_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 33195
+# HELP juicefs_meta_ops_total Meta operation count
+# TYPE juicefs_meta_ops_total counter
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GetAttr",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 776
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Lookup",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 117
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Mknod",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="NewDirHandler",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Read",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 18
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="StatFS",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 108
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Truncate",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1
+juicefs_meta_ops_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="Write",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 32173
+# HELP juicefs_object_request_data_bytes Object requests size in bytes.
+# TYPE juicefs_object_request_data_bytes counter
+juicefs_object_request_data_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume"} 7.71751936e+09
+juicefs_object_request_data_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume"} 1.6307453952e+10
+# HELP juicefs_object_request_durations_histogram_seconds Object requests latency distributions.
+# TYPE juicefs_object_request_durations_histogram_seconds histogram
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.01"} 27384
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.015"} 30687
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.0225"} 33139
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.03375"} 34897
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.050625"} 36377
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.0759375"} 37940
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.11390625000000001"} 40803
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.17085937500000004"} 48380
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.25628906250000005"} 50369
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.3844335937500001"} 52057
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.5766503906250001"} 53289
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="0.8649755859375001"} 54222
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="1.2974633789062502"} 54566
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="1.9461950683593754"} 54648
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="2.919292602539063"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="4.378938903808595"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="6.568408355712892"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="9.852612533569339"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="14.778918800354008"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="22.168378200531013"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="33.25256730079652"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="49.87885095119478"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="74.81827642679217"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="112.22741464018824"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="168.34112196028235"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume",le="+Inf"} 54662
+juicefs_object_request_durations_histogram_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume"} 4400.867041195004
+juicefs_object_request_durations_histogram_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="DELETE",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="",vol_name="test-volume"} 54662
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.01"} 5816
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.015"} 7092
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.0225"} 8315
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.03375"} 9330
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.050625"} 10075
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.0759375"} 10812
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.11390625000000001"} 12212
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.17085937500000004"} 20263
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.25628906250000005"} 23408
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.3844335937500001"} 26683
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.5766503906250001"} 28073
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.8649755859375001"} 29032
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="1.2974633789062502"} 29377
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="1.9461950683593754"} 29440
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="2.919292602539063"} 29448
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="4.378938903808595"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="6.568408355712892"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="9.852612533569339"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="14.778918800354008"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="22.168378200531013"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="33.25256730079652"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="49.87885095119478"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="74.81827642679217"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="112.22741464018824"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="168.34112196028235"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="+Inf"} 29451
+juicefs_object_request_durations_histogram_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume"} 4919.075370807977
+juicefs_object_request_durations_histogram_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="GET",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume"} 29451
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.01"} 3954
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.015"} 9942
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.0225"} 16865
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.03375"} 25638
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.050625"} 32918
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.0759375"} 36184
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.11390625000000001"} 40621
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.17085937500000004"} 48514
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.25628906250000005"} 52660
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.3844335937500001"} 56044
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.5766503906250001"} 58948
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="0.8649755859375001"} 61016
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="1.2974633789062502"} 61958
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="1.9461950683593754"} 62185
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="2.919292602539063"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="4.378938903808595"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="6.568408355712892"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="9.852612533569339"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="14.778918800354008"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="22.168378200531013"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="33.25256730079652"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="49.87885095119478"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="74.81827642679217"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="112.22741464018824"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="168.34112196028235"} 62220
+juicefs_object_request_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume",le="+Inf"} 62220
+juicefs_object_request_durations_histogram_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume"} 8604.322770104985
+juicefs_object_request_durations_histogram_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",method="PUT",mp="/RESULTS/20260927-LT002-C2/mnt",storage_class="STANDARD",vol_name="test-volume"} 62220
+# HELP juicefs_object_request_errors failed requests to object store
+# TYPE juicefs_object_request_errors counter
+juicefs_object_request_errors{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_object_request_uploading number of uploading requests
+# TYPE juicefs_object_request_uploading gauge
+juicefs_object_request_uploading{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE juicefs_process_cpu_seconds_total counter
+juicefs_process_cpu_seconds_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 351.69
+# HELP juicefs_process_max_fds Maximum number of open file descriptors.
+# TYPE juicefs_process_max_fds gauge
+juicefs_process_max_fds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 100000
+# HELP juicefs_process_network_receive_bytes_total Number of bytes received by the process over the network.
+# TYPE juicefs_process_network_receive_bytes_total counter
+juicefs_process_network_receive_bytes_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 3.262037791762e+12
+# HELP juicefs_process_network_transmit_bytes_total Number of bytes sent by the process over the network.
+# TYPE juicefs_process_network_transmit_bytes_total counter
+juicefs_process_network_transmit_bytes_total{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.812450555976e+12
+# HELP juicefs_process_open_fds Number of open file descriptors.
+# TYPE juicefs_process_open_fds gauge
+juicefs_process_open_fds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 46
+# HELP juicefs_process_resident_memory_bytes Resident memory size in bytes.
+# TYPE juicefs_process_resident_memory_bytes gauge
+juicefs_process_resident_memory_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 2.62914048e+08
+# HELP juicefs_process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE juicefs_process_start_time_seconds gauge
+juicefs_process_start_time_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.79049056336e+09
+# HELP juicefs_process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE juicefs_process_virtual_memory_bytes gauge
+juicefs_process_virtual_memory_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.7485893632e+10
+# HELP juicefs_process_virtual_memory_max_bytes Maximum amount of virtual memory available in bytes.
+# TYPE juicefs_process_virtual_memory_max_bytes gauge
+juicefs_process_virtual_memory_max_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.8446744073709552e+19
+# HELP juicefs_staging_block_bytes Total bytes of blocks in the staging path.
+# TYPE juicefs_staging_block_bytes gauge
+juicefs_staging_block_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_staging_block_delay_seconds Total seconds of delay for staging blocks
+# TYPE juicefs_staging_block_delay_seconds counter
+juicefs_staging_block_delay_seconds{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_staging_block_errors Total errors when staging blocks
+# TYPE juicefs_staging_block_errors counter
+juicefs_staging_block_errors{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_staging_blocks Number of blocks in the staging path.
+# TYPE juicefs_staging_blocks gauge
+juicefs_staging_blocks{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_staging_write_bytes write bytes of blocks in the staging path.
+# TYPE juicefs_staging_write_bytes counter
+juicefs_staging_write_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_staging_writing_blocks Number of writing blocks in staging.
+# TYPE juicefs_staging_writing_blocks gauge
+juicefs_staging_writing_blocks{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_store_cache_size_bytes size of store cache.
+# TYPE juicefs_store_cache_size_bytes gauge
+juicefs_store_cache_size_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_subdir_info Subdir configuration for JuiceFS mount (empty string means root mount)
+# TYPE juicefs_subdir_info gauge
+juicefs_subdir_info{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",subdir="/TEST_SUBTREE/20260927-LT002-C2",vol_name="test-volume"} 1
+# HELP juicefs_total_inodes Total number of inodes.
+# TYPE juicefs_total_inodes gauge
+juicefs_total_inodes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.048604e+07
+# HELP juicefs_total_space Total space in bytes.
+# TYPE juicefs_total_space gauge
+juicefs_total_space{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.125899906842624e+15
+# HELP juicefs_transaction_durations_histogram_seconds Transactions latency distributions.
+# TYPE juicefs_transaction_durations_histogram_seconds histogram
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0001"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00015000000000000001"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00022500000000000002"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0003375"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00050625"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.000759375"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0011390624999999999"} 4
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0017085937499999998"} 74
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0025628906249999996"} 3175
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0038443359374999994"} 14317
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.00576650390625"} 26483
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.008649755859375"} 44613
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0129746337890625"} 54198
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.01946195068359375"} 59800
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.029192926025390625"} 60840
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.043789389038085935"} 61022
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.0656840835571289"} 61128
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.09852612533569335"} 61228
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.14778918800354002"} 61297
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.22168378200531003"} 61322
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.33252567300796504"} 61365
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.49878850951194753"} 61409
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="0.7481827642679213"} 61424
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.122274146401882"} 61435
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="1.683411219602823"} 61435
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="2.5251168294042348"} 61435
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="3.787675244106352"} 61435
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="5.681512866159528"} 61435
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="8.52226929923929"} 61435
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="12.783403948858936"} 61435
+juicefs_transaction_durations_histogram_seconds_bucket{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume",le="+Inf"} 61435
+juicefs_transaction_durations_histogram_seconds_sum{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 516.6680938629976
+juicefs_transaction_durations_histogram_seconds_count{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 61435
+# HELP juicefs_uptime Total running time in seconds.
+# TYPE juicefs_uptime gauge
+juicefs_uptime{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1067.622414329
+# HELP juicefs_used_buffer_size_bytes size of currently used buffer.
+# TYPE juicefs_used_buffer_size_bytes gauge
+juicefs_used_buffer_size_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 5.701632e+06
+# HELP juicefs_used_inodes Total used number of inodes.
+# TYPE juicefs_used_inodes gauge
+juicefs_used_inodes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 280
+# HELP juicefs_used_read_buffer_size_bytes size of currently used buffer for read
+# TYPE juicefs_used_read_buffer_size_bytes gauge
+juicefs_used_read_buffer_size_bytes{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 0
+# HELP juicefs_used_space Total used space in bytes.
+# TYPE juicefs_used_space gauge
+juicefs_used_space{instance="test-client",juicefs_version="1.4.1+2026-07-30.0b90c7d-lt002-idle",mp="/RESULTS/20260927-LT002-C2/mnt",vol_name="test-volume"} 1.49250199552e+11

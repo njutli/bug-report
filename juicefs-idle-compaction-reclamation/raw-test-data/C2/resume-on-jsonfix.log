@@ -1,0 +1,20 @@
+PLAN_PASS
+sudo -n env CEPH_ADMIN_SOCKET=none CEPH_LOG_FILE=none /RESULTS/20260927-LT002-C2/juicefs-lt002-idle-candidate mount -d --cache-size 0 --max-uploads 150 --backup-meta 0 --compact-interval 15s --subdir /TEST_SUBTREE/20260927-LT002-C2 --metrics 127.0.0.1:9569 --log=/RESULTS/20260927-LT002-C2/client-on.log -o allow_other,default_permissions tikv://STORAGE_A:2379,STORAGE_B:2379,STORAGE_C:2379/test-volume /RESULTS/20260927-LT002-C2/mnt
+sudo -n /usr/bin/fusermount3 -u /RESULTS/20260927-LT002-C2/mnt
+{"epoch": 1790492058.1315107, "event": "RESUME_ON_AFTER_NORMAL_UNMOUNT", "reason": "process exited between ps and readlink; no extra mount or IO"}
+{"epoch": 1790492058.1317286, "event": "UMOUNT_PASS", "mode": "off", "validated_after_process_exit": true}
+{"epoch": 1790492058.132981, "event": "START", "label": "off-unmounted-recheck", "pid": 1001142}
+{"epoch": 1790492059.134822, "event": "FINISH", "label": "off-unmounted-recheck", "rc": 0, "start_epoch": 1790492058.132976, "end_epoch": 1790492059.13439, "elapsed_s": 1.00141586601967}
+{"epoch": 1790492061.185128, "event": "MOUNT_PASS", "mode": "on", "mount": "104 /RESULTS/20260927-LT002-C2/mnt JuiceFS:test-volume fuse.juicefs"}
+{"epoch": 1790492061.1865096, "event": "START", "label": "on-observe-00", "pid": 1001361}
+{"epoch": 1790492062.1876519, "event": "FINISH", "label": "on-observe-00", "rc": 0, "start_epoch": 1790492061.1865044, "end_epoch": 1790492062.1871514, "elapsed_s": 1.000649300054647}
+{"epoch": 1790492093.6000261, "event": "START", "label": "on-observe-01", "pid": 1001602}
+{"epoch": 1790492094.6019726, "event": "FINISH", "label": "on-observe-01", "rc": 0, "start_epoch": 1790492093.600019, "end_epoch": 1790492094.601524, "elapsed_s": 1.001508729008492}
+{"epoch": 1790492125.7210786, "event": "START", "label": "on-observe-02", "pid": 1001774}
+{"epoch": 1790492126.723102, "event": "FINISH", "label": "on-observe-02", "rc": 0, "start_epoch": 1790492125.7210712, "end_epoch": 1790492126.7225895, "elapsed_s": 1.0015210009878501}
+{"epoch": 1790492157.9057314, "event": "START", "label": "on-observe-03", "pid": 1002009}
+{"epoch": 1790492158.9076831, "event": "FINISH", "label": "on-observe-03", "rc": 0, "start_epoch": 1790492157.9057238, "end_epoch": 1790492158.9072204, "elapsed_s": 1.001499614038039}
+{"epoch": 1790492192.9524186, "event": "START", "label": "final-verify", "pid": 1002221}
+{"epoch": 1790492226.1732087, "event": "FINISH", "label": "final-verify", "rc": 0, "start_epoch": 1790492192.9524145, "end_epoch": 1790492226.1728423, "elapsed_s": 33.220428909000475}
+{"epoch": 1790492226.3151512, "event": "UMOUNT_PASS", "mode": "on"}
+{"epoch": 1790492227.6082792, "event": "COMPLETE", "result": "IDLE_C2_CANARY_COMPLETE", "on_elapsed_s": 98.68975767499069}

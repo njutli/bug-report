@@ -1,0 +1,38 @@
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+    idle_compaction_test.go:113: IDLE_RETRY_MISSING: after skipped trigger and no new IO: got 99 records, want 1
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+    idle_compaction_test.go:123: IDLE_RETRY_MISSING: below write threshold: got 3 records, want 1
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+    idle_compaction_test.go:143: expected one bounded pass, got 1024
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+    idle_compaction_test.go:161: busy chunk was not rediscovered: 3
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+2026/09/27 13:46:05.597807 juicefs[150] <WARNING>: The latency to database is too high: 10.685874ms [newSQLMeta@sql.go:513]
+    idle_compaction_test.go:113: IDLE_RETRY_MISSING: after skipped trigger and no new IO: got 99 records, want 1
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+    idle_compaction_test.go:123: IDLE_RETRY_MISSING: below write threshold: got 3 records, want 1
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+    idle_compaction_test.go:143: expected one bounded pass, got 1024
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+    idle_compaction_test.go:161: busy chunk was not rediscovered: 3
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+--- FAIL: TestIdleCompactionMechanism (0.25s)
+    --- FAIL: TestIdleCompactionMechanism/memkv (0.00s)
+        --- FAIL: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.00s)
+        --- FAIL: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- FAIL: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.00s)
+        --- FAIL: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- FAIL: TestIdleCompactionMechanism/sqlite (0.25s)
+        --- FAIL: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.03s)
+        --- FAIL: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.01s)
+        --- FAIL: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (0.18s)
+        --- FAIL: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.01s)
+FAIL
+FAIL	github.com/juicedata/juicefs/pkg/meta	0.289s
+FAIL

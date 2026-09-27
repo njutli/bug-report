@@ -1,0 +1,44 @@
+SKIP_NON_CORE=true go test -v -cover -count=1  -failfast -timeout=12m ./pkg/meta/... -args -test.gocoverdir="/tmp/lt002-stagec-src-8juU2F/cover"
+=== RUN   TestRedisClient
+redis: 2026/09/27 13:35:41 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:41 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:42 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:43 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:43 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:44 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:45 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:46 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:35:51 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:00 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:08 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:08 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:09 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:09 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:10 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:10 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:11 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:12 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:13 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:15 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:22 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:33 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+2026/09/27 13:36:33.075227 juicefs[211] <WARNING>: parse info: dial tcp 127.0.0.1:6379: socket: operation not permitted [checkServerConfig@redis.go:4599]
+redis: 2026/09/27 13:36:33 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:34 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:34 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:35 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:35 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:36 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:37 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:40 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:44 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:48 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+redis: 2026/09/27 13:36:59 pool.go:617: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:6379: socket: operation not permitted
+    base_test.go:171: reset meta: dial tcp 127.0.0.1:6379: socket: operation not permitted
+--- FAIL: TestRedisClient (78.61s)
+FAIL
+coverage: 0.6% of statements
+FAIL	github.com/juicedata/juicefs/pkg/meta	78.643s
+	github.com/juicedata/juicefs/pkg/meta/pb		coverage: 0.0% of statements
+FAIL
+make: *** [Makefile:112: test.meta.core] Error 1

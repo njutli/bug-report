@@ -1,0 +1,184 @@
+=== RUN   TestIdleCompactionSubdirAndCancellation
+=== RUN   TestIdleCompactionSubdirAndCancellation/memkv
+=== RUN   TestIdleCompactionSubdirAndCancellation/sqlite
+2026/09/27 13:53:27.107740 juicefs[100] <WARNING>: The latency to database is too high: 20.173818ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionSubdirAndCancellation (0.05s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/memkv (0.00s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/sqlite (0.05s)
+=== RUN   TestIdleCompactionScheduler
+=== RUN   TestIdleCompactionScheduler/disabled
+=== RUN   TestIdleCompactionScheduler/readonly
+=== RUN   TestIdleCompactionScheduler/no-bgjob
+=== RUN   TestIdleCompactionScheduler/enabled
+2026/09/27 13:53:32.371482 juicefs[100] <INFO>: Idle compaction traversal root=1 duration=382.523µs status=errno 0 [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionScheduler (5.24s)
+    --- PASS: TestIdleCompactionScheduler/disabled (1.40s)
+    --- PASS: TestIdleCompactionScheduler/readonly (1.40s)
+    --- PASS: TestIdleCompactionScheduler/no-bgjob (1.40s)
+    --- PASS: TestIdleCompactionScheduler/enabled (1.03s)
+=== RUN   TestIdleCompactionThrottle
+=== RUN   TestIdleCompactionThrottle/memkv
+=== RUN   TestIdleCompactionThrottle/sqlite
+2026/09/27 13:53:32.380093 juicefs[100] <WARNING>: The latency to database is too high: 7.114078ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionThrottle (0.02s)
+    --- PASS: TestIdleCompactionThrottle/memkv (0.00s)
+    --- PASS: TestIdleCompactionThrottle/sqlite (0.02s)
+=== RUN   TestIdleCompactionCancellationWaitsForInFlight
+2026/09/27 13:53:33.491649 juicefs[100] <INFO>: Idle compaction traversal root=1 duration=50.677738ms status=interrupted system call [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionCancellationWaitsForInFlight (1.10s)
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+2026/09/27 13:53:33.537214 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+2026/09/27 13:53:33.564723 juicefs[100] <WARNING>: The latency to database is too high: 7.83791ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+2026/09/27 13:53:33.692964 juicefs[100] <WARNING>: The latency to database is too high: 9.719529ms [newSQLMeta@sql.go:513]
+2026/09/27 13:53:34.437853 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+2026/09/27 13:53:34.660140 juicefs[100] <WARNING>: The latency to database is too high: 5.430072ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+2026/09/27 13:53:34.685107 juicefs[100] <WARNING>: The latency to database is too high: 6.02754ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionMechanism (1.21s)
+    --- PASS: TestIdleCompactionMechanism/memkv (0.06s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.06s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- PASS: TestIdleCompactionMechanism/sqlite (1.14s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.11s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.02s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (0.97s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.02s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.02s)
+=== RUN   TestIdleCompactionSubdirAndCancellation
+=== RUN   TestIdleCompactionSubdirAndCancellation/memkv
+=== RUN   TestIdleCompactionSubdirAndCancellation/sqlite
+2026/09/27 13:53:34.710313 juicefs[100] <WARNING>: The latency to database is too high: 6.836709ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionSubdirAndCancellation (0.04s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/memkv (0.00s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/sqlite (0.04s)
+=== RUN   TestIdleCompactionScheduler
+=== RUN   TestIdleCompactionScheduler/disabled
+=== RUN   TestIdleCompactionScheduler/readonly
+=== RUN   TestIdleCompactionScheduler/no-bgjob
+=== RUN   TestIdleCompactionScheduler/enabled
+2026/09/27 13:53:39.964411 juicefs[100] <INFO>: Idle compaction traversal root=1 duration=308.523µs status=errno 0 [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionScheduler (5.22s)
+    --- PASS: TestIdleCompactionScheduler/disabled (1.40s)
+    --- PASS: TestIdleCompactionScheduler/readonly (1.40s)
+    --- PASS: TestIdleCompactionScheduler/no-bgjob (1.40s)
+    --- PASS: TestIdleCompactionScheduler/enabled (1.02s)
+=== RUN   TestIdleCompactionThrottle
+=== RUN   TestIdleCompactionThrottle/memkv
+=== RUN   TestIdleCompactionThrottle/sqlite
+2026/09/27 13:53:39.975131 juicefs[100] <WARNING>: The latency to database is too high: 9.13621ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionThrottle (0.03s)
+    --- PASS: TestIdleCompactionThrottle/memkv (0.00s)
+    --- PASS: TestIdleCompactionThrottle/sqlite (0.03s)
+=== RUN   TestIdleCompactionCancellationWaitsForInFlight
+2026/09/27 13:53:41.068982 juicefs[100] <INFO>: Idle compaction traversal root=1 duration=50.861435ms status=interrupted system call [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionCancellationWaitsForInFlight (1.08s)
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+2026/09/27 13:53:41.119636 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+2026/09/27 13:53:41.153176 juicefs[100] <WARNING>: The latency to database is too high: 8.808222ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+2026/09/27 13:53:41.275654 juicefs[100] <WARNING>: The latency to database is too high: 5.181986ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+2026/09/27 13:53:41.301711 juicefs[100] <WARNING>: The latency to database is too high: 6.835962ms [newSQLMeta@sql.go:513]
+2026/09/27 13:53:42.210967 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+2026/09/27 13:53:42.482755 juicefs[100] <WARNING>: The latency to database is too high: 5.762778ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+2026/09/27 13:53:42.511341 juicefs[100] <WARNING>: The latency to database is too high: 6.011354ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionMechanism (1.47s)
+    --- PASS: TestIdleCompactionMechanism/memkv (0.07s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.07s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- PASS: TestIdleCompactionMechanism/sqlite (1.39s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.13s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.02s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (1.18s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.03s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.03s)
+=== RUN   TestIdleCompactionSubdirAndCancellation
+=== RUN   TestIdleCompactionSubdirAndCancellation/memkv
+=== RUN   TestIdleCompactionSubdirAndCancellation/sqlite
+2026/09/27 13:53:42.542361 juicefs[100] <WARNING>: The latency to database is too high: 5.129537ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionSubdirAndCancellation (0.04s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/memkv (0.00s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/sqlite (0.04s)
+=== RUN   TestIdleCompactionScheduler
+=== RUN   TestIdleCompactionScheduler/disabled
+=== RUN   TestIdleCompactionScheduler/readonly
+=== RUN   TestIdleCompactionScheduler/no-bgjob
+=== RUN   TestIdleCompactionScheduler/enabled
+2026/09/27 13:53:47.829163 juicefs[100] <INFO>: Idle compaction traversal root=1 duration=350.887µs status=errno 0 [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionScheduler (5.25s)
+    --- PASS: TestIdleCompactionScheduler/disabled (1.40s)
+    --- PASS: TestIdleCompactionScheduler/readonly (1.40s)
+    --- PASS: TestIdleCompactionScheduler/no-bgjob (1.40s)
+    --- PASS: TestIdleCompactionScheduler/enabled (1.05s)
+=== RUN   TestIdleCompactionThrottle
+=== RUN   TestIdleCompactionThrottle/memkv
+=== RUN   TestIdleCompactionThrottle/sqlite
+2026/09/27 13:53:47.845532 juicefs[100] <WARNING>: The latency to database is too high: 14.603531ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionThrottle (0.03s)
+    --- PASS: TestIdleCompactionThrottle/memkv (0.00s)
+    --- PASS: TestIdleCompactionThrottle/sqlite (0.03s)
+=== RUN   TestIdleCompactionCancellationWaitsForInFlight
+2026/09/27 13:53:48.877001 juicefs[100] <INFO>: Idle compaction traversal root=1 duration=50.685213ms status=interrupted system call [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionCancellationWaitsForInFlight (1.01s)
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+2026/09/27 13:53:48.928592 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+2026/09/27 13:53:48.964296 juicefs[100] <WARNING>: The latency to database is too high: 10.649837ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+2026/09/27 13:53:49.091621 juicefs[100] <WARNING>: The latency to database is too high: 5.72798ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+2026/09/27 13:53:49.117873 juicefs[100] <WARNING>: The latency to database is too high: 5.971728ms [newSQLMeta@sql.go:513]
+2026/09/27 13:53:50.076199 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+2026/09/27 13:53:50.376637 juicefs[100] <WARNING>: The latency to database is too high: 6.104296ms [newSQLMeta@sql.go:513]
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+2026/09/27 13:53:50.405324 juicefs[100] <WARNING>: The latency to database is too high: 5.971191ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionMechanism (1.55s)
+    --- PASS: TestIdleCompactionMechanism/memkv (0.08s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.01s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.07s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- PASS: TestIdleCompactionMechanism/sqlite (1.47s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.13s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.03s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (1.26s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.03s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.02s)
+PASS
+ok  	github.com/juicedata/juicefs/pkg/meta	24.459s

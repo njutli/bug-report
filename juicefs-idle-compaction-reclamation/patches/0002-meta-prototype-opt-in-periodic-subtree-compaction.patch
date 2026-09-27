@@ -1,0 +1,329 @@
+From 169663da8215649dfb3e46118db806755a7d8d88 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <lilingfeng@sunrise-ai.com>
+Date: Sun, 27 Sep 2026 13:41:20 +0800
+Subject: [PATCH 2/3] meta: prototype opt-in periodic subtree compaction
+
+---
+ cmd/flags.go                                  |   4 +
+ cmd/mount.go                                  |   1 +
+ .../idle-compaction-experimental.md           |  45 +++++++
+ pkg/meta/base.go                              |  70 ++++++++++
+ pkg/meta/config.go                            |   3 +-
+ pkg/meta/idle_compaction_scheduler_test.go    | 124 ++++++++++++++++++
+ 6 files changed, 246 insertions(+), 1 deletion(-)
+ create mode 100644 docs/en/administration/idle-compaction-experimental.md
+ create mode 100644 pkg/meta/idle_compaction_scheduler_test.go
+
+diff --git a/cmd/flags.go b/cmd/flags.go
+index 58a9988..1249d47 100644
+--- a/cmd/flags.go
++++ b/cmd/flags.go
+@@ -310,6 +310,10 @@ func metaFlags() []cli.Flag {
+ 			Name:  "no-bgjob",
+ 			Usage: "disable background jobs (clean-up, backup, etc.)",
+ 		},
++		&cli.DurationFlag{
++			Name:  "compact-interval",
++			Usage: "experimental: interval between serial compaction sweeps of the mounted subtree (0 disables; scans metadata and rewrites objects)",
++		},
+ 		&cli.StringFlag{
+ 			Name:  "atime-mode",
+ 			Value: "noatime",
+diff --git a/cmd/mount.go b/cmd/mount.go
+index 9f141e8..d27fb9d 100644
+--- a/cmd/mount.go
++++ b/cmd/mount.go
+@@ -339,6 +339,7 @@ func getMetaConf(c *cli.Context, mp string, readOnly bool) *meta.Config {
+ 	conf.SkipDirNlink = c.Int("skip-dir-nlink")
+ 	conf.ReadOnly = readOnly
+ 	conf.NoBGJob = c.Bool("no-bgjob")
++	conf.CompactInterval = c.Duration("compact-interval")
+ 	conf.OpenCache = utils.Duration(c.String("open-cache"))
+ 	conf.OpenCacheLimit = c.Uint64("open-cache-limit")
+ 	conf.Heartbeat = utils.Duration(c.String("heartbeat"))
+diff --git a/docs/en/administration/idle-compaction-experimental.md b/docs/en/administration/idle-compaction-experimental.md
+new file mode 100644
+index 0000000..e673c9f
+--- /dev/null
++++ b/docs/en/administration/idle-compaction-experimental.md
+@@ -0,0 +1,45 @@
++# Experimental periodic compaction (candidate patch)
++
++Ordinary compaction is triggered by IO. If it is skipped because another
++compaction is busy, no durable retry is queued. A file that becomes cold can
++therefore retain obsolete slice references indefinitely, even with trash
++disabled. Deleting unreferenced slices cannot remove these still-referenced
++objects; compaction must first replace the chunk's slice list.
++
++This candidate adds `--compact-interval 1h` to mount options. The default is
++`0` (disabled); read-only and `--no-bgjob` mounts never start the task. This
++is a **new option in the patched client**, not an existing release option.
++Do not pass it to an unpatched client.
++
++After an interval, one worker walks the mounted subtree, making one ordinary
++(non-force) compact attempt per chunk. It retains the existing admission and
++transactional origin checks. Busy/failed work and histories larger than 1000
++records are revisited in later passes, including after client restart, without
++a volatile queue or one goroutine per write. Completion requires a surviving
++enabled client and eventually successful traversals and storage operations.
++This does not bound capacity under indefinitely sustained overload.
++
++## Deployment boundaries
++
++- Initially enable on **one designated maintenance client only**, preferably
++  scoped with `--subdir`. No persistent volume format change is made.
++- A per-subtree metadata counter provides best-effort cross-client throttling,
++  not a lease: long passes and overlapping subtree mounts can overlap.
++- Walking large directories, hard links and huge sparse files adds metadata
++  work. Compaction rewrites object data even when the expected space saving is
++  small. Measure scan cost and foreground impact before production use; no
++  default activation or universal interval is proposed here.
++- Cancellation stops admission of further chunks, but cannot interrupt an
++  already-running object-compaction callback. A hung storage callback may delay
++  unmount. This patch does not change the object API's cancellation semantics.
++- A traversal status of zero means the tree walk completed; it does **not** mean
++  every compaction succeeded. Object failures are logged by the existing
++  compactor and retained candidates can be retried in a later pass.
++- Trash retention and deletion concurrency retain their existing meanings.
++  Space reclamation may lag slice-list reduction. Observe both metadata and
++  object-store capacity, and verify data integrity.
++
++This is an upstream discussion candidate, not production acceptance. It needs
++real-storage, restart, multi-client and scan-overhead validation in addition to
++unit regression tests. Existing `juicefs compact --threads 1 <exact-file>` is
++the manual maintenance fallback; it is not evidence of native automatic recovery.
+diff --git a/pkg/meta/base.go b/pkg/meta/base.go
+index a3a0262..56baa3e 100644
+--- a/pkg/meta/base.go
++++ b/pkg/meta/base.go
+@@ -810,6 +810,7 @@ func (m *baseMeta) NewSession(record bool) error {
+ 		go m.cleanupSlices(ctx)
+ 		go m.cleanupTrash(ctx)
+ 		go m.symlinks.clean(ctx, &m.sessWG)
++		m.startIdleCompaction(ctx)
+ 		if m.fmt.ChangeLog {
+ 			m.sessWG.Add(1)
+ 			go m.cleanupChangelog(ctx)
+@@ -2772,6 +2773,75 @@ func (m *baseMeta) GetFormat() Format {
+ 	return *m.getFormat()
+ }
+ 
++// startIdleCompaction is opt-in: namespace scans and object rewrites are not free.
++// Re-discovery comes from durable chunk metadata, not an in-memory retry queue.
++func (m *baseMeta) startIdleCompaction(ctx Context) {
++	if m.conf.CompactInterval <= 0 || m.conf.ReadOnly || m.conf.NoBGJob {
++		return
++	}
++	m.sessWG.Add(1)
++	go func() {
++		defer m.sessWG.Done()
++		interval := m.conf.CompactInterval
++		if interval < time.Second {
++			interval = time.Second
++		}
++		for {
++			timer := time.NewTimer(utils.JitterIt(interval))
++			select {
++			case <-ctx.Done():
++				timer.Stop()
++				return
++			case <-timer.C:
++			}
++			if ctx.Canceled() {
++				return
++			}
++			// This is a best-effort throttle, not a distributed lease. A pass
++			// longer than interval, or overlapping subdir mounts, can overlap.
++			key := fmt.Sprintf("lastIdleCompactRoot%d", m.root)
++			ok, err := m.en.setIfSmall(key, time.Now().UnixMilli(), interval.Milliseconds())
++			if err != nil {
++				logger.Warnf("Idle compaction throttle: %s", err)
++				continue
++			}
++			if ok {
++				start := time.Now()
++				st := m.compactIdleChunks(ctx)
++				logger.Infof("Idle compaction traversal root=%d duration=%s status=%s", m.root, time.Since(start), st)
++			}
++		}
++	}()
++}
++
++// compactIdleChunks makes one serial, non-force attempt per reachable chunk.
++// Busy or failed chunks remain discoverable on the next pass, including after
++// a client restart. A chunk with >maxCompactSlices may require several passes.
++// It intentionally reuses walk (as Compact does), not a streaming SQL read
++// transaction held open while workers need to write the same chunk table.
++func (m *baseMeta) compactIdleChunks(ctx Context) syscall.Errno {
++	if ctx.Canceled() {
++		return syscall.EINTR
++	}
++	var attr Attr
++	if st := m.GetAttr(ctx, m.root, &attr); st != 0 {
++		return st
++	}
++	return m.walk(ctx, m.root, "", &attr, func(ctx Context, inode Ino, _ string, attr *Attr) {
++		if attr.Typ != TypeFile {
++			return
++		}
++		for i := uint64(0); i < (attr.Length+ChunkSize-1)/ChunkSize; i++ {
++			if ctx.Canceled() {
++				return
++			}
++			// Existing admission/CAS rules still apply. Cancellation prevents
++			// new work; it cannot interrupt an in-flight object callback.
++			m.compactChunk(inode, uint32(i), false, false, int(attr.Tier))
++		}
++	})
++}
++
+ func (m *baseMeta) CompactAll(ctx Context, threads int, bar *utils.Bar) syscall.Errno {
+ 	var wg sync.WaitGroup
+ 	ch := make(chan cchunk, 1000000)
+diff --git a/pkg/meta/config.go b/pkg/meta/config.go
+index 6001ac3..d96d0ae 100644
+--- a/pkg/meta/config.go
++++ b/pkg/meta/config.go
+@@ -41,7 +41,8 @@ type Config struct {
+ 	SkipDirNlink       int
+ 	CaseInsensi        bool
+ 	ReadOnly           bool
+-	NoBGJob            bool // disable background jobs like clean-up, backup, etc.
++	NoBGJob            bool          // disable background jobs like clean-up, backup, etc.
++	CompactInterval    time.Duration // opt-in periodic compaction; zero disables it
+ 	OpenCache          time.Duration
+ 	OpenCacheLimit     uint64 // max number of files to cache (soft limit)
+ 	Heartbeat          time.Duration
+diff --git a/pkg/meta/idle_compaction_scheduler_test.go b/pkg/meta/idle_compaction_scheduler_test.go
+new file mode 100644
+index 0000000..cbefb4f
+--- /dev/null
++++ b/pkg/meta/idle_compaction_scheduler_test.go
+@@ -0,0 +1,124 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package meta
++
++import (
++	"sync/atomic"
++	"testing"
++	"time"
++)
++
++func TestIdleCompactionSubdirAndCancellation(t *testing.T) {
++	for _, backend := range []string{"memkv", "sqlite"} {
++		t.Run(backend, func(t *testing.T) {
++			m := idleTestMeta(t, backend)
++			outside := idleTestFile(t, m, RootInode, "outside", 3)
++			var dir Ino
++			if st := m.Mkdir(Background(), RootInode, "scope", 0700, 0, 0, &dir, nil); st != 0 {
++				t.Fatal(st)
++			}
++			inside := idleTestFile(t, m, dir, "inside", 3)
++			m.chroot(dir)
++			if st := m.compactIdleChunks(Background()); st != 0 {
++				t.Fatal(st)
++			}
++			if n := idleRecords(t, m, outside); n != 3 {
++				t.Fatalf("escaped subdir: %d", n)
++			}
++			if n := idleRecords(t, m, inside); n != 1 {
++				t.Fatalf("inside not compacted: %d", n)
++			}
++			_ = idleTestFile(t, m, dir, "cancel-a", 3)
++			_ = idleTestFile(t, m, dir, "cancel-b", 3)
++			ctx := Background()
++			var calls int
++			m.OnMsg(CompactChunk, func(...interface{}) error { calls++; ctx.Cancel(); return nil })
++			_ = m.compactIdleChunks(ctx)
++			if calls != 1 {
++				t.Fatalf("continued after cancellation: %d", calls)
++			}
++		})
++	}
++}
++
++func TestIdleCompactionScheduler(t *testing.T) {
++	for _, mode := range []string{"disabled", "readonly", "no-bgjob", "enabled"} {
++		t.Run(mode, func(t *testing.T) {
++			m := idleTestMeta(t, "memkv")
++			inode := idleTestFile(t, m, RootInode, "cold", 3)
++			m.conf.CompactInterval = time.Second
++			m.conf.ReadOnly = mode == "readonly"
++			m.conf.NoBGJob = mode == "no-bgjob"
++			if mode == "disabled" {
++				m.conf.CompactInterval = 0
++			}
++			ctx := Background()
++			m.sessCtx = ctx
++			var calls atomic.Int32
++			signal := make(chan struct{}, 1)
++			m.OnMsg(CompactChunk, func(...interface{}) error {
++				calls.Add(1)
++				select {
++				case signal <- struct{}{}:
++				default:
++				}
++				return nil
++			})
++			m.startIdleCompaction(ctx)
++			if mode == "enabled" {
++				select {
++				case <-signal:
++				case <-time.After(5 * time.Second):
++					t.Error("scheduler did not revisit idle file")
++				}
++			} else {
++				select {
++				case <-signal:
++					t.Error("disabled scheduler ran")
++				case <-time.After(1400 * time.Millisecond):
++				}
++			}
++			ctx.Cancel()
++			m.sessWG.Wait()
++			if mode == "enabled" {
++				if calls.Load() != 1 || idleRecords(t, m, inode) != 1 {
++					t.Fatal("enabled pass did not finish")
++				}
++			} else if calls.Load() != 0 || idleRecords(t, m, inode) != 3 {
++				t.Fatal("disabled pass changed file")
++			}
++		})
++	}
++}
++
++func TestIdleCompactionThrottle(t *testing.T) {
++	for _, backend := range []string{"memkv", "sqlite"} {
++		t.Run(backend, func(t *testing.T) {
++			m := idleTestMeta(t, backend)
++			const key = "lastIdleCompactRoot1"
++			for _, tc := range []struct {
++				now  int64
++				want bool
++			}{{1000000, true}, {1000001, false}, {1002000, true}} {
++				ok, err := m.en.setIfSmall(key, tc.now, 1000)
++				if err != nil || ok != tc.want {
++					t.Fatalf("claim at %d: ok=%v err=%v", tc.now, ok, err)
++				}
++			}
++		})
++	}
++}
+-- 
+2.53.0
+

@@ -1,0 +1,5 @@
+{
+  "error": "control changed during unmount; preserve before enabling scanner",
+  "epoch": 1790491871.7765334,
+  "action": "preserve private mount/data"
+}

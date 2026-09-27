@@ -1,0 +1,196 @@
+From e2c0cdeb950fa53e4f27c7d84463fc2e3b552c0f Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <lilingfeng@sunrise-ai.com>
+Date: Sun, 27 Sep 2026 13:41:20 +0800
+Subject: [PATCH 1/3] meta: reproduce retained cold chunks after skipped
+ compaction
+
+---
+ pkg/meta/idle_compaction_test.go | 176 +++++++++++++++++++++++++++++++
+ 1 file changed, 176 insertions(+)
+ create mode 100644 pkg/meta/idle_compaction_test.go
+
+diff --git a/pkg/meta/idle_compaction_test.go b/pkg/meta/idle_compaction_test.go
+new file mode 100644
+index 0000000..ca326f2
+--- /dev/null
++++ b/pkg/meta/idle_compaction_test.go
+@@ -0,0 +1,176 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package meta
++
++import (
++	"errors"
++	"path/filepath"
++	"syscall"
++	"testing"
++	"time"
++)
++
++// Keep the mechanism regression runnable against the unmodified release too.
++// That release has no idle sweep: no reads/writes or manual force-compaction
++// are substituted for it. The assertions below then fail on retained records.
++func idleSweepForRegression(m *baseMeta, ctx Context) syscall.Errno {
++	if sweeper, ok := interface{}(m).(interface{ compactIdleChunks(Context) syscall.Errno }); ok {
++		return sweeper.compactIdleChunks(ctx)
++	}
++	return 0
++}
++
++func idleTestMeta(t *testing.T, backend string) *baseMeta {
++	t.Helper()
++	var client Meta
++	var err error
++	if backend == "sqlite" {
++		client, err = newSQLMeta("sqlite3", filepath.Join(t.TempDir(), "idle.db"), testConfig())
++	} else {
++		client, err = newKVMeta("memkv", "idle-compaction-test", testConfig())
++	}
++	if err != nil {
++		t.Fatal(err)
++	}
++	if err = client.Reset(); err != nil {
++		t.Fatal(err)
++	}
++	if err = client.Init(testFormat(), true); err != nil {
++		t.Fatal(err)
++	}
++	m := client.(interface{ getBase() *baseMeta }).getBase()
++	m.OnMsg(DeleteSlice, func(...interface{}) error { return nil })
++	m.OnMsg(CompactChunk, func(...interface{}) error { return nil })
++	t.Cleanup(func() { _ = client.Shutdown() })
++	return m
++}
++
++func idleTestFile(t *testing.T, m *baseMeta, parent Ino, name string, records int) Ino {
++	t.Helper()
++	ctx := Background()
++	var inode Ino
++	var attr Attr
++	if st := m.Create(ctx, parent, name, 0600, 0, 0, &inode, &attr); st != 0 {
++		t.Fatal(st)
++	}
++	// Use the engine write primitive to deterministically prepare the state
++	// observed after ordinary asynchronous triggers have been skipped.
++	for i := 0; i < records; i++ {
++		var id uint64
++		if st := m.NewSlice(ctx, &id); st != 0 {
++			t.Fatal(st)
++		}
++		var count int
++		var delta dirStat
++		if st := m.en.doWrite(ctx, inode, 0, 0, Slice{Id: id, Size: 65536, Len: 65536}, time.Now(), &count, &delta, &attr); st != 0 {
++			t.Fatal(st)
++		}
++	}
++	return inode
++}
++
++func idleRecords(t *testing.T, m *baseMeta, inode Ino) int {
++	t.Helper()
++	ss, st := m.en.doRead(Background(), inode, 0)
++	if st != 0 {
++		t.Fatal(st)
++	}
++	return len(ss)
++}
++
++func TestIdleCompactionMechanism(t *testing.T) {
++	for _, backend := range []string{"memkv", "sqlite"} {
++		t.Run(backend, func(t *testing.T) {
++			t.Run("SkippedConcurrency", func(t *testing.T) {
++				m := idleTestMeta(t, backend)
++				inode := idleTestFile(t, m, RootInode, "overwritten", 99)
++				for k := uint64(10000); k < 10012; k++ {
++					m.compacting[k] = true
++				}
++				m.compactChunk(inode, 0, false, false, 0)
++				if n := idleRecords(t, m, inode); n != 99 {
++					t.Fatalf("fixture: saturated trigger unexpectedly compacted: %d", n)
++				}
++				clear(m.compacting)
++				if st := idleSweepForRegression(m, Background()); st != 0 {
++					t.Fatal(st)
++				}
++				if n := idleRecords(t, m, inode); n != 1 {
++					t.Fatalf("IDLE_RETRY_MISSING: after skipped trigger and no new IO: got %d records, want 1", n)
++				}
++			})
++			t.Run("BelowWriteThreshold", func(t *testing.T) {
++				m := idleTestMeta(t, backend)
++				inode := idleTestFile(t, m, RootInode, "cold", 3)
++				if st := idleSweepForRegression(m, Background()); st != 0 {
++					t.Fatal(st)
++				}
++				if n := idleRecords(t, m, inode); n != 1 {
++					t.Fatalf("IDLE_RETRY_MISSING: below write threshold: got %d records, want 1", n)
++				}
++			})
++			t.Run("BoundedPassesAndFailureRetry", func(t *testing.T) {
++				m := idleTestMeta(t, backend)
++				inode := idleTestFile(t, m, RootInode, "long-history", maxCompactSlices+24)
++				failed := true
++				m.OnMsg(CompactChunk, func(...interface{}) error {
++					if failed {
++						return errors.New("injected transient object failure")
++					}
++					return nil
++				})
++				_ = idleSweepForRegression(m, Background())
++				if n := idleRecords(t, m, inode); n != maxCompactSlices+24 {
++					t.Fatalf("failed compact changed records: %d", n)
++				}
++				failed = false
++				_ = idleSweepForRegression(m, Background())
++				if n := idleRecords(t, m, inode); n != 25 {
++					t.Fatalf("expected one bounded pass, got %d", n)
++				}
++				_ = idleSweepForRegression(m, Background())
++				if n := idleRecords(t, m, inode); n != 1 {
++					t.Fatalf("subsequent idle pass did not converge: %d", n)
++				}
++			})
++			t.Run("SameChunkBusy", func(t *testing.T) {
++				m := idleTestMeta(t, backend)
++				inode := idleTestFile(t, m, RootInode, "busy", 3)
++				m.compacting[uint64(inode)] = true
++				_ = idleSweepForRegression(m, Background())
++				if n := idleRecords(t, m, inode); n != 3 {
++					t.Fatalf("busy chunk was processed twice: %d", n)
++				}
++				delete(m.compacting, uint64(inode))
++				_ = idleSweepForRegression(m, Background())
++				if n := idleRecords(t, m, inode); n != 1 {
++					t.Fatalf("busy chunk was not rediscovered: %d", n)
++				}
++			})
++			t.Run("Cancellation", func(t *testing.T) {
++				m := idleTestMeta(t, backend)
++				inode := idleTestFile(t, m, RootInode, "cancel", 3)
++				ctx := Background()
++				ctx.Cancel()
++				_ = idleSweepForRegression(m, ctx)
++				if n := idleRecords(t, m, inode); n != 3 {
++					t.Fatalf("canceled sweep changed metadata: %d", n)
++				}
++			})
++		})
++	}
++}
+-- 
+2.53.0
+

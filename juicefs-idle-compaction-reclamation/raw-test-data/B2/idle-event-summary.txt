@@ -1,0 +1,1 @@
+trigger=26649 skip=26616 start=33 stop=0 finish=33

@@ -1,0 +1,623 @@
+=== RUN   TestIdleCompactionSubdirAndCancellation
+=== RUN   TestIdleCompactionSubdirAndCancellation/memkv
+=== RUN   TestIdleCompactionSubdirAndCancellation/sqlite
+2026/09/27 13:37:50.199829 juicefs[100] <WARNING>: The latency to database is too high: 11.810111ms [newSQLMeta@sql.go:513]
+--- PASS: TestIdleCompactionSubdirAndCancellation (0.02s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/memkv (0.00s)
+    --- PASS: TestIdleCompactionSubdirAndCancellation/sqlite (0.02s)
+=== RUN   TestIdleCompactionScheduler
+=== RUN   TestIdleCompactionScheduler/disabled
+=== RUN   TestIdleCompactionScheduler/readonly
+=== RUN   TestIdleCompactionScheduler/no-bgjob
+=== RUN   TestIdleCompactionScheduler/enabled
+2026/09/27 13:37:55.429940 juicefs[100] <INFO>: Idle compaction traversal root=1 duration=168.48µs status=errno 0 [startIdleCompaction@base.go:2811]
+--- PASS: TestIdleCompactionScheduler (5.22s)
+    --- PASS: TestIdleCompactionScheduler/disabled (1.40s)
+    --- PASS: TestIdleCompactionScheduler/readonly (1.40s)
+    --- PASS: TestIdleCompactionScheduler/no-bgjob (1.40s)
+    --- PASS: TestIdleCompactionScheduler/enabled (1.02s)
+=== RUN   TestIdleCompactionThrottle
+=== RUN   TestIdleCompactionThrottle/memkv
+=== RUN   TestIdleCompactionThrottle/sqlite
+--- PASS: TestIdleCompactionThrottle (0.01s)
+    --- PASS: TestIdleCompactionThrottle/memkv (0.00s)
+    --- PASS: TestIdleCompactionThrottle/sqlite (0.01s)
+=== RUN   TestIdleCompactionMechanism
+=== RUN   TestIdleCompactionMechanism/memkv
+=== RUN   TestIdleCompactionMechanism/memkv/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/memkv/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry
+2026/09/27 13:37:55.443604 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/memkv/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/memkv/Cancellation
+=== RUN   TestIdleCompactionMechanism/sqlite
+=== RUN   TestIdleCompactionMechanism/sqlite/SkippedConcurrency
+=== RUN   TestIdleCompactionMechanism/sqlite/BelowWriteThreshold
+=== RUN   TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry
+2026/09/27 13:37:55.654340 juicefs[100] <WARNING>: compact 2 0 with 1000 slices: injected transient object failure [compactChunk@base.go:2941]
+=== RUN   TestIdleCompactionMechanism/sqlite/SameChunkBusy
+=== RUN   TestIdleCompactionMechanism/sqlite/Cancellation
+--- PASS: TestIdleCompactionMechanism (0.29s)
+    --- PASS: TestIdleCompactionMechanism/memkv (0.01s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SkippedConcurrency (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BelowWriteThreshold (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/BoundedPassesAndFailureRetry (0.01s)
+        --- PASS: TestIdleCompactionMechanism/memkv/SameChunkBusy (0.00s)
+        --- PASS: TestIdleCompactionMechanism/memkv/Cancellation (0.00s)
+    --- PASS: TestIdleCompactionMechanism/sqlite (0.28s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SkippedConcurrency (0.02s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BelowWriteThreshold (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/BoundedPassesAndFailureRetry (0.22s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/SameChunkBusy (0.01s)
+        --- PASS: TestIdleCompactionMechanism/sqlite/Cancellation (0.01s)
+=== RUN   TestSQLiteClient
+2026/09/27 13:37:55.731251 juicefs[100] <ERROR>: error: no such table: jfs_node
+goroutine 4772 [running]:
+runtime/debug.Stack()
+	/usr/lib/go-1.26/src/runtime/debug/stack.go:26 +0x5e
+github.com/juicedata/juicefs/pkg/meta.errno({0x3f75860, 0x2b62c8c05c80})
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/utils.go:157 +0xf9
+github.com/juicedata/juicefs/pkg/meta.(*dbMeta).doGetAttr(0x2b62c9800440?, {0x3febc68?, 0x2b62c9800f40?}, 0x1?, 0x2b62c8482cc0?)
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/sql.go:1487 +0x65
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).GetAttr.func1({0x4630f0?, 0x2b62c8a3dfd0?})
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/base.go:1441 +0x45
+github.com/juicedata/juicefs/pkg/utils.WithTimeout.func1()
+	/tmp/lt002-stagec-src-8juU2F/pkg/utils/utils.go:116 +0x34
+created by github.com/juicedata/juicefs/pkg/utils.WithTimeout in goroutine 4767
+	/tmp/lt002-stagec-src-8juU2F/pkg/utils/utils.go:115 +0x125 [errno@utils.go:157]
+2026/09/27 13:37:55.734314 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:37:55.734752 juicefs[100] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:37:56.754093 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:56.754278 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:37:56.858984 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:56.859722 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:56.861062 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:56.862302 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:56.864150 juicefs[100] <WARNING>: File name is too long as a trash entry, truncating it: fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -> 1-27-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff [trashEntry@base.go:3127]
+2026/09/27 13:37:56.864938 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:56.869666 juicefs[100] <INFO>: cleanup trash: deleted 12 files in 1.548117ms [CleanupTrashBefore@base.go:3217]
+2026/09/27 13:37:57.739216 juicefs[100] <INFO>: Quota for inode 18 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:37:59.579641 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:59.590428 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:37:59.878317 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:37:59.878492 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:01.162297 juicefs[100] <ERROR>: error: UNIQUE constraint failed: jfs_chunk_ref.chunkid
+goroutine 4767 [running]:
+runtime/debug.Stack()
+	/usr/lib/go-1.26/src/runtime/debug/stack.go:26 +0x5e
+github.com/juicedata/juicefs/pkg/meta.errno({0x3f75860, 0x2b62c8c3d9b0})
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/utils.go:157 +0xf9
+github.com/juicedata/juicefs/pkg/meta.(*dbMeta).doWrite(0x2b62c9800440, {0x3febc68?, 0x2b62c9666040?}, 0x103e, 0x0?, 0x0?, {0x0, 0x100000, 0x0, 0x100000}, ...)
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/sql.go:3356 +0x145
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).Write(0x2b62c8cd6008, {0x3febc68, 0x2b62c9666040}, 0x103e, 0x0, 0x0, {0x0, 0x100000, 0x0, 0x100000}, ...)
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/base.go:2173 +0x28e
+github.com/juicedata/juicefs/pkg/meta.testCompaction(0x2b62c8cc8008, {0x401d2f0, 0x2b62c9800440}, 0x1)
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/base_test.go:1915 +0x1812
+github.com/juicedata/juicefs/pkg/meta.testMeta(0x2b62c8cc8008, {0x401d2f0, 0x2b62c9800440})
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/base_test.go:186 +0x17e
+github.com/juicedata/juicefs/pkg/meta.TestSQLiteClient(0x2b62c8cc8008)
+	/tmp/lt002-stagec-src-8juU2F/pkg/meta/sql_test.go:34 +0x198
+testing.tRunner(0x2b62c8cc8008, 0x3f56250)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5 [errno@utils.go:157]
+2026/09/27 13:38:01.163995 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:01.164178 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:01.166240 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:01.166771 juicefs[100] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:01.178118 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:01.178432 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:01.266913 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:01.267495 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:06.323179 juicefs[100] <INFO>: Quota for inode 4476 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:06.323301 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:06.343949 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:06.344012 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:06.344672 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+=== RUN   TestSQLiteClient/BasicQuotaOperations
+=== RUN   TestSQLiteClient/QuotaFileOperations
+2026/09/27 13:38:06.432090 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+=== RUN   TestSQLiteClient/QuotaErrorCases
+=== RUN   TestSQLiteClient/QuotaConcurrentOperations
+=== RUN   TestSQLiteClient/QuotaMixedTypes
+=== RUN   TestSQLiteClient/QuotaUsageStatistics
+=== RUN   TestSQLiteClient/CheckQuotaFileOwner
+2026/09/27 13:38:08.478509 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:08.478681 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+=== RUN   TestSQLiteClient/QuotaEdgeCases
+    base_test.go:4650: Testing inodes-only quota limit...
+    base_test.go:4666: Testing space-only quota limit...
+=== RUN   TestSQLiteClient/HardlinkQuota
+=== RUN   TestSQLiteClient/BatchUnlinkWithUserGroupQuota
+2026/09/27 13:38:08.480345 juicefs[100] <INFO>: Quota for inode 4483 is deleted [syncQuotaMaps@quota.go:343]
+=== RUN   TestSQLiteClient/SustainedInodeQuotaDecrement
+=== RUN   TestSQLiteClient/SustainedInodeBeforeQuotaEnabled
+2026/09/27 13:38:08.534520 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:08.535535 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:15.037174 juicefs[100] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:15.037199 juicefs[100] <WARNING>: Path /check (inode 4531) can be repaired, please re-run with '--path /check --repair' to fix it [Check@base.go:2641]
+2026/09/27 13:38:15.037652 juicefs[100] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:15.037789 juicefs[100] <INFO>: Checked 1 nodes [Check@base.go:2704]
+2026/09/27 13:38:15.038203 juicefs[100] <WARNING>: nlink of /check/d1/d2 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:15.038348 juicefs[100] <INFO>: Checked 1 nodes [Check@base.go:2704]
+2026/09/27 13:38:15.081766 juicefs[100] <WARNING>: nlink of /check/d1 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:15.082030 juicefs[100] <WARNING>: nlink of /check/d1/d2/d3 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:15.082243 juicefs[100] <WARNING>: nlink of /check/d1/d2/d3/d4 should be 2, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:15.104588 juicefs[100] <INFO>: Checked 4143 nodes [Check@base.go:2704]
+2026/09/27 13:38:15.118529 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:15.119097 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:15.119136 juicefs[100] <INFO>: Quota for inode 4486 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:15.119143 juicefs[100] <INFO>: Quota for inode 4487 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:15.119712 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.119962 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.120078 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.120215 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.120372 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.120617 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.120821 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.121106 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.121135 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.121429 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.121452 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.121632 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.121655 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.122259 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:15.159229 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:15.160036 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:15.160198 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.160233 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.160483 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.160817 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.160847 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.161061 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+=== NAME  TestSQLiteClient
+    base_test.go:3235: Test 1 passed: cross-dir rename without overwrite
+2026/09/27 13:38:15.161116 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.161306 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.161543 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.161720 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3253: Test 2 passed: same-dir rename without overwrite
+2026/09/27 13:38:15.161746 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.162008 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.162287 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.162443 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3274: Test 3 passed: same-dir rename with overwrite
+2026/09/27 13:38:15.162467 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.162482 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.162773 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.162796 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.163035 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.163054 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.163192 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3298: Test 4 passed: cross-dir rename with overwrite
+2026/09/27 13:38:15.163217 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.163607 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.164587 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.164638 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.165141 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.165195 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.165911 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.165958 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3326: Test 5 passed: exchange rename
+2026/09/27 13:38:15.165982 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.166374 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.166620 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.166984 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3350: Test 6 passed: same-dir exchange rename
+2026/09/27 13:38:15.167015 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.167904 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:15.193360 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:15.194073 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:15.194218 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.194644 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.195090 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.195469 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3411: Test trash overwrite passed
+2026/09/27 13:38:15.195506 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.195527 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.195831 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.195859 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.196319 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.196346 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.197169 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3441: Test trash cross-dir overwrite passed
+2026/09/27 13:38:15.197287 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.197353 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.197995 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.198043 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.198423 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.198452 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.199455 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.199483 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3469: Test trash exchange passed
+2026/09/27 13:38:15.199863 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.700961 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.701030 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.701184 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3502: Test 7 skipped: rename from trash not allowed (expected for security)
+2026/09/27 13:38:15.701881 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.701905 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.702193 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.702398 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.702885 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3531: Test 8 passed: same-dir exchange with trash
+2026/09/27 13:38:15.702916 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:15.703005 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:17.812588 juicefs[100] <INFO>: Create read-only session OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:777]
+2026/09/27 13:38:17.812705 juicefs[100] <WARNING>: Delete flock/plock with sid 2: read-only file system [doCleanStaleSession@sql.go:3159]
+2026/09/27 13:38:17.812732 juicefs[100] <INFO>: close session 2: failed to clean up sid 2 [CloseSession@base.go:984]
+--- PASS: TestSQLiteClient (22.09s)
+    --- PASS: TestSQLiteClient/BasicQuotaOperations (0.09s)
+    --- PASS: TestSQLiteClient/QuotaFileOperations (2.00s)
+    --- PASS: TestSQLiteClient/QuotaErrorCases (0.00s)
+    --- PASS: TestSQLiteClient/QuotaConcurrentOperations (0.00s)
+    --- PASS: TestSQLiteClient/QuotaMixedTypes (0.04s)
+    --- PASS: TestSQLiteClient/QuotaUsageStatistics (0.00s)
+    --- PASS: TestSQLiteClient/CheckQuotaFileOwner (0.00s)
+    --- PASS: TestSQLiteClient/QuotaEdgeCases (0.00s)
+    --- PASS: TestSQLiteClient/HardlinkQuota (0.00s)
+    --- PASS: TestSQLiteClient/BatchUnlinkWithUserGroupQuota (0.00s)
+    --- PASS: TestSQLiteClient/SustainedInodeQuotaDecrement (0.00s)
+    --- PASS: TestSQLiteClient/SustainedInodeBeforeQuotaEnabled (0.05s)
+=== RUN   TestMemKVClient
+2026/09/27 13:38:17.812994 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:17.813010 juicefs[100] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:18.821520 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:18.821636 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:18.923256 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:18.923332 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:18.923419 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:18.923465 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:18.923540 juicefs[100] <WARNING>: File name is too long as a trash entry, truncating it: fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -> 1-27-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff [trashEntry@base.go:3127]
+2026/09/27 13:38:18.923556 juicefs[100] <WARNING>: File name is too long as a trash entry, truncating it: fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -> 1-27-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff [trashEntry@base.go:3127]
+2026/09/27 13:38:18.923641 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:18.923991 juicefs[100] <INFO>: cleanup trash: deleted 12 files in 111.959µs [CleanupTrashBefore@base.go:3217]
+2026/09/27 13:38:19.075345 juicefs[100] <INFO>: Quota for inode 18 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:19.148759 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:19.148946 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:19.395089 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:19.395171 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:20.625825 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:20.625877 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:20.626121 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:20.626145 juicefs[100] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:20.637128 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:20.637210 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:20.643096 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:20.643156 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:25.651786 juicefs[100] <INFO>: Quota for inode 4484 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:25.651830 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:25.652768 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:25.652797 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:25.652821 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+=== RUN   TestMemKVClient/BasicQuotaOperations
+=== RUN   TestMemKVClient/QuotaFileOperations
+2026/09/27 13:38:25.662654 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+=== RUN   TestMemKVClient/QuotaErrorCases
+=== RUN   TestMemKVClient/QuotaConcurrentOperations
+=== RUN   TestMemKVClient/QuotaMixedTypes
+=== RUN   TestMemKVClient/QuotaUsageStatistics
+=== RUN   TestMemKVClient/CheckQuotaFileOwner
+2026/09/27 13:38:27.671219 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:27.671269 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+=== RUN   TestMemKVClient/QuotaEdgeCases
+    base_test.go:4650: Testing inodes-only quota limit...
+    base_test.go:4666: Testing space-only quota limit...
+=== RUN   TestMemKVClient/HardlinkQuota
+=== RUN   TestMemKVClient/BatchUnlinkWithUserGroupQuota
+2026/09/27 13:38:27.671496 juicefs[100] <INFO>: Quota for inode 4491 is deleted [syncQuotaMaps@quota.go:343]
+=== RUN   TestMemKVClient/SustainedInodeQuotaDecrement
+=== RUN   TestMemKVClient/SustainedInodeBeforeQuotaEnabled
+2026/09/27 13:38:27.677564 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:27.677797 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:33.741606 juicefs[100] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:33.741636 juicefs[100] <WARNING>: Path /check (inode 4539) can be repaired, please re-run with '--path /check --repair' to fix it [Check@base.go:2641]
+2026/09/27 13:38:33.741833 juicefs[100] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:33.741849 juicefs[100] <INFO>: Checked 1 nodes [Check@base.go:2704]
+2026/09/27 13:38:33.742117 juicefs[100] <WARNING>: nlink of /check/d1/d2 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:33.742144 juicefs[100] <INFO>: Checked 1 nodes [Check@base.go:2704]
+2026/09/27 13:38:33.744597 juicefs[100] <WARNING>: nlink of / should be 15, but got 5 [Check@base.go:2614]
+2026/09/27 13:38:33.755329 juicefs[100] <WARNING>: nlink of /check/d1 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:33.755343 juicefs[100] <WARNING>: nlink of /check/d1/d2/d3/d4 should be 2, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:33.755338 juicefs[100] <WARNING>: nlink of /check/d1/d2/d3 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:33.757023 juicefs[100] <INFO>: Checked 4143 nodes [Check@base.go:2704]
+2026/09/27 13:38:33.758739 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:33.758787 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:33.758801 juicefs[100] <INFO>: Quota for inode 4495 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:33.758810 juicefs[100] <INFO>: Quota for inode 4494 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:33.758913 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.758942 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.758957 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.758975 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.758989 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759007 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759026 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759049 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759055 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759079 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759084 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759099 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759106 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.759196 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:33.764159 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:33.764201 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:33.764263 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764272 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764293 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764316 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764320 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764334 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+=== NAME  TestMemKVClient
+    base_test.go:3235: Test 1 passed: cross-dir rename without overwrite
+2026/09/27 13:38:33.764354 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764369 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764395 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764408 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3253: Test 2 passed: same-dir rename without overwrite
+2026/09/27 13:38:33.764422 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764443 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764461 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764475 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3274: Test 3 passed: same-dir rename with overwrite
+2026/09/27 13:38:33.764483 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764489 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764510 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764515 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764543 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764548 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764561 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3298: Test 4 passed: cross-dir rename with overwrite
+2026/09/27 13:38:33.764569 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764573 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764594 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764599 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764612 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764619 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764638 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764644 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3326: Test 5 passed: exchange rename
+2026/09/27 13:38:33.764651 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764671 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764684 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764701 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3350: Test 6 passed: same-dir exchange rename
+2026/09/27 13:38:33.764710 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.764781 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:33.768061 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:33.768107 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:33.768177 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768215 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768269 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768299 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3411: Test trash overwrite passed
+2026/09/27 13:38:33.768312 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768317 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768341 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768348 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768377 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768383 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768408 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3441: Test trash cross-dir overwrite passed
+2026/09/27 13:38:33.768418 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768422 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768444 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768449 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768463 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768470 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768503 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:33.768513 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3469: Test trash exchange passed
+2026/09/27 13:38:33.768553 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268596 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268648 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268672 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3502: Test 7 skipped: rename from trash not allowed (expected for security)
+2026/09/27 13:38:34.268831 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268846 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268888 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268905 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268949 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3531: Test 8 passed: same-dir exchange with trash
+2026/09/27 13:38:34.268961 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:34.268994 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:35.280630 juicefs[100] <INFO>: Create read-only session OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:777]
+2026/09/27 13:38:35.280687 juicefs[100] <INFO>: close session 2: read-only file system [CloseSession@base.go:984]
+--- PASS: TestMemKVClient (17.47s)
+    --- PASS: TestMemKVClient/BasicQuotaOperations (0.01s)
+    --- PASS: TestMemKVClient/QuotaFileOperations (2.00s)
+    --- PASS: TestMemKVClient/QuotaErrorCases (0.00s)
+    --- PASS: TestMemKVClient/QuotaConcurrentOperations (0.00s)
+    --- PASS: TestMemKVClient/QuotaMixedTypes (0.01s)
+    --- PASS: TestMemKVClient/QuotaUsageStatistics (0.00s)
+    --- PASS: TestMemKVClient/CheckQuotaFileOwner (0.00s)
+    --- PASS: TestMemKVClient/QuotaEdgeCases (0.00s)
+    --- PASS: TestMemKVClient/HardlinkQuota (0.00s)
+    --- PASS: TestMemKVClient/BatchUnlinkWithUserGroupQuota (0.00s)
+    --- PASS: TestMemKVClient/SustainedInodeQuotaDecrement (0.00s)
+    --- PASS: TestMemKVClient/SustainedInodeBeforeQuotaEnabled (0.01s)
+=== RUN   TestBadgerClient
+2026/09/27 13:38:35.290441 badger[100] <INFO>: All 0 tables opened in 0s [Infof@logger.go:35]
+2026/09/27 13:38:35.293322 badger[100] <INFO>: Discard stats nextEmptySlot: 0 [Infof@logger.go:35]
+2026/09/27 13:38:35.293399 badger[100] <INFO>: Set nextTxnTs to 0 [Infof@logger.go:35]
+2026/09/27 13:38:35.293596 badger[100] <INFO>: DropAll called. Blocking writes... [Infof@logger.go:35]
+2026/09/27 13:38:35.293615 badger[100] <INFO>: Writes flushed. Stopping compactions now... [Infof@logger.go:35]
+2026/09/27 13:38:35.293878 badger[100] <INFO>: Deleted 0 SSTables. Now deleting value logs... [Infof@logger.go:35]
+2026/09/27 13:38:35.293921 badger[100] <INFO>: Value logs deleted. Creating value log file: 1 [Infof@logger.go:35]
+2026/09/27 13:38:35.293965 badger[100] <INFO>: Deleted 1 value log files. DropAll done. [Infof@logger.go:35]
+2026/09/27 13:38:35.294738 badger[100] <INFO>: Resuming writes [Infof@logger.go:35]
+2026/09/27 13:38:35.294913 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:35.294970 juicefs[100] <INFO>: Create session 1 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:36.302979 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:36.303062 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:36.404437 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:36.404625 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:36.404743 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:36.404817 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:36.404985 juicefs[100] <WARNING>: File name is too long as a trash entry, truncating it: fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -> 1-27-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff [trashEntry@base.go:3127]
+2026/09/27 13:38:36.405006 juicefs[100] <WARNING>: File name is too long as a trash entry, truncating it: fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -> 1-27-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff [trashEntry@base.go:3127]
+2026/09/27 13:38:36.405139 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:36.405812 juicefs[100] <INFO>: cleanup trash: deleted 12 files in 222.442µs [CleanupTrashBefore@base.go:3217]
+2026/09/27 13:38:36.594830 juicefs[100] <INFO>: Quota for inode 18 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:36.947064 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:36.947765 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:37.201562 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:37.201686 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:38.453177 juicefs[100] <INFO>: flush session 1: [FlushSession@base.go:995]
+2026/09/27 13:38:38.453244 juicefs[100] <INFO>: close session 1: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:38.453434 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:38.453467 juicefs[100] <INFO>: Create session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:38.464032 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:38.464144 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:38.471155 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:38.471212 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:43.479837 juicefs[100] <INFO>: Quota for inode 4476 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:43.479901 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:43.481944 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:43.481970 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:43.482011 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+=== RUN   TestBadgerClient/BasicQuotaOperations
+=== RUN   TestBadgerClient/QuotaFileOperations
+2026/09/27 13:38:43.495606 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+=== RUN   TestBadgerClient/QuotaErrorCases
+=== RUN   TestBadgerClient/QuotaConcurrentOperations
+=== RUN   TestBadgerClient/QuotaMixedTypes
+=== RUN   TestBadgerClient/QuotaUsageStatistics
+=== RUN   TestBadgerClient/CheckQuotaFileOwner
+2026/09/27 13:38:45.510949 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:45.511029 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+=== RUN   TestBadgerClient/QuotaEdgeCases
+    base_test.go:4650: Testing inodes-only quota limit...
+    base_test.go:4666: Testing space-only quota limit...
+=== RUN   TestBadgerClient/HardlinkQuota
+=== RUN   TestBadgerClient/BatchUnlinkWithUserGroupQuota
+2026/09/27 13:38:45.511571 juicefs[100] <INFO>: Quota for inode 4483 is deleted [syncQuotaMaps@quota.go:343]
+=== RUN   TestBadgerClient/SustainedInodeQuotaDecrement
+=== RUN   TestBadgerClient/SustainedInodeBeforeQuotaEnabled
+2026/09/27 13:38:45.517842 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:45.518285 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:51.579922 juicefs[100] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:51.579955 juicefs[100] <WARNING>: Path /check (inode 4531) can be repaired, please re-run with '--path /check --repair' to fix it [Check@base.go:2641]
+2026/09/27 13:38:51.580149 juicefs[100] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:51.580202 juicefs[100] <INFO>: Checked 1 nodes [Check@base.go:2704]
+2026/09/27 13:38:51.580417 juicefs[100] <WARNING>: nlink of /check/d1/d2 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:51.580457 juicefs[100] <INFO>: Checked 1 nodes [Check@base.go:2704]
+2026/09/27 13:38:51.595450 juicefs[100] <WARNING>: nlink of /check/d1 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:51.595488 juicefs[100] <WARNING>: nlink of /check/d1/d2/d3 should be 3, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:51.595496 juicefs[100] <WARNING>: nlink of /check/d1/d2/d3/d4 should be 2, but got 0 [Check@base.go:2614]
+2026/09/27 13:38:51.596517 juicefs[100] <INFO>: Checked 4143 nodes [Check@base.go:2704]
+2026/09/27 13:38:51.598380 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:51.598438 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:51.598459 juicefs[100] <INFO>: Quota for inode 4486 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:51.598466 juicefs[100] <INFO>: Quota for inode 4487 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/27 13:38:51.598607 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598664 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598727 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598759 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598789 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598853 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598910 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598952 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.598962 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.599013 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.599023 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.599064 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.599073 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.599272 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:51.602735 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:51.602794 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:51.602884 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.602897 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.602938 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.602973 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.602980 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603007 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+=== NAME  TestBadgerClient
+    base_test.go:3235: Test 1 passed: cross-dir rename without overwrite
+2026/09/27 13:38:51.603029 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603074 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603101 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603127 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3253: Test 2 passed: same-dir rename without overwrite
+2026/09/27 13:38:51.603141 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603189 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603226 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603252 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3274: Test 3 passed: same-dir rename with overwrite
+2026/09/27 13:38:51.603265 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603271 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603319 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603328 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603357 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603364 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603389 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3298: Test 4 passed: cross-dir rename with overwrite
+2026/09/27 13:38:51.603401 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603406 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603451 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603457 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603485 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603494 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603527 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603535 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3326: Test 5 passed: exchange rename
+2026/09/27 13:38:51.603542 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603613 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603648 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603685 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3350: Test 6 passed: same-dir exchange rename
+2026/09/27 13:38:51.603704 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.603972 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:51.606670 juicefs[100] <WARNING>: Failed to get local IP: route ip+net: netlinkrib: operation not permitted [newSessionInfo@base.go:743]
+2026/09/27 13:38:51.606741 juicefs[100] <INFO>: Update session 2 OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:796]
+2026/09/27 13:38:51.606927 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607052 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607153 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607232 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3411: Test trash overwrite passed
+2026/09/27 13:38:51.607257 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607266 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607349 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607362 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607430 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607442 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607510 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3441: Test trash cross-dir overwrite passed
+2026/09/27 13:38:51.607529 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607538 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607721 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607773 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607921 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.607950 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.608111 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:51.608124 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3469: Test trash exchange passed
+2026/09/27 13:38:51.608228 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.108923 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.108981 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.109017 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3502: Test 7 skipped: rename from trash not allowed (expected for security)
+2026/09/27 13:38:52.109295 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.109317 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.109458 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.109488 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.109569 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+    base_test.go:3531: Test 8 passed: same-dir exchange with trash
+2026/09/27 13:38:52.109583 juicefs[100] <INFO>: flush session 2: [FlushSession@base.go:995]
+2026/09/27 13:38:52.109654 juicefs[100] <INFO>: close session 2: <nil> [CloseSession@base.go:984]
+2026/09/27 13:38:53.121198 juicefs[100] <INFO>: Create read-only session OK with version: 1.4.1+2026-07-30.0b90c7d [NewSession@base.go:777]
+2026/09/27 13:38:53.121297 juicefs[100] <INFO>: close session 2: read-only file system [CloseSession@base.go:984]
+--- PASS: TestBadgerClient (17.84s)
+    --- PASS: TestBadgerClient/BasicQuotaOperations (0.01s)
+    --- PASS: TestBadgerClient/QuotaFileOperations (2.00s)
+    --- PASS: TestBadgerClient/QuotaErrorCases (0.00s)
+    --- PASS: TestBadgerClient/QuotaConcurrentOperations (0.00s)
+    --- PASS: TestBadgerClient/QuotaMixedTypes (0.01s)
+    --- PASS: TestBadgerClient/QuotaUsageStatistics (0.00s)
+    --- PASS: TestBadgerClient/CheckQuotaFileOwner (0.00s)
+    --- PASS: TestBadgerClient/QuotaEdgeCases (0.00s)
+    --- PASS: TestBadgerClient/HardlinkQuota (0.00s)
+    --- PASS: TestBadgerClient/BatchUnlinkWithUserGroupQuota (0.00s)
+    --- PASS: TestBadgerClient/SustainedInodeQuotaDecrement (0.00s)
+    --- PASS: TestBadgerClient/SustainedInodeBeforeQuotaEnabled (0.01s)
+PASS
+ok  	github.com/juicedata/juicefs/pkg/meta	62.972s

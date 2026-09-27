@@ -1,0 +1,32 @@
+{
+  "files": 1,
+  "logical_bytes": 1073741824,
+  "raw_records": 16,
+  "unique_raw_slices": 16,
+  "raw_full_slice_bytes": 1073741824,
+  "raw_object_count_at_B256": 4096,
+  "visible_unique_slices": 16,
+  "visible_full_slice_bytes": 1073741824,
+  "fully_shadowed_unique_slices": 0,
+  "fully_shadowed_full_slice_bytes": 0,
+  "raw_full_slice_amplification": 1.0,
+  "chunk_record_histogram": {
+    "1": 16
+  },
+  "per_file": [
+    {
+      "path": "/cycle.dat",
+      "inode": 4769,
+      "logical_bytes": 1073741824,
+      "raw_records": 16,
+      "unique_raw_slices": 16,
+      "raw_full_slice_bytes": 1073741824,
+      "visible_slices": 16,
+      "visible_full_slice_bytes": 1073741824,
+      "covered_logical_bytes": 1073741824,
+      "max_raw_records_per_chunk": 1,
+      "chunks": 16
+    }
+  ],
+  "scope_caution": "latest-wins is reconstructed only inside this dump; other-subtree references are not excluded"
+}
