@@ -1,0 +1,34 @@
+{
+  "started_utc": "2026-09-29T08:59:36.569079+00:00",
+  "elapsed_seconds": 26.842,
+  "cwd": "<WORK>/stock/github.com/juicedata/juicefs@v1.4.1",
+  "command": [
+    "go",
+    "test",
+    "-mod=readonly",
+    "-p",
+    "1",
+    "-count=1",
+    "-timeout=120s",
+    "-run",
+    "^TestCompactRetry",
+    "-json",
+    "./pkg/meta"
+  ],
+  "environment": {
+    "GOTOOLCHAIN": "local",
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "GOWORK": "off",
+    "GOFLAGS": "",
+    "GOMAXPROCS": "2",
+    "GOTMPDIR": "<WORK>/build",
+    "GIT_CEILING_DIRECTORIES": "<WORK>",
+    "COMPACT_RETRY_REDIS_SOCKET": "<WORK>/redis/redis.sock"
+  },
+  "exit_code": 1,
+  "expected_exit_code": 1,
+  "timed_out": false,
+  "expectation_met": true,
+  "log": "stock-verified.log"
+}

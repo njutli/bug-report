@@ -1,0 +1,32 @@
+{
+  "started_utc": "2026-09-29T08:36:48.374305+00:00",
+  "elapsed_seconds": 34.875,
+  "cwd": "<WORK>/source/github.com/juicedata/juicefs@v1.4.1",
+  "command": [
+    "go",
+    "test",
+    "-mod=readonly",
+    "-p",
+    "1",
+    "-count=1",
+    "-timeout=120s",
+    "-run",
+    "^TestCompactRetry",
+    "-json",
+    "./pkg/meta"
+  ],
+  "environment": {
+    "GOTOOLCHAIN": "local",
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "GOWORK": "off",
+    "GOFLAGS": "",
+    "GOMAXPROCS": "2",
+    "GOTMPDIR": "<WORK>/build"
+  },
+  "exit_code": 0,
+  "expected_exit_code": 0,
+  "timed_out": false,
+  "expectation_met": true,
+  "log": "initial.log"
+}

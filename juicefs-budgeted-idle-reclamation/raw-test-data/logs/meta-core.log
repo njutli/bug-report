@@ -1,0 +1,659 @@
+SKIP_NON_CORE=true go test -v -cover -count=1  -failfast -timeout=12m ./pkg/meta/... -args -test.gocoverdir="<WORK>/source/github.com/juicedata/juicefs@v1.4.1/cover"
+=== RUN   TestRedisClient
+2026/09/29 08:51:12.005759 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:12.006083 juicefs[134] <INFO>: Ping redis latency: 151.494µs [checkServerConfig@redis.go:4624]
+2026/09/29 08:51:12.013468 juicefs[134] <INFO>: Create session 1 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+2026/09/29 08:51:13.103236 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:13.104134 juicefs[134] <INFO>: close session 1: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:13.212757 juicefs[134] <INFO>: found leaked chunk c19_163840 [cleanupLeakedChunks@redis.go:3580]
+2026/09/29 08:51:13.223492 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:13.229047 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:13.237261 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:13.240903 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:13.249152 juicefs[134] <WARNING>: File name is too long as a trash entry, truncating it: fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -> 1-27-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff [trashEntry@base.go:3094]
+2026/09/29 08:51:13.255481 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:13.292564 juicefs[134] <INFO>: cleanup trash: deleted 12 files in 8.507934ms [CleanupTrashBefore@base.go:3184]
+2026/09/29 08:51:19.632617 juicefs[134] <INFO>: Quota for inode 18 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/29 08:51:20.118634 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (8.349196ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.128860 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (18.05122ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.138170 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (25.9752ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.148634 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (34.806446ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.171179 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (56.54562ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.179788 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (63.981716ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.189235 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (72.574271ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.199979 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (82.708143ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.214085 juicefs[134] <WARNING>: Transaction succeeded after 6 tries (95.929062ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.222373 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (103.873209ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.236712 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (62.696801ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.246074 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (6.951125ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.354473 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (3.943245ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.490549 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (2.090293ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.666733 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (5.582928ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.709548 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (2.76418ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:20.912386 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (4.907713ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:21.165081 juicefs[134] <WARNING>: Transaction succeeded after 7 tries (21.273866ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:21.270924 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (6.557595ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:21.364409 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (20.588692ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:21.400752 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (18.149365ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:21.462152 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (4.139456ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:21.591436 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (3.08038ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.039415 juicefs[134] <WARNING>: Transaction succeeded after 7 tries (57.390886ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.053816 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (13.482067ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.203899 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (1.980569ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.353389 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (6.365083ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.417540 juicefs[134] <WARNING>: Transaction succeeded after 7 tries (36.246193ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.420397 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (2.042831ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.431550 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (11.078458ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.550185 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (9.900679ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.976236 juicefs[134] <WARNING>: Transaction succeeded after 7 tries (43.951417ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:22.987907 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (9.865561ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:23.340831 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (23.892402ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:23.416270 juicefs[134] <WARNING>: Transaction succeeded after 7 tries (37.177768ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:23.425781 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (7.646544ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:23.640546 juicefs[134] <WARNING>: Transaction succeeded after 7 tries (61.582576ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:23.719079 juicefs[134] <WARNING>: Transaction succeeded after 8 tries (77.839455ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:23.732857 juicefs[134] <WARNING>: Transaction succeeded after 4 tries (11.089562ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:23.820516 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (2.772924ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:24.135480 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (3.487589ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:24.303178 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (3.484145ms), keys: [c4156_0], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:24.318109 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:24.325121 juicefs[134] <INFO>: close session 1: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:24.340296 juicefs[134] <WARNING>: Transaction succeeded after 5 tries (10.614328ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:24.665350 juicefs[134] <WARNING>: Transaction succeeded after 3 tries (3.531371ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1191]
+2026/09/29 08:51:24.697016 juicefs[134] <INFO>: found leaked chunk c19_163840 [cleanupLeakedChunks@redis.go:3580]
+2026/09/29 08:51:24.707426 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:24.708484 juicefs[134] <INFO>: close session 1: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:26.034338 juicefs[134] <INFO>: found leaked chunk c19_163840 [cleanupLeakedChunks@redis.go:3580]
+2026/09/29 08:51:26.052544 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:26.053062 juicefs[134] <INFO>: close session 1: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:26.057351 juicefs[134] <INFO>: Create session 2 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+2026/09/29 08:51:26.069221 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:26.070593 juicefs[134] <INFO>: close session 2: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:26.282751 juicefs[134] <INFO>: Update session 2 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+2026/09/29 08:51:31.307170 juicefs[134] <INFO>: Quota for inode 4476 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/29 08:51:31.307508 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:31.332172 juicefs[134] <INFO>: close session 2: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:31.333540 juicefs[134] <INFO>: Update session 2 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+=== RUN   TestRedisClient/BasicQuotaOperations
+=== RUN   TestRedisClient/QuotaFileOperations
+2026/09/29 08:51:31.363014 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+=== RUN   TestRedisClient/QuotaErrorCases
+=== RUN   TestRedisClient/QuotaConcurrentOperations
+=== RUN   TestRedisClient/QuotaMixedTypes
+=== RUN   TestRedisClient/QuotaUsageStatistics
+=== RUN   TestRedisClient/CheckQuotaFileOwner
+2026/09/29 08:51:33.387091 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:33.387670 juicefs[134] <INFO>: close session 2: <nil> [CloseSession@base.go:987]
+=== RUN   TestRedisClient/QuotaEdgeCases
+    base_test.go:4650: Testing inodes-only quota limit...
+    base_test.go:4666: Testing space-only quota limit...
+=== RUN   TestRedisClient/HardlinkQuota
+=== RUN   TestRedisClient/BatchUnlinkWithUserGroupQuota
+2026/09/29 08:51:33.402388 juicefs[134] <INFO>: Quota for inode 4483 is deleted [syncQuotaMaps@quota.go:343]
+=== RUN   TestRedisClient/SustainedInodeQuotaDecrement
+=== RUN   TestRedisClient/SustainedInodeBeforeQuotaEnabled
+2026/09/29 08:51:33.437406 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:33.441186 juicefs[134] <INFO>: close session 2: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:39.582057 juicefs[134] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2617]
+2026/09/29 08:51:39.582094 juicefs[134] <WARNING>: Path /check (inode 4531) can be repaired, please re-run with '--path /check --repair' to fix it [Check@base.go:2644]
+2026/09/29 08:51:39.582997 juicefs[134] <WARNING>: nlink of /check should be 3, but got 0 [Check@base.go:2617]
+2026/09/29 08:51:39.583544 juicefs[134] <INFO>: Checked 1 nodes [Check@base.go:2707]
+2026/09/29 08:51:39.584308 juicefs[134] <WARNING>: nlink of /check/d1/d2 should be 3, but got 0 [Check@base.go:2617]
+2026/09/29 08:51:39.584782 juicefs[134] <INFO>: Checked 1 nodes [Check@base.go:2707]
+2026/09/29 08:51:39.609684 juicefs[134] <WARNING>: nlink of /check/d1 should be 3, but got 0 [Check@base.go:2617]
+2026/09/29 08:51:39.609769 juicefs[134] <WARNING>: nlink of /check/d1/d2/d3/d4 should be 2, but got 0 [Check@base.go:2617]
+2026/09/29 08:51:39.609787 juicefs[134] <WARNING>: nlink of /check/d1/d2/d3 should be 3, but got 0 [Check@base.go:2617]
+2026/09/29 08:51:39.615804 juicefs[134] <INFO>: Checked 4143 nodes [Check@base.go:2707]
+2026/09/29 08:51:39.622774 juicefs[134] <INFO>: Update session 2 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+2026/09/29 08:51:39.623206 juicefs[134] <INFO>: Quota for inode 4486 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/29 08:51:39.623229 juicefs[134] <INFO>: Quota for inode 4487 is deleted [syncQuotaMaps@quota.go:343]
+2026/09/29 08:51:39.623998 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.624947 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.625626 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.626152 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.626903 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.627798 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.628554 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.630470 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.630763 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.632616 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.633003 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.634149 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.634451 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.637122 juicefs[134] <INFO>: close session 2: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:39.647822 juicefs[134] <INFO>: Update session 2 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+2026/09/29 08:51:39.648732 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.649018 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.650055 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.651689 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.652019 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.653513 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+=== NAME  TestRedisClient
+    base_test.go:3235: Test 1 passed: cross-dir rename without overwrite
+2026/09/29 08:51:39.653865 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.655231 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.656641 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.657894 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3253: Test 2 passed: same-dir rename without overwrite
+2026/09/29 08:51:39.658165 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.660163 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.661943 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.663563 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3274: Test 3 passed: same-dir rename with overwrite
+2026/09/29 08:51:39.664197 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.664525 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.666637 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.667295 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.669433 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.669744 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.670764 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3298: Test 4 passed: cross-dir rename with overwrite
+2026/09/29 08:51:39.671223 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.671592 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.672985 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.673259 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.674367 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.674611 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.676777 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.677077 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3326: Test 5 passed: exchange rename
+2026/09/29 08:51:39.677382 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.679625 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.680946 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.682882 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3350: Test 6 passed: same-dir exchange rename
+2026/09/29 08:51:39.683365 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.687693 juicefs[134] <INFO>: close session 2: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:39.699288 juicefs[134] <INFO>: Update session 2 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+2026/09/29 08:51:39.700044 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.701825 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.703369 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.704606 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3411: Test trash overwrite passed
+2026/09/29 08:51:39.704928 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.705217 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.707511 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.707787 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.709259 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.709493 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.710749 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3441: Test trash cross-dir overwrite passed
+2026/09/29 08:51:39.711064 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.711410 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.713411 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.713844 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.714968 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.715213 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.717193 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:39.717403 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3469: Test trash exchange passed
+2026/09/29 08:51:39.719506 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.220134 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.220207 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.220674 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3502: Test 7 skipped: rename from trash not allowed (expected for security)
+2026/09/29 08:51:40.222135 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.222353 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.223505 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.224068 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.225252 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+    base_test.go:3531: Test 8 passed: same-dir exchange with trash
+2026/09/29 08:51:40.225451 juicefs[134] <INFO>: flush session 2: [FlushSession@base.go:998]
+2026/09/29 08:51:40.225791 juicefs[134] <INFO>: close session 2: <nil> [CloseSession@base.go:987]
+2026/09/29 08:51:41.290877 juicefs[134] <INFO>: Create read-only session OK with version: 1.4.1+unknown [NewSession@base.go:778]
+2026/09/29 08:51:41.291327 juicefs[134] <INFO>: close session 2: read-only file system [CloseSession@base.go:987]
+--- PASS: TestRedisClient (29.29s)
+    --- PASS: TestRedisClient/BasicQuotaOperations (0.03s)
+    --- PASS: TestRedisClient/QuotaFileOperations (2.00s)
+    --- PASS: TestRedisClient/QuotaErrorCases (0.00s)
+    --- PASS: TestRedisClient/QuotaConcurrentOperations (0.00s)
+    --- PASS: TestRedisClient/QuotaMixedTypes (0.01s)
+    --- PASS: TestRedisClient/QuotaUsageStatistics (0.00s)
+    --- PASS: TestRedisClient/CheckQuotaFileOwner (0.00s)
+    --- PASS: TestRedisClient/QuotaEdgeCases (0.00s)
+    --- PASS: TestRedisClient/HardlinkQuota (0.01s)
+    --- PASS: TestRedisClient/BatchUnlinkWithUserGroupQuota (0.01s)
+    --- PASS: TestRedisClient/SustainedInodeQuotaDecrement (0.01s)
+    --- PASS: TestRedisClient/SustainedInodeBeforeQuotaEnabled (0.01s)
+=== RUN   TestKeyDB
+    base_test.go:115: skip non-core test
+--- SKIP: TestKeyDB (0.00s)
+=== RUN   TestRedisCluster
+    base_test.go:160: skip non-core test
+--- SKIP: TestRedisCluster (0.00s)
+=== RUN   TestQuotaEdgeCases
+    base_test.go:4415: Testing inodes-only quota limit...
+    base_test.go:4429: Testing space-only quota limit...
+    base_test.go:4441: Testing mixed quota limits...
+--- PASS: TestQuotaEdgeCases (0.00s)
+=== RUN   TestCheckQuotaFileOwner
+--- PASS: TestCheckQuotaFileOwner (0.00s)
+=== RUN   TestSymlinkCache
+--- PASS: TestSymlinkCache (0.01s)
+=== RUN   TestTxBatchLock
+--- PASS: TestTxBatchLock (0.00s)
+=== RUN   TestCompactRetryGlobal
+=== RUN   TestCompactRetryGlobal/memkv/error-false
+=== RUN   TestCompactRetryGlobal/memkv/error-true
+2026/09/29 08:51:41.304972 juicefs[134] <WARNING>: compact 2 0 with 5 slices: injected compaction failure [compactChunkAdmitted@base.go:2910]
+=== RUN   TestCompactRetryGlobal/sqlite/error-false
+=== RUN   TestCompactRetryGlobal/sqlite/error-true
+2026/09/29 08:51:41.372610 juicefs[134] <WARNING>: The latency to database is too high: 5.493507ms [newSQLMeta@sql.go:513]
+2026/09/29 08:51:41.416127 juicefs[134] <WARNING>: compact 2 0 with 5 slices: injected compaction failure [compactChunkAdmitted@base.go:2910]
+=== RUN   TestCompactRetryGlobal/redis/error-false
+2026/09/29 08:51:41.428267 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:41.428407 juicefs[134] <INFO>: Ping redis latency: 89.676µs [checkServerConfig@redis.go:4624]
+=== RUN   TestCompactRetryGlobal/redis/error-true
+2026/09/29 08:51:41.510326 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:41.510430 juicefs[134] <INFO>: Ping redis latency: 62.032µs [checkServerConfig@redis.go:4624]
+2026/09/29 08:51:41.572836 juicefs[134] <WARNING>: compact 2 0 with 5 slices: injected compaction failure [compactChunkAdmitted@base.go:2910]
+--- PASS: TestCompactRetryGlobal (0.28s)
+    --- PASS: TestCompactRetryGlobal/memkv/error-false (0.00s)
+    --- PASS: TestCompactRetryGlobal/memkv/error-true (0.00s)
+    --- PASS: TestCompactRetryGlobal/sqlite/error-false (0.06s)
+    --- PASS: TestCompactRetryGlobal/sqlite/error-true (0.06s)
+    --- PASS: TestCompactRetryGlobal/redis/error-false (0.08s)
+    --- PASS: TestCompactRetryGlobal/redis/error-true (0.07s)
+=== RUN   TestCompactRetrySameChunk
+=== RUN   TestCompactRetrySameChunk/memkv
+=== RUN   TestCompactRetrySameChunk/sqlite
+2026/09/29 08:51:41.586362 juicefs[134] <WARNING>: The latency to database is too high: 5.23721ms [newSQLMeta@sql.go:513]
+=== RUN   TestCompactRetrySameChunk/redis
+2026/09/29 08:51:41.632124 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:41.632227 juicefs[134] <INFO>: Ping redis latency: 59.288µs [checkServerConfig@redis.go:4624]
+--- PASS: TestCompactRetrySameChunk (0.10s)
+    --- PASS: TestCompactRetrySameChunk/memkv (0.00s)
+    --- PASS: TestCompactRetrySameChunk/sqlite (0.05s)
+    --- PASS: TestCompactRetrySameChunk/redis (0.05s)
+=== RUN   TestCompactRetryNoRedundantRewrite
+=== RUN   TestCompactRetryNoRedundantRewrite/memkv
+=== RUN   TestCompactRetryNoRedundantRewrite/sqlite
+=== RUN   TestCompactRetryNoRedundantRewrite/redis
+2026/09/29 08:51:41.699164 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:41.699367 juicefs[134] <INFO>: Ping redis latency: 156.853µs [checkServerConfig@redis.go:4624]
+--- PASS: TestCompactRetryNoRedundantRewrite (0.02s)
+    --- PASS: TestCompactRetryNoRedundantRewrite/memkv (0.00s)
+    --- PASS: TestCompactRetryNoRedundantRewrite/sqlite (0.01s)
+    --- PASS: TestCompactRetryNoRedundantRewrite/redis (0.01s)
+=== RUN   TestCompactRetryFailureDoesNotLoop
+=== RUN   TestCompactRetryFailureDoesNotLoop/memkv
+2026/09/29 08:51:41.704579 juicefs[134] <WARNING>: compact 2 0 with 5 slices: injected compaction failure [compactChunkAdmitted@base.go:2910]
+=== RUN   TestCompactRetryFailureDoesNotLoop/sqlite
+2026/09/29 08:51:41.710420 juicefs[134] <WARNING>: The latency to database is too high: 5.234857ms [newSQLMeta@sql.go:513]
+2026/09/29 08:51:41.714914 juicefs[134] <WARNING>: compact 2 0 with 5 slices: injected compaction failure [compactChunkAdmitted@base.go:2910]
+=== RUN   TestCompactRetryFailureDoesNotLoop/redis
+2026/09/29 08:51:41.719887 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:41.719962 juicefs[134] <INFO>: Ping redis latency: 39.394µs [checkServerConfig@redis.go:4624]
+2026/09/29 08:51:41.722007 juicefs[134] <WARNING>: compact 2 0 with 5 slices: injected compaction failure [compactChunkAdmitted@base.go:2910]
+--- PASS: TestCompactRetryFailureDoesNotLoop (0.02s)
+    --- PASS: TestCompactRetryFailureDoesNotLoop/memkv (0.00s)
+    --- PASS: TestCompactRetryFailureDoesNotLoop/sqlite (0.01s)
+    --- PASS: TestCompactRetryFailureDoesNotLoop/redis (0.00s)
+=== RUN   TestCompactRetryCancellation
+=== RUN   TestCompactRetryCancellation/memkv
+2026/09/29 08:51:41.722979 juicefs[134] <INFO>: flush session 0: [FlushSession@base.go:998]
+2026/09/29 08:51:41.723000 juicefs[134] <INFO>: close session 0: <nil> [CloseSession@base.go:987]
+=== RUN   TestCompactRetryCancellation/sqlite
+2026/09/29 08:51:41.766175 juicefs[134] <INFO>: flush session 0: [FlushSession@base.go:998]
+2026/09/29 08:51:41.766225 juicefs[134] <INFO>: close session 0: <nil> [CloseSession@base.go:987]
+=== RUN   TestCompactRetryCancellation/redis
+2026/09/29 08:51:41.773180 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:41.773301 juicefs[134] <INFO>: Ping redis latency: 79.462µs [checkServerConfig@redis.go:4624]
+2026/09/29 08:51:41.822307 juicefs[134] <INFO>: flush session 0: [FlushSession@base.go:998]
+2026/09/29 08:51:41.822365 juicefs[134] <INFO>: close session 0: <nil> [CloseSession@base.go:987]
+--- PASS: TestCompactRetryCancellation (0.10s)
+    --- PASS: TestCompactRetryCancellation/memkv (0.00s)
+    --- PASS: TestCompactRetryCancellation/sqlite (0.05s)
+    --- PASS: TestCompactRetryCancellation/redis (0.05s)
+=== RUN   TestCompactRetryForcedOwnership
+=== RUN   TestCompactRetryForcedOwnership/memkv
+=== RUN   TestCompactRetryForcedOwnership/sqlite
+2026/09/29 08:51:41.846456 juicefs[134] <WARNING>: The latency to database is too high: 5.785592ms [newSQLMeta@sql.go:513]
+=== RUN   TestCompactRetryForcedOwnership/redis
+2026/09/29 08:51:42.139613 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:42.139792 juicefs[134] <INFO>: Ping redis latency: 126.531µs [checkServerConfig@redis.go:4624]
+--- PASS: TestCompactRetryForcedOwnership (0.81s)
+    --- PASS: TestCompactRetryForcedOwnership/memkv (0.02s)
+    --- PASS: TestCompactRetryForcedOwnership/sqlite (0.30s)
+    --- PASS: TestCompactRetryForcedOwnership/redis (0.50s)
+=== RUN   TestRemoveSecret
+--- PASS: TestRemoveSecret (0.00s)
+=== RUN   TestEncrypt
+=== RUN   TestEncrypt/aes256gcm-rsa
+=== RUN   TestEncrypt/chacha20-rsa
+=== RUN   TestEncrypt/sm4gcm
+--- PASS: TestEncrypt (0.00s)
+    --- PASS: TestEncrypt/aes256gcm-rsa (0.00s)
+    --- PASS: TestEncrypt/chacha20-rsa (0.00s)
+    --- PASS: TestEncrypt/sm4gcm (0.00s)
+=== RUN   TestFormat_Update_KeyConflict
+--- PASS: TestFormat_Update_KeyConflict (0.00s)
+=== RUN   TestGetTreeSummaryCanceledByProgressCallback
+--- PASS: TestGetTreeSummaryCanceledByProgressCallback (0.01s)
+=== RUN   TestKVTxnReturnsEINTRWhenContextAlreadyCanceled
+2026/09/29 08:51:42.650004 juicefs[134] <WARNING>: Transaction TestKVTxnReturnsEINTRWhenContextAlreadyCanceled interrupted after 12.298µs, tried 1, inodes: [] [txn@tkv.go:1116]
+--- PASS: TestKVTxnReturnsEINTRWhenContextAlreadyCanceled (0.00s)
+=== RUN   TestCleanupTrashBeforeReturnsEINTRWhenContextAlreadyCanceled
+--- PASS: TestCleanupTrashBeforeReturnsEINTRWhenContextAlreadyCanceled (0.00s)
+=== RUN   TestCleanupDelayedSlicesReturnsCanceledWhenContextCanceled
+--- PASS: TestCleanupDelayedSlicesReturnsCanceledWhenContextCanceled (0.00s)
+=== RUN   TestRemoveEmptyDirReturnsEINTRWhenCanceled
+--- PASS: TestRemoveEmptyDirReturnsEINTRWhenCanceled (0.00s)
+=== RUN   TestBadgerKVTxnReturnsEINTRWhenContextAlreadyCanceled
+2026/09/29 08:51:42.652386 juicefs[134] <INFO>: Meta address: badger://<WORK>/build/TestBadgerKVTxnReturnsEINTRWhenContextAlreadyCanceled1833152962/001/jfs-cancel-tkv-badger [NewClient@interface.go:643]
+2026/09/29 08:51:42.664815 badger[134] <INFO>: All 0 tables opened in 0s [Infof@logger.go:35]
+2026/09/29 08:51:42.668093 badger[134] <INFO>: Discard stats nextEmptySlot: 0 [Infof@logger.go:35]
+2026/09/29 08:51:42.668187 badger[134] <INFO>: Set nextTxnTs to 0 [Infof@logger.go:35]
+2026/09/29 08:51:42.669202 badger[134] <INFO>: DropAll called. Blocking writes... [Infof@logger.go:35]
+2026/09/29 08:51:42.669277 badger[134] <INFO>: Writes flushed. Stopping compactions now... [Infof@logger.go:35]
+2026/09/29 08:51:42.669967 badger[134] <INFO>: Deleted 0 SSTables. Now deleting value logs... [Infof@logger.go:35]
+2026/09/29 08:51:42.670100 badger[134] <INFO>: Value logs deleted. Creating value log file: 1 [Infof@logger.go:35]
+2026/09/29 08:51:42.670221 badger[134] <INFO>: Deleted 1 value log files. DropAll done. [Infof@logger.go:35]
+2026/09/29 08:51:42.672597 badger[134] <INFO>: Resuming writes [Infof@logger.go:35]
+2026/09/29 08:51:42.672885 juicefs[134] <WARNING>: Transaction TestBadgerKVTxnReturnsEINTRWhenContextAlreadyCanceled interrupted after 12.385µs, tried 1, inodes: [] [txn@tkv.go:1116]
+--- PASS: TestBadgerKVTxnReturnsEINTRWhenContextAlreadyCanceled (0.02s)
+=== RUN   TestKVReaddirCursorDeleted
+2026/09/29 08:51:42.673288 juicefs[134] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/09/29 08:51:42.673621 juicefs[134] <WARNING>: Existing volume will be overwrited: {
+  "Name": "test",
+  "UUID": "",
+  "Storage": "",
+  "Tiers": null,
+  "Bucket": "",
+  "BlockSize": 0,
+  "TrashDays": 0,
+  "DirStats": true,
+  "EnableACL": false
+} [update@config.go:117]
+2026/09/29 08:51:42.675003 juicefs[134] <INFO>: Create session 1 OK with version: 1.4.1+unknown [NewSession@base.go:797]
+2026/09/29 08:51:42.675830 juicefs[134] <INFO>: flush session 1: [FlushSession@base.go:998]
+2026/09/29 08:51:42.675897 juicefs[134] <INFO>: close session 1: <nil> [CloseSession@base.go:987]
+--- PASS: TestKVReaddirCursorDeleted (0.00s)
+=== RUN   TestSQLDumpMetaNoGoroutineLeakOnFailure
+2026/09/29 08:51:42.683367 juicefs[134] <WARNING>: The latency to database is too high: 6.839304ms [newSQLMeta@sql.go:513]
+--- PASS: TestSQLDumpMetaNoGoroutineLeakOnFailure (0.65s)
+=== RUN   TestMemKVDumpMetaNoGoroutineLeakOnFailure
+--- PASS: TestMemKVDumpMetaNoGoroutineLeakOnFailure (0.62s)
+=== RUN   TestOlderThan
+--- PASS: TestOlderThan (0.00s)
+=== RUN   TestParseRedisVersion
+=== RUN   TestParseRedisVersion/Should_return_error_for_invalid_redisVersion
+=== RUN   TestParseRedisVersion/Should_parse_redisVersion
+--- PASS: TestParseRedisVersion (0.00s)
+    --- PASS: TestParseRedisVersion/Should_return_error_for_invalid_redisVersion (0.00s)
+    --- PASS: TestParseRedisVersion/Should_parse_redisVersion (0.00s)
+=== RUN   TestParseRedisInfo
+=== RUN   TestParseRedisInfo/Should_parse_the_fields_we_are_interested_in
+2026/09/29 08:51:43.943994 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+--- PASS: TestParseRedisInfo (0.00s)
+    --- PASS: TestParseRedisInfo/Should_parse_the_fields_we_are_interested_in (0.00s)
+=== RUN   Test_injectPasswordIntoURI
+=== RUN   Test_injectPasswordIntoURI/#00
+=== RUN   Test_injectPasswordIntoURI/#01
+=== RUN   Test_injectPasswordIntoURI/#02
+=== RUN   Test_injectPasswordIntoURI/#03
+=== RUN   Test_injectPasswordIntoURI/#04
+=== RUN   Test_injectPasswordIntoURI/#05
+=== RUN   Test_injectPasswordIntoURI/#06
+=== RUN   Test_injectPasswordIntoURI/#07
+=== RUN   Test_injectPasswordIntoURI/#08
+=== RUN   Test_injectPasswordIntoURI/#09
+=== RUN   Test_injectPasswordIntoURI/#10
+=== RUN   Test_injectPasswordIntoURI/#11
+=== RUN   Test_injectPasswordIntoURI/#12
+--- PASS: Test_injectPasswordIntoURI (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#00 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#01 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#02 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#03 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#04 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#05 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#06 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#07 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#08 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#09 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#10 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#11 (0.00s)
+    --- PASS: Test_injectPasswordIntoURI/#12 (0.00s)
+=== RUN   Test_setPasswordFromEnv
+=== RUN   Test_setPasswordFromEnv/META_PASSWORD_only
+=== RUN   Test_setPasswordFromEnv/META_PASSWORD_FILE_only
+=== RUN   Test_setPasswordFromEnv/META_PASSWORD_takes_precedence_over_META_PASSWORD_FILE
+=== RUN   Test_setPasswordFromEnv/neither_environment_variable_set
+=== RUN   Test_setPasswordFromEnv/META_PASSWORD_FILE_points_to_non-existent_file
+--- PASS: Test_setPasswordFromEnv (0.00s)
+    --- PASS: Test_setPasswordFromEnv/META_PASSWORD_only (0.00s)
+    --- PASS: Test_setPasswordFromEnv/META_PASSWORD_FILE_only (0.00s)
+    --- PASS: Test_setPasswordFromEnv/META_PASSWORD_takes_precedence_over_META_PASSWORD_FILE (0.00s)
+    --- PASS: Test_setPasswordFromEnv/neither_environment_variable_set (0.00s)
+    --- PASS: Test_setPasswordFromEnv/META_PASSWORD_FILE_points_to_non-existent_file (0.00s)
+=== RUN   Test_readPasswordFromFile
+=== RUN   Test_readPasswordFromFile/valid_password_file
+=== RUN   Test_readPasswordFromFile/password_with_leading_and_trailing_whitespace
+=== RUN   Test_readPasswordFromFile/empty_file
+=== RUN   Test_readPasswordFromFile/complex_password_with_special_characters
+=== RUN   Test_readPasswordFromFile/file_does_not_exist
+--- PASS: Test_readPasswordFromFile (0.00s)
+    --- PASS: Test_readPasswordFromFile/valid_password_file (0.00s)
+    --- PASS: Test_readPasswordFromFile/password_with_leading_and_trailing_whitespace (0.00s)
+    --- PASS: Test_readPasswordFromFile/empty_file (0.00s)
+    --- PASS: Test_readPasswordFromFile/complex_password_with_special_characters (0.00s)
+    --- PASS: Test_readPasswordFromFile/file_does_not_exist (0.00s)
+=== RUN   TestEscape
+    load_dump_test.go:70: escape value:  %251F果汁数据科技有限公司%252B
+    load_dump_test.go:70: escape value:  %B9%FB汁数据科技有限公司%251F
+    load_dump_test.go:70: escape value:  果֭数据科技有限公司
+    load_dump_test.go:70: escape value:  果֭%CA%FD%BE%DD科技有限公司
+    load_dump_test.go:70: escape value:  果汁数据科%BC%BC%D3%D0%CF޹%AB˾
+    load_dump_test.go:70: escape value:  %B9%FB֭%CA%FD%BEݿƼ%BC%D3%D0%CF޹%AB˾
+    load_dump_test.go:70: escape value:  GBK%B9%FB֭%CA%FD%BEݿƼ%BC%D3%D0%CF޹%AB˾%CEļ%FE
+    load_dump_test.go:70: escape value:  %25%B9%FB֭%CA%FD据科%25技有限公司%25
+    load_dump_test.go:70: escape value:  %22%B9%FB֭%CA%FD据科%22技有限公司%25
+    load_dump_test.go:70: escape value:  %5C%B9%FB֭%CA%FD%5C据科技有限公司
+    load_dump_test.go:70: escape value:  file%20name%20with%20spaces
+--- PASS: TestEscape (0.00s)
+=== RUN   TestLoadDump
+=== RUN   TestLoadDump/Metadata_Engine:_redis
+2026/09/29 08:51:43.949629 juicefs[134] <INFO>: Meta address: redis://127.0.0.1/10 [NewClient@interface.go:643]
+2026/09/29 08:51:43.951079 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:43.951225 juicefs[134] <INFO>: Ping redis latency: 102.673µs [checkServerConfig@redis.go:4624]
+2026/09/29 08:51:43.952903 juicefs[134] <INFO>: Loading from file ... [loadEntries@dump.go:449]
+2026/09/29 08:51:43.959763 juicefs[134] <INFO>: Dumped counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:509]
+2026/09/29 08:51:43.959793 juicefs[134] <INFO>: Loaded counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:510]
+2026/09/29 08:51:43.967378 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@redis.go:5004]
+2026/09/29 08:51:43.973638 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@redis.go:5004]
+2026/09/29 08:51:43.977006 juicefs[134] <INFO>: Meta address: redis://127.0.0.1/10 [NewClient@interface.go:643]
+2026/09/29 08:51:43.978038 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:43.978140 juicefs[134] <INFO>: Ping redis latency: 66.231µs [checkServerConfig@redis.go:4624]
+2026/09/29 08:51:43.979141 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@redis.go:5004]
+2026/09/29 08:51:43.983021 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@redis.go:5004]
+2026/09/29 08:51:43.985438 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@redis.go:5004]
+2026/09/29 08:51:43.989134 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@redis.go:5004]
+2026/09/29 08:51:43.991824 juicefs[134] <INFO>: Meta address: redis://127.0.0.1/10 [NewClient@interface.go:643]
+2026/09/29 08:51:43.992826 juicefs[134] <WARNING>: AOF is not enabled, you may lose data if Redis is not shutdown properly. [checkRedisInfo@info.go:84]
+2026/09/29 08:51:43.993025 juicefs[134] <INFO>: Ping redis latency: 131.515µs [checkServerConfig@redis.go:4624]
+2026/09/29 08:51:43.993290 juicefs[134] <INFO>: Loading from file ... [loadEntries@dump.go:449]
+2026/09/29 08:51:43.993652 juicefs[134] <INFO>: Dumped counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:509]
+2026/09/29 08:51:43.993674 juicefs[134] <INFO>: Loaded counters: {UsedSpace:104861696 UsedInodes:2 NextInode:7 NextChunk:7 NextSession:0 NextTrash:0 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:510]
+=== RUN   TestLoadDump/Metadata_Engine:_sqlite3
+2026/09/29 08:51:43.995015 juicefs[134] <INFO>: Meta address: sqlite3://<WORK>/build/TestLoadDump1649809474/001/jfs-load-dump-sqlite3.db [NewClient@interface.go:643]
+2026/09/29 08:51:44.000407 juicefs[134] <WARNING>: The latency to database is too high: 5.339614ms [newSQLMeta@sql.go:513]
+2026/09/29 08:51:44.004233 juicefs[134] <INFO>: Loading from file ... [loadEntries@dump.go:449]
+2026/09/29 08:51:44.004803 juicefs[134] <INFO>: Dumped counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:509]
+2026/09/29 08:51:44.004832 juicefs[134] <INFO>: Loaded counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:510]
+2026/09/29 08:51:44.010421 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@sql.go:5046]
+2026/09/29 08:51:44.012923 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@sql.go:5046]
+2026/09/29 08:51:44.022052 juicefs[134] <INFO>: Meta address: sqlite3://<WORK>/build/TestLoadDump1649809474/001/jfs-load-dump-sqlite3.db [NewClient@interface.go:643]
+2026/09/29 08:51:44.023215 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@sql.go:5046]
+2026/09/29 08:51:44.025617 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@sql.go:5046]
+2026/09/29 08:51:44.028755 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@sql.go:5046]
+2026/09/29 08:51:44.030852 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@sql.go:5046]
+2026/09/29 08:51:44.033905 juicefs[134] <INFO>: Meta address: sqlite3://<WORK>/build/TestLoadDump1649809474/001/jfs-load-dump-sqlite3.db [NewClient@interface.go:643]
+2026/09/29 08:51:44.039434 juicefs[134] <INFO>: Loading from file ... [loadEntries@dump.go:449]
+2026/09/29 08:51:44.039831 juicefs[134] <INFO>: Dumped counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:509]
+2026/09/29 08:51:44.039871 juicefs[134] <INFO>: Loaded counters: {UsedSpace:104861696 UsedInodes:2 NextInode:7 NextChunk:7 NextSession:0 NextTrash:0 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:510]
+=== RUN   TestLoadDump/Metadata_Engine:_badger
+2026/09/29 08:51:44.041070 juicefs[134] <INFO>: Meta address: badger://<WORK>/build/TestLoadDump1649809474/002/jfs-load-dump [NewClient@interface.go:643]
+2026/09/29 08:51:44.048875 badger[134] <INFO>: All 0 tables opened in 0s [Infof@logger.go:35]
+2026/09/29 08:51:44.050728 badger[134] <INFO>: Discard stats nextEmptySlot: 0 [Infof@logger.go:35]
+2026/09/29 08:51:44.050778 badger[134] <INFO>: Set nextTxnTs to 0 [Infof@logger.go:35]
+2026/09/29 08:51:44.050966 badger[134] <INFO>: DropAll called. Blocking writes... [Infof@logger.go:35]
+2026/09/29 08:51:44.052329 badger[134] <INFO>: Writes flushed. Stopping compactions now... [Infof@logger.go:35]
+2026/09/29 08:51:44.055379 badger[134] <INFO>: Deleted 0 SSTables. Now deleting value logs... [Infof@logger.go:35]
+2026/09/29 08:51:44.055501 badger[134] <INFO>: Value logs deleted. Creating value log file: 1 [Infof@logger.go:35]
+2026/09/29 08:51:44.055606 badger[134] <INFO>: Deleted 1 value log files. DropAll done. [Infof@logger.go:35]
+2026/09/29 08:51:44.056542 badger[134] <INFO>: Resuming writes [Infof@logger.go:35]
+2026/09/29 08:51:44.056606 juicefs[134] <INFO>: Loading from file ... [loadEntries@dump.go:449]
+2026/09/29 08:51:44.057100 juicefs[134] <INFO>: Dumped counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:509]
+2026/09/29 08:51:44.057127 juicefs[134] <INFO>: Loaded counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:510]
+2026/09/29 08:51:44.058121 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@tkv.go:4187]
+2026/09/29 08:51:44.059975 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@tkv.go:4187]
+2026/09/29 08:51:44.061193 badger[134] <INFO>: Lifetime L0 stalled for: 0s [Infof@logger.go:35]
+2026/09/29 08:51:44.069245 badger[134] <INFO>: 
+Level 0 [ ]: NumTables: 01. Size: 2.8 KiB of 0 B. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 64 MiB
+Level 1 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 2 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 3 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 4 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 5 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 6 [B]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level Done [Infof@logger.go:35]
+2026/09/29 08:51:44.071155 juicefs[134] <INFO>: Meta address: badger://<WORK>/build/TestLoadDump1649809474/002/jfs-load-dump [NewClient@interface.go:643]
+2026/09/29 08:51:44.072258 badger[134] <INFO>: All 1 tables opened in 0s [Infof@logger.go:35]
+2026/09/29 08:51:44.074024 badger[134] <INFO>: Discard stats nextEmptySlot: 0 [Infof@logger.go:35]
+2026/09/29 08:51:44.074066 badger[134] <INFO>: Set nextTxnTs to 20 [Infof@logger.go:35]
+2026/09/29 08:51:44.074650 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@tkv.go:4187]
+2026/09/29 08:51:44.077345 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@tkv.go:4187]
+2026/09/29 08:51:44.079752 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@tkv.go:4187]
+2026/09/29 08:51:44.081550 juicefs[134] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@tkv.go:4187]
+2026/09/29 08:51:44.082963 badger[134] <INFO>: Lifetime L0 stalled for: 0s [Infof@logger.go:35]
+2026/09/29 08:51:44.086589 badger[134] <INFO>: 
+Level 0 [ ]: NumTables: 01. Size: 2.8 KiB of 0 B. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 64 MiB
+Level 1 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 2 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 3 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 4 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 5 [ ]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level 6 [B]: NumTables: 00. Size: 0 B of 10 MiB. Score: 0.00->0.00 StaleData: 0 B Target FileSize: 2.0 MiB
+Level Done [Infof@logger.go:35]
+2026/09/29 08:51:44.089789 juicefs[134] <INFO>: Meta address: badger://<WORK>/build/TestLoadDump1649809474/002/jfs-load-dump [NewClient@interface.go:643]
+2026/09/29 08:51:44.159308 badger[134] <INFO>: All 1 tables opened in 0s [Infof@logger.go:35]
+2026/09/29 08:51:44.164472 badger[134] <INFO>: Discard stats nextEmptySlot: 0 [Infof@logger.go:35]
+2026/09/29 08:51:44.164537 badger[134] <INFO>: Set nextTxnTs to 20 [Infof@logger.go:35]
+2026/09/29 08:51:44.164599 badger[134] <INFO>: Deleting empty file: <WORK>/build/TestLoadDump1649809474/002/jfs-load-dump/000001.vlog [Infof@logger.go:35]
+2026/09/29 08:51:44.164882 badger[134] <INFO>: DropAll called. Blocking writes... [Infof@logger.go:35]
+2026/09/29 08:51:44.164909 badger[134] <INFO>: Writes flushed. Stopping compactions now... [Infof@logger.go:35]
+2026/09/29 08:51:44.234111 badger[134] <INFO>: Deleted 1 SSTables. Now deleting value logs... [Infof@logger.go:35]
+2026/09/29 08:51:44.234258 badger[134] <INFO>: Value logs deleted. Creating value log file: 1 [Infof@logger.go:35]
+2026/09/29 08:51:44.234446 badger[134] <INFO>: Deleted 2 value log files. DropAll done. [Infof@logger.go:35]
+2026/09/29 08:51:44.234830 badger[134] <INFO>: Resuming writes [Infof@logger.go:35]
+2026/09/29 08:51:44.234912 juicefs[134] <INFO>: Loading from file ... [loadEntries@dump.go:449]
+2026/09/29 08:51:44.235393 juicefs[134] <INFO>: Dumped counters: {UsedSpace:115392512 UsedInodes:14 NextInode:35 NextChunk:9 NextSession:0 NextTrash:1 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:509]
+2026/09/29 08:51:44.235419 juicefs[134] <INFO>: Loaded counters: {UsedSpace:104861696 UsedInodes:2 NextInode:7 NextChunk:7 NextSession:0 NextTrash:0 NextCleanupSlices:0 LastChangelog:0} [loadEntries@dump.go:510]
+=== RUN   TestLoadDump/Metadata_Engine:_tikv
+2026/09/29 08:51:44.235781 juicefs[134] <INFO>: Meta address: tikv://127.0.0.1:2379/jfs-load-dump [NewClient@interface.go:643]
+2026/09/29 08:51:44.235841 juicefs[134] <INFO>: TiKV gc interval is set to 3h0m0s [newTikvClient@tkv_tikv.go:90]
+[2026/09/29 08:51:44.237 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:45.238 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:46.238 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:47.239 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:48.240 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:49.241 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:50.242 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:51.244 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:52.244 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:53.245 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:54.246 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:55.246 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:56.247 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:57.248 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:58.248 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:51:59.249 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:00.249 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:01.250 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:02.251 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:03.252 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:04.252 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:05.253 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:06.254 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:07.255 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:08.256 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:09.257 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:10.257 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:11.258 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:12.259 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:13.260 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:14.260 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:15.261 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:16.263 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:17.263 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:18.264 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:19.264 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:20.265 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:21.265 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:22.266 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:23.267 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:24.268 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:25.269 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:26.270 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:27.270 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:28.271 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:29.272 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:30.273 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:31.273 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:32.274 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:33.275 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:34.276 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:35.276 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:36.277 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:37.278 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:38.279 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:39.279 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:40.280 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:41.281 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:42.282 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:43.282 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:44.283 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:45.283 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:46.285 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:47.286 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:48.287 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:49.288 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:50.289 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:51.290 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:52.291 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:53.293 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:54.293 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:55.294 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:56.295 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:57.295 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:58.296 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:52:59.298 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:00.298 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:01.299 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:02.300 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:03.301 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:04.302 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:05.303 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:06.304 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:07.305 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:08.306 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:09.306 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:10.307 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:11.309 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:12.310 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:13.311 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:14.312 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:15.313 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:16.314 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:17.315 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:18.316 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:19.317 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:20.318 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:21.318 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:22.319 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+[2026/09/29 08:53:23.320 +00:00] [WARN] [pd_service_discovery.go:366] ["[pd] failed to get cluster id"] [component=tikv] [pid=134] [url=http://127.0.0.1:2379] [error="[PD:client:ErrClientGetMember]error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE: error:rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused\" target:127.0.0.1:2379 status:TRANSIENT_FAILURE"]
+2026/09/29 08:53:24.321279 juicefs[134] <FATAL>: Meta tikv://127.0.0.1:2379/jfs-load-dump is not available: connect to addr 127.0.0.1:2379/jfs-load-dump: [pd] failed to get cluster id [NewClient@interface.go:655]
+FAIL	github.com/juicedata/juicefs/pkg/meta	132.398s
+FAIL
+make: *** [Makefile:112: test.meta.core] Error 1
