@@ -1,5 +1,0 @@
-{"Time":"2026-09-29T16:42:07.681128238+08:00","Action":"start","Package":"github.com/juicedata/juicefs/pkg/meta"}
-{"Time":"2026-09-29T16:42:07.730337964+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Output":"testing: warning: no tests to run\n"}
-{"Time":"2026-09-29T16:42:07.730421007+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Output":"PASS\n"}
-{"Time":"2026-09-29T16:42:07.735665551+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Output":"ok  \tgithub.com/juicedata/juicefs/pkg/meta\t0.054s [no tests to run]\n"}
-{"Time":"2026-09-29T16:42:07.7357311+08:00","Action":"pass","Package":"github.com/juicedata/juicefs/pkg/meta","Elapsed":0.055}
