@@ -1,0 +1,46 @@
+{
+  "base_version": "v1.4.1",
+  "base_commit": "0b90c7db5a929ae6adc5faad948d108efd2c99f9",
+  "scope": "successful Write idle compaction only",
+  "patches": [
+    {
+      "path": "patches/0001-meta-compact-written-chunks-after-idle.patch",
+      "sha256": "776a542192a63595c5a5dbd039a03d16b601b24fa285a6e65cf057118ca10a5a",
+      "file_hashes": [
+        {
+          "path": "pkg/meta/base.go",
+          "before_sha256": "936c52e48b50a148bb9f7885ca66cbb50c0d83b3f23bd94b07a9826e4a03b1e0",
+          "after_sha256": "eeee0381f977005756c239f83b7247a7d62292a1c661adea876ddea0e4df7c3e"
+        },
+        {
+          "path": "pkg/meta/idle_write.go",
+          "before_sha256": null,
+          "after_sha256": "fa532858f9280db4604619b11290b487f5b8916e979d8d926c535fde210de8bf"
+        }
+      ],
+      "role": "implementation"
+    },
+    {
+      "path": "patches/0002-meta-test-written-chunk-idle-compaction.patch",
+      "sha256": "6bee54e914645b2ac0b30d22af9d781b9d090c7a2ed067cec5839757baa139ac",
+      "file_hashes": [
+        {
+          "path": "pkg/meta/idle_write_fixture_test.go",
+          "before_sha256": null,
+          "after_sha256": "891c7508bdb621c388bf132af2053bab1de4c23af0fd5b07e166c2475d760e49"
+        },
+        {
+          "path": "pkg/meta/idle_write_test.go",
+          "before_sha256": null,
+          "after_sha256": "ca168175acc1b002f6e2fa9bfbe4e6d6aa7ff9aac0603e1a2e13861a6a521ab4"
+        },
+        {
+          "path": "pkg/meta/idle_write_automatic_test.go",
+          "before_sha256": null,
+          "after_sha256": "5829b1fbca6e90cd39499595286f45a5e4c432b58b96dd43569443b1ee565731"
+        }
+      ],
+      "role": "tests"
+    }
+  ]
+}

@@ -1,0 +1,671 @@
+{
+  "checked_at": "2026-10-04T21:35:41.766676+08:00",
+  "result": {
+    "result": "C14_CONTINUATION_FUNCTIONAL_COMPLETE",
+    "epoch": 1791120340.92506,
+    "binary_sha256": "c2307d90c9184c7d48a9770c8d775a093671496c5569d0e5f7c81d594d7b3b6f",
+    "old_failure_preserved": true,
+    "history_seen": true,
+    "first_automatic_clean": true,
+    "second_automatic_clean": true,
+    "resumed_foreground": true,
+    "overlap_status": "REQUIRES_TIMELINE_REVIEW",
+    "crc": "PASS",
+    "total_written_bytes": 42949672960,
+    "private_unmounted": true,
+    "private_worker_exited": true,
+    "original_and_c13_preserved": true,
+    "data_preserved": true,
+    "final_health": {
+      "epoch": 1791120340.924763,
+      "label": "complete",
+      "pool": {
+        "stored": 655917260204,
+        "stored_data": 655917252608,
+        "stored_omap": 7596,
+        "objects": 2535543,
+        "kb_used": 960816276,
+        "bytes_used": 983875865730,
+        "data_bytes_used": 983875854336,
+        "omap_bytes_used": 11394,
+        "percent_used": 0.5431630611419678,
+        "max_avail": 551670841344,
+        "quota_objects": 0,
+        "quota_bytes": 0,
+        "dirty": 0,
+        "rd": 123278590,
+        "rd_bytes": 10907704178688,
+        "wr": 45234244,
+        "wr_bytes": 6134945970176,
+        "compress_bytes_used": 0,
+        "compress_under_bytes": 0,
+        "stored_raw": 983875846144,
+        "avail_raw": 827506214314
+      },
+      "health": {
+        "status": "HEALTH_WARN",
+        "checks": {
+          "BLUESTORE_SLOW_OP_ALERT": {
+            "severity": "HEALTH_WARN",
+            "summary": {
+              "message": "5 OSD(s) experiencing slow operations in BlueStore",
+              "count": 5
+            },
+            "muted": false
+          }
+        },
+        "mutes": []
+      },
+      "pgs": [
+        {
+          "state_name": "active+clean",
+          "count": 161
+        }
+      ],
+      "mem_available": 266271567872
+    },
+    "automatic_next_stage": false
+  },
+  "trigger": {
+    "time": "2026-10-04T21:00:45.149455+08:00",
+    "values": {
+      "juicefs_idle_compact_pending_chunks": 128.0,
+      "juicefs_idle_compact_queue_attempts_total": 257.0,
+      "juicefs_compact_size_histogram_bytes_count": 270.0,
+      "juicefs_object_request_uploading": 1.0,
+      "juicefs_object_request_data_bytes": 78683045888.0,
+      "juicefs_fuse_written_size_bytes_sum": 34359738368.0
+    }
+  },
+  "resume_start": "2026-10-04T21:00:45.152755+08:00",
+  "resume_end": "2026-10-04T21:03:18.594974+08:00",
+  "timeline": [
+    {
+      "time": "2026-10-04T21:00:34.740517+08:00",
+      "label": "await-idle-attempt",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 256.0,
+        "juicefs_compact_size_histogram_bytes_count": 269.0,
+        "juicefs_object_request_uploading": 0.0,
+        "juicefs_object_request_data_bytes": 78680686592.0,
+        "juicefs_fuse_written_size_bytes_sum": 34359738368.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:01:08.289317+08:00",
+      "label": "resume-one-pass",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 150.0,
+        "juicefs_object_request_data_bytes": 80412540928.0,
+        "juicefs_fuse_written_size_bytes_sum": 36679188480.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:01:39.634248+08:00",
+      "label": "resume-one-pass",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 150.0,
+        "juicefs_object_request_data_bytes": 82272845824.0,
+        "juicefs_fuse_written_size_bytes_sum": 38500302848.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:02:12.748963+08:00",
+      "label": "resume-one-pass",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 150.0,
+        "juicefs_object_request_data_bytes": 83964723200.0,
+        "juicefs_fuse_written_size_bytes_sum": 40179204096.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:02:44.008533+08:00",
+      "label": "resume-one-pass",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 150.0,
+        "juicefs_object_request_data_bytes": 85741010944.0,
+        "juicefs_fuse_written_size_bytes_sum": 41927573504.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:03:16.584994+08:00",
+      "label": "resume-one-pass",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 0.0,
+        "juicefs_object_request_data_bytes": 87404838912.0,
+        "juicefs_fuse_written_size_bytes_sum": 42949672960.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:03:21.720933+08:00",
+      "label": "cold-second-000",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 0.0,
+        "juicefs_object_request_data_bytes": 87404838912.0,
+        "juicefs_fuse_written_size_bytes_sum": 42949672960.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:03:22.779219+08:00",
+      "label": "cold-second-idle",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 0.0,
+        "juicefs_object_request_data_bytes": 87404838912.0,
+        "juicefs_fuse_written_size_bytes_sum": 42949672960.0
+      }
+    },
+    {
+      "time": "2026-10-04T21:03:53.825378+08:00",
+      "label": "cold-second-idle",
+      "values": {
+        "juicefs_idle_compact_pending_chunks": 128.0,
+        "juicefs_idle_compact_queue_attempts_total": 257.0,
+        "juicefs_compact_size_histogram_bytes_count": 270.0,
+        "juicefs_object_request_uploading": 0.0,
+        "juicefs_object_request_data_bytes": 87404838912.0,
+        "juicefs_fuse_written_size_bytes_sum": 42949672960.0
+      }
+    }
+  ],
+  "frozen": {
+    "cold-first": {
+      "minimal": true,
+      "no_user_file_reads": true,
+      "manual_compact_gc": false,
+      "first": {
+        "epoch": 1791117261.9901295,
+        "meta": {
+          "raw_records": 435,
+          "raw_full_slice_bytes": 17179869184,
+          "fully_shadowed_full_slice_bytes": 8589934592
+        },
+        "minimal": false,
+        "pool": {
+          "stored": 664507456940,
+          "stored_data": 664507449344,
+          "stored_omap": 7596,
+          "objects": 2568386,
+          "kb_used": 973399620,
+          "bytes_used": 996761209986,
+          "data_bytes_used": 996761198592,
+          "omap_bytes_used": 11394,
+          "percent_used": 0.5504369139671326,
+          "max_avail": 542728945664,
+          "quota_objects": 0,
+          "quota_bytes": 0,
+          "dirty": 0,
+          "rd": 123081111,
+          "rd_bytes": 10881867266048,
+          "wr": 44938499,
+          "wr_bytes": 6100516069376,
+          "compress_bytes_used": 0,
+          "compress_under_bytes": 0,
+          "stored_raw": 996761141248,
+          "avail_raw": 814093444922
+        },
+        "pending": 128.0,
+        "attempts": 128.0
+      },
+      "last": {
+        "epoch": 1791118398.2685719,
+        "meta": {
+          "raw_records": 128,
+          "raw_full_slice_bytes": 8589934592,
+          "fully_shadowed_full_slice_bytes": 0
+        },
+        "minimal": true,
+        "pool": {
+          "stored": 655917260204,
+          "stored_data": 655917252608,
+          "stored_omap": 7596,
+          "objects": 2535543,
+          "kb_used": 960816276,
+          "bytes_used": 983875865730,
+          "data_bytes_used": 983875854336,
+          "omap_bytes_used": 11394,
+          "percent_used": 0.5429230332374573,
+          "max_avail": 552204763136,
+          "quota_objects": 0,
+          "quota_bytes": 0,
+          "dirty": 0,
+          "rd": 123146856,
+          "rd_bytes": 10890457200640,
+          "wr": 45036882,
+          "wr_bytes": 6109109057536,
+          "compress_bytes_used": 0,
+          "compress_under_bytes": 0,
+          "stored_raw": 983875846144,
+          "avail_raw": 828307121554
+        },
+        "pending": 0.0,
+        "attempts": 256.0
+      },
+      "baseline_pool": {
+        "stored": 655917522348,
+        "stored_data": 655917514752,
+        "stored_omap": 7596,
+        "objects": 2535543,
+        "kb_used": 960816708,
+        "bytes_used": 983876308098,
+        "data_bytes_used": 983876296704,
+        "omap_bytes_used": 11394,
+        "percent_used": 0.5431572198867798,
+        "max_avail": 551684145152,
+        "quota_objects": 0,
+        "quota_bytes": 0,
+        "dirty": 0,
+        "rd": 123081111,
+        "rd_bytes": 10881867266048,
+        "wr": 44905656,
+        "wr_bytes": 6091926134784,
+        "compress_bytes_used": 0,
+        "compress_under_bytes": 0,
+        "stored_raw": 983876239360,
+        "avail_raw": 827526219177
+      },
+      "end_pool": {
+        "stored": 655917260204,
+        "stored_data": 655917252608,
+        "stored_omap": 7596,
+        "objects": 2535543,
+        "kb_used": 960816276,
+        "bytes_used": 983875865730,
+        "data_bytes_used": 983875854336,
+        "omap_bytes_used": 11394,
+        "percent_used": 0.5429230332374573,
+        "max_avail": 552204763136,
+        "quota_objects": 0,
+        "quota_bytes": 0,
+        "dirty": 0,
+        "rd": 123146856,
+        "rd_bytes": 10890457200640,
+        "wr": 45036882,
+        "wr_bytes": 6109109057536,
+        "compress_bytes_used": 0,
+        "compress_under_bytes": 0,
+        "stored_raw": 983875846144,
+        "avail_raw": 828307121554
+      }
+    },
+    "cold-second": {
+      "minimal": true,
+      "no_user_file_reads": true,
+      "manual_compact_gc": false,
+      "first": {
+        "epoch": 1791119001.727539,
+        "meta": {
+          "raw_records": 642,
+          "raw_full_slice_bytes": 25702694912,
+          "fully_shadowed_full_slice_bytes": 17112760320
+        },
+        "minimal": false,
+        "pool": {
+          "stored": 673030020524,
+          "stored_data": 673030012928,
+          "stored_omap": 7596,
+          "objects": 2600944,
+          "kb_used": 985883796,
+          "bytes_used": 1009545006210,
+          "data_bytes_used": 1009544994816,
+          "omap_bytes_used": 11394,
+          "percent_used": 0.5573506355285645,
+          "max_avail": 534522134528,
+          "quota_objects": 0,
+          "quota_bytes": 0,
+          "dirty": 0,
+          "rd": 123147368,
+          "rd_bytes": 10890524309504,
+          "wr": 45103307,
+          "wr_bytes": 6126356035584,
+          "compress_bytes_used": 0,
+          "compress_under_bytes": 0,
+          "stored_raw": 1009544986624,
+          "avail_raw": 801783204008
+        },
+        "pending": 128.0,
+        "attempts": 257.0
+      },
+      "last": {
+        "epoch": 1791120075.8951077,
+        "meta": {
+          "raw_records": 128,
+          "raw_full_slice_bytes": 8589934592,
+          "fully_shadowed_full_slice_bytes": 0
+        },
+        "minimal": true,
+        "pool": {
+          "stored": 655917260204,
+          "stored_data": 655917252608,
+          "stored_omap": 7596,
+          "objects": 2535543,
+          "kb_used": 960816276,
+          "bytes_used": 983875865730,
+          "data_bytes_used": 983875854336,
+          "omap_bytes_used": 11394,
+          "percent_used": 0.5431630611419678,
+          "max_avail": 551670841344,
+          "quota_objects": 0,
+          "quota_bytes": 0,
+          "dirty": 0,
+          "rd": 123213038,
+          "rd_bytes": 10899114244096,
+          "wr": 45234244,
+          "wr_bytes": 6134945970176,
+          "compress_bytes_used": 0,
+          "compress_under_bytes": 0,
+          "stored_raw": 983875846144,
+          "avail_raw": 827506214314
+        },
+        "pending": 0.0,
+        "attempts": 385.0
+      },
+      "baseline_pool": {
+        "stored": 655917522348,
+        "stored_data": 655917514752,
+        "stored_omap": 7596,
+        "objects": 2535543,
+        "kb_used": 960816708,
+        "bytes_used": 983876308098,
+        "data_bytes_used": 983876296704,
+        "omap_bytes_used": 11394,
+        "percent_used": 0.5431572198867798,
+        "max_avail": 551684145152,
+        "quota_objects": 0,
+        "quota_bytes": 0,
+        "dirty": 0,
+        "rd": 123081111,
+        "rd_bytes": 10881867266048,
+        "wr": 44905656,
+        "wr_bytes": 6091926134784,
+        "compress_bytes_used": 0,
+        "compress_under_bytes": 0,
+        "stored_raw": 983876239360,
+        "avail_raw": 827526219177
+      },
+      "end_pool": {
+        "stored": 655917260204,
+        "stored_data": 655917252608,
+        "stored_omap": 7596,
+        "objects": 2535543,
+        "kb_used": 960816276,
+        "bytes_used": 983875865730,
+        "data_bytes_used": 983875854336,
+        "omap_bytes_used": 11394,
+        "percent_used": 0.5431630611419678,
+        "max_avail": 551670841344,
+        "quota_objects": 0,
+        "quota_bytes": 0,
+        "dirty": 0,
+        "rd": 123213038,
+        "rd_bytes": 10899114244096,
+        "wr": 45234244,
+        "wr_bytes": 6134945970176,
+        "compress_bytes_used": 0,
+        "compress_under_bytes": 0,
+        "stored_raw": 983875846144,
+        "avail_raw": 827506214314
+      }
+    }
+  },
+  "before_crc": {
+    "juicefs_fuse_read_size_bytes_sum": 8589934592.0,
+    "juicefs_fuse_written_size_bytes_sum": 42949672960.0
+  },
+  "fio_resume": [
+    {
+      "error": 0,
+      "write_bytes": 8589934592,
+      "write_runtime_ms": 150173
+    }
+  ],
+  "fio_final_crc": [
+    {
+      "error": 0,
+      "read_bytes": 8589934592,
+      "write_bytes": 0
+    }
+  ],
+  "ceph_status": {
+    "fsid": "073f28e0-5fe0-11f1-8ce6-7369ee2be5a1",
+    "health": {
+      "status": "HEALTH_WARN",
+      "checks": {
+        "BLUESTORE_SLOW_OP_ALERT": {
+          "severity": "HEALTH_WARN",
+          "summary": {
+            "message": "5 OSD(s) experiencing slow operations in BlueStore",
+            "count": 5
+          },
+          "muted": false
+        }
+      },
+      "mutes": []
+    },
+    "election_epoch": 1874,
+    "quorum": [
+      0,
+      1,
+      2
+    ],
+    "quorum_names": [
+      "ceph-node1",
+      "ceph-node2",
+      "ceph-node3"
+    ],
+    "quorum_age": 1146040,
+    "monmap": {
+      "epoch": 5,
+      "min_mon_release_name": "quincy",
+      "num_mons": 3
+    },
+    "osdmap": {
+      "epoch": 20184,
+      "num_osds": 7,
+      "num_up_osds": 6,
+      "osd_up_since": 1789974903,
+      "num_in_osds": 6,
+      "osd_in_since": 1789974903,
+      "num_remapped_pgs": 0
+    },
+    "pgmap": {
+      "pgs_by_state": [
+        {
+          "state_name": "active+clean",
+          "count": 161
+        }
+      ],
+      "num_pgs": 161,
+      "num_pools": 6,
+      "num_objects": 2535766,
+      "data_bytes": 655917319489,
+      "bytes_used": 1006096707584,
+      "bytes_avail": 926638575616,
+      "bytes_total": 1932735283200
+    },
+    "fsmap": {
+      "epoch": 21,
+      "by_rank": [],
+      "up:standby": 0
+    },
+    "mgrmap": {
+      "available": true,
+      "num_standbys": 1,
+      "modules": [
+        "cephadm",
+        "iostat",
+        "nfs",
+        "restful"
+      ],
+      "services": {}
+    },
+    "servicemap": {
+      "epoch": 78495,
+      "modified": "2026-10-04T13:32:49.859301+0000",
+      "services": {
+        "rgw": {
+          "daemons": {
+            "summary": "",
+            "88373871": {
+              "start_epoch": 67269,
+              "start_stamp": "2026-09-21T07:14:48.383352+0000",
+              "gid": 88373871,
+              "addr": "192.168.11.13:0/630502006",
+              "metadata": {
+                "arch": "x86_64",
+                "ceph_release": "quincy",
+                "ceph_version": "ceph version 17.2.8 (f817ceb7f187defb1d021d6328fa833eb8e943b3) quincy (stable)",
+                "ceph_version_short": "17.2.8",
+                "container_hostname": "ceph-node2",
+                "container_image": "quay.io/ceph/ceph@sha256:a0f373aaaf5a5ca5c4379c09da24c771b8266a09dc9e2181f90eacf423d7326f",
+                "cpu": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+                "distro": "centos",
+                "distro_description": "CentOS Stream 9",
+                "distro_version": "9",
+                "frontend_config#0": "beast port=80",
+                "frontend_type#0": "beast",
+                "hostname": "ceph-node2",
+                "id": "myrgw.ceph-node2.gdyrfc",
+                "kernel_description": "#197-Ubuntu SMP Fri Jul 17 19:17:01 UTC 2026",
+                "kernel_version": "5.15.0-187-generic",
+                "mem_swap_kb": "8388604",
+                "mem_total_kb": "264006444",
+                "num_handles": "1",
+                "os": "Linux",
+                "pid": "2",
+                "realm_id": "",
+                "realm_name": "",
+                "zone_id": "868b82c0-4d3d-4ab6-aadc-342fc9f8cfe5",
+                "zone_name": "default",
+                "zonegroup_id": "9e26abeb-3a5a-42b7-b84b-11db58bba71e",
+                "zonegroup_name": "default"
+              },
+              "task_status": {}
+            },
+            "88374300": {
+              "start_epoch": 67301,
+              "start_stamp": "2026-09-21T07:47:51.487282+0000",
+              "gid": 88374300,
+              "addr": "192.168.11.11:0/4084807650",
+              "metadata": {
+                "arch": "x86_64",
+                "ceph_release": "quincy",
+                "ceph_version": "ceph version 17.2.8 (f817ceb7f187defb1d021d6328fa833eb8e943b3) quincy (stable)",
+                "ceph_version_short": "17.2.8",
+                "container_hostname": "ceph-node1",
+                "container_image": "quay.io/ceph/ceph@sha256:a0f373aaaf5a5ca5c4379c09da24c771b8266a09dc9e2181f90eacf423d7326f",
+                "cpu": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+                "distro": "centos",
+                "distro_description": "CentOS Stream 9",
+                "distro_version": "9",
+                "frontend_config#0": "beast port=80",
+                "frontend_type#0": "beast",
+                "hostname": "ceph-node1",
+                "id": "myrgw.ceph-node1.lhwoqs",
+                "kernel_description": "#197-Ubuntu SMP Fri Jul 17 19:17:01 UTC 2026",
+                "kernel_version": "5.15.0-187-generic",
+                "mem_swap_kb": "8388604",
+                "mem_total_kb": "264005928",
+                "num_handles": "1",
+                "os": "Linux",
+                "pid": "2",
+                "realm_id": "",
+                "realm_name": "",
+                "zone_id": "868b82c0-4d3d-4ab6-aadc-342fc9f8cfe5",
+                "zone_name": "default",
+                "zonegroup_id": "9e26abeb-3a5a-42b7-b84b-11db58bba71e",
+                "zonegroup_name": "default"
+              },
+              "task_status": {}
+            },
+            "88388669": {
+              "start_epoch": 67302,
+              "start_stamp": "2026-09-21T07:48:35.183747+0000",
+              "gid": 88388669,
+              "addr": "192.168.11.14:0/2263098385",
+              "metadata": {
+                "arch": "x86_64",
+                "ceph_release": "quincy",
+                "ceph_version": "ceph version 17.2.8 (f817ceb7f187defb1d021d6328fa833eb8e943b3) quincy (stable)",
+                "ceph_version_short": "17.2.8",
+                "container_hostname": "ceph-node3",
+                "container_image": "quay.io/ceph/ceph@sha256:a0f373aaaf5a5ca5c4379c09da24c771b8266a09dc9e2181f90eacf423d7326f",
+                "cpu": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+                "distro": "centos",
+                "distro_description": "CentOS Stream 9",
+                "distro_version": "9",
+                "frontend_config#0": "beast port=80",
+                "frontend_type#0": "beast",
+                "hostname": "ceph-node3",
+                "id": "myrgw.ceph-node3.etxabq",
+                "kernel_description": "#197-Ubuntu SMP Fri Jul 17 19:17:01 UTC 2026",
+                "kernel_version": "5.15.0-187-generic",
+                "mem_swap_kb": "8388604",
+                "mem_total_kb": "264006544",
+                "num_handles": "1",
+                "os": "Linux",
+                "pid": "7",
+                "realm_id": "",
+                "realm_name": "",
+                "zone_id": "868b82c0-4d3d-4ab6-aadc-342fc9f8cfe5",
+                "zone_name": "default",
+                "zonegroup_id": "9e26abeb-3a5a-42b7-b84b-11db58bba71e",
+                "zonegroup_name": "default"
+              },
+              "task_status": {}
+            }
+          }
+        }
+      }
+    },
+    "progress_events": {}
+  },
+  "ceph_df": {
+    "name": "juicefs-data",
+    "id": 63,
+    "stats": {
+      "stored": 655917260204,
+      "stored_data": 655917252608,
+      "stored_omap": 7596,
+      "objects": 2535543,
+      "kb_used": 960816276,
+      "bytes_used": 983875865730,
+      "data_bytes_used": 983875854336,
+      "omap_bytes_used": 11394,
+      "percent_used": 0.5431630611419678,
+      "max_avail": 551670841344,
+      "quota_objects": 0,
+      "quota_bytes": 0,
+      "dirty": 0,
+      "rd": 123278590,
+      "rd_bytes": 10907704178688,
+      "wr": 45234244,
+      "wr_bytes": 6134945970176,
+      "compress_bytes_used": 0,
+      "compress_under_bytes": 0,
+      "stored_raw": 983875846144,
+      "avail_raw": 827506214314
+    }
+  }
+}

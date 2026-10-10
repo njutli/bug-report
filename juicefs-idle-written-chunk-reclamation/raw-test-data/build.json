@@ -1,0 +1,14 @@
+{
+  "command": [
+    "go",
+    "build",
+    "-mod=readonly",
+    "-p",
+    "1",
+    "-o",
+    "/tmp/opencode/write-idle-fix/juicefs-write-idle",
+    "."
+  ],
+  "exit_code": 0,
+  "elapsed_s": 14.217230319976807
+}

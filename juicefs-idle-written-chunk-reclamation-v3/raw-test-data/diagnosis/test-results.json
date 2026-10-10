@@ -1,0 +1,11 @@
+{
+  "kind": "mechanism_characterization_not_fix_acceptance",
+  "date": "2026-10-04",
+  "backends": ["memkv", "sqlite"],
+  "race_detector": true,
+  "repeats": 3,
+  "cases_per_repeat": 8,
+  "native": {"exit_code": 0, "pass": 24, "fail": 0, "skip": 0},
+  "stock": {"exit_code": 0, "pass": 24, "fail": 0, "skip": 0},
+  "note": "Both preserve low-count overwritten history without a new trigger. Public Read positive controls compact the history. Test fixture disables background jobs and mocks object compaction; real remote object reclamation is not tested."
+}

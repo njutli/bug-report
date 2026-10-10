@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-07",
+  "timezone": "Asia/Shanghai",
+  "local_evidence_root": "/mnt/c/SunRise/test/reliability",
+  "remote_evidence_root": "/data/reliability-lt-results",
+  "directories": [
+    "20261004-LT002-V3-IDLE-WRITTEN-CHUNKS",
+    "20261004-LT002-C13-NATIVE-SEQWRITE-2H",
+    "20261004-LT002-C14-V3-SHORT",
+    "20261004-LT002-C15-V3-SEQWRITE-2H",
+    "20261005-LT002-C16-V3-RANDRW-2H",
+    "20261006-LT002-C17-V3-RANDWRITE-2H"
+  ],
+  "package_contains_binary": false,
+  "package_contains_raw_volume_dump": false,
+  "package_contains_user_data": false,
+  "remote_supplemental_fetch": "SSH timeout; no files fetched; no cluster changes",
+  "c15_formal_fio_bundled": false,
+  "newer_lt003_and_lt001_not_counted_in_acceptance_table": true,
+  "verification_scope": "Bundled evidence and offline source replay, not newly executed tests or full field-history acceptance"
+}

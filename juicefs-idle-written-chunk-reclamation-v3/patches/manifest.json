@@ -1,0 +1,139 @@
+{
+  "base_version": "v1.4.1",
+  "base_commit": "0b90c7db5a929ae6adc5faad948d108efd2c99f9",
+  "patches": [
+    {
+      "path": "patches/0001-meta-retry-compaction-after-busy-admission.patch",
+      "sha256": "546a02af7fa17ee7d606693b1c55cf4aad7565151e9f48dc4f7d86cedc524c05",
+      "source": "/home/lilingfeng/demo/bug-report/juicefs-budgeted-idle-reclamation/patches/0001-meta-retry-compaction-after-busy-admission.patch",
+      "role": "V2 implementation prerequisite",
+      "format": "git-email",
+      "files": [
+        "pkg/meta/base.go"
+      ],
+      "file_hashes": [
+        {
+          "path": "pkg/meta/base.go",
+          "before_sha256": "936c52e48b50a148bb9f7885ca66cbb50c0d83b3f23bd94b07a9826e4a03b1e0",
+          "after_sha256": "7cdc87a42e423fca6d86d48a575bd493e10d030cffff3c55d4dc806ca30cbc45"
+        }
+      ]
+    },
+    {
+      "path": "patches/0002-meta-test-busy-compaction-retries.patch",
+      "sha256": "17b4cc930bea4939fafd2dc9290203cf5dd6a1bada24ffb5dacd73c5342a911e",
+      "source": "/home/lilingfeng/demo/bug-report/juicefs-budgeted-idle-reclamation/patches/0002-meta-test-busy-compaction-retries.patch",
+      "role": "V2 tests and shared fixture",
+      "format": "git-email",
+      "files": [
+        "pkg/meta/compact_retry_test.go",
+        "pkg/meta/compact_retry_objects_test.go"
+      ],
+      "file_hashes": [
+        {
+          "path": "pkg/meta/compact_retry_test.go",
+          "before_sha256": null,
+          "after_sha256": "da729a45fe605a8ced679f54259e8f01e467ea2fd5edc5737b75f0de3b529d0e"
+        },
+        {
+          "path": "pkg/meta/compact_retry_objects_test.go",
+          "before_sha256": null,
+          "after_sha256": "3d752a34aaa8534f0f475b504e621277ad999e80d83f716fd6f231d51f10acf0"
+        }
+      ]
+    },
+    {
+      "path": "patches/0003-v3-idle-written-chunks-on-native-v2.patch",
+      "sha256": "ccecade6193003dbec098401f67ea62304d09d4568faf0d88cfbf3cfe973a496",
+      "source": "/home/lilingfeng/.codex/worktrees/41f2/production/reliability/debug/v3-idle-written-chunks/0001-v3-idle-written-chunks-on-native-v2.patch",
+      "role": "V3 implementation delta",
+      "format": "unified-diff",
+      "files": [
+        "pkg/meta/base.go",
+        "pkg/meta/config.go",
+        "pkg/meta/idle_compact.go",
+        "cmd/flags.go",
+        "cmd/mount.go",
+        "docs/en/experimental-idle-compaction.md"
+      ],
+      "file_hashes": [
+        {
+          "path": "pkg/meta/base.go",
+          "before_sha256": "7cdc87a42e423fca6d86d48a575bd493e10d030cffff3c55d4dc806ca30cbc45",
+          "after_sha256": "fc6a0eb4e2c7676ac6b0fa101b52ce3e93c6324441918f6b19490b5b9ee2f9c5"
+        },
+        {
+          "path": "pkg/meta/config.go",
+          "before_sha256": "cd0e65744ea655a9e02ac4a445295907d94fe1a421bec9c4532c785105ad5ec7",
+          "after_sha256": "b6ccc7e75ccface6c4733bfec309065f8f9a3cd253266f0c12a96b71b7ca34f5"
+        },
+        {
+          "path": "pkg/meta/idle_compact.go",
+          "before_sha256": null,
+          "after_sha256": "daee1325968f89d47e27c5dd3f6e1d42b3565b4411252a8cc105a31f1248ab52"
+        },
+        {
+          "path": "cmd/flags.go",
+          "before_sha256": "30f117ace69df745b3da6e828e14e37b68558b87b3ed70b9f9ed59086a4fa7e7",
+          "after_sha256": "298b546dcc2763fcc3e7945de49ec319b1dbe89c5d78a118f35813c3766ddc29"
+        },
+        {
+          "path": "cmd/mount.go",
+          "before_sha256": "bc3f6e0decf2281e8a83afa82fc8fc116250a3237fb5d4a49f2792698c70bdc0",
+          "after_sha256": "a77b972f4a1464dfe078016ddee1618c5ca6615514be4a0b6c75390c12866fdc"
+        },
+        {
+          "path": "docs/en/experimental-idle-compaction.md",
+          "before_sha256": null,
+          "after_sha256": "02fa84c2cf7b4f1bf3d3bcdcf0bdda0b94bc0e71ba8bcd8ae166fce2c4b92193"
+        }
+      ]
+    },
+    {
+      "path": "patches/0004-v3-idle-trigger-regression-tests.patch",
+      "sha256": "bb8b79c2ff94f993df2e3ecb6bee3983e4d2dc094b03778a77db234b38d75927",
+      "source": "/home/lilingfeng/.codex/worktrees/41f2/production/reliability/debug/v3-idle-written-chunks/0002-v3-idle-trigger-regression-tests.patch",
+      "role": "V3 tests",
+      "format": "unified-diff",
+      "files": [
+        "pkg/meta/idle_compact_test.go",
+        "pkg/meta/idle_compact_objects_test.go",
+        "pkg/meta/idle_trigger_regression_test.go",
+        "cmd/idle_compact_flags_test.go"
+      ],
+      "file_hashes": [
+        {
+          "path": "pkg/meta/idle_compact_test.go",
+          "before_sha256": null,
+          "after_sha256": "6458e4535f9d0dd6bb1fb1f0c1bdd9806f9cb145f50f61bcffa8c4b7cba4708c"
+        },
+        {
+          "path": "pkg/meta/idle_compact_objects_test.go",
+          "before_sha256": null,
+          "after_sha256": "fcc35bf3b8577a6a0ba2ff20bbb0fd4b361f1bc5369c28ac9f93e1d5aad4877e"
+        },
+        {
+          "path": "pkg/meta/idle_trigger_regression_test.go",
+          "before_sha256": null,
+          "after_sha256": "c9a238be9f99ad3242e7cf23af2ed44b049da6fce39475906ab51a5ab5cb7cf2"
+        },
+        {
+          "path": "cmd/idle_compact_flags_test.go",
+          "before_sha256": null,
+          "after_sha256": "ff1284c02fbd560191d9a8909dacab85117730e3ca8207bc485dd30fe68c35a9"
+        }
+      ]
+    }
+  ],
+  "field_binary": {
+    "version": "1.4.1+2026-07-30.0b90c7d-lt002-idle-written-v3",
+    "sha256": "c2307d90c9184c7d48a9770c8d775a093671496c5569d0e5f7c81d594d7b3b6f",
+    "composition": [
+      "independent VFS B-catchup",
+      "native V2",
+      "V3 idle-written-chunks"
+    ],
+    "bcatchup_included_in_this_patch_series": false,
+    "writer_go_sha256": "cedd984e2bc0113d5d635aa9f49b0c1023f56b6e4c2aace4e4c4b3249a002b18"
+  }
+}

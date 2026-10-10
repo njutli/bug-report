@@ -1,0 +1,13 @@
+{"Time":"2026-10-10T07:45:04.841839684+08:00","Action":"start","Package":"github.com/juicedata/juicefs/pkg/meta"}
+{"Time":"2026-10-10T07:45:05.007736615+08:00","Action":"run","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects"}
+{"Time":"2026-10-10T07:45:05.007769982+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Output":"=== RUN   TestIdleWriteAutomaticObjects\n"}
+{"Time":"2026-10-10T07:45:05.007920332+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Output":"2026/10/10 07:45:05.007773 juicefs[712137] \u003cINFO\u003e: Meta address: sqlite3:///tmp/TestIdleWriteAutomaticObjects4033896724/001/objects.db [NewClient@interface.go:643]\n"}
+{"Time":"2026-10-10T07:45:05.100099237+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Output":"2026/10/10 07:45:05.099931 juicefs[712137] \u003cINFO\u003e: Create session 1 OK with version: 1.4.1+unknown [NewSession@base.go:796]\n"}
+{"Time":"2026-10-10T07:46:20.121945779+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Output":"    idle_write_automatic_test.go:103: IDLE_WRITE_TRIGGER_MISSING records=3\n"}
+{"Time":"2026-10-10T07:46:20.121983496+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Output":"2026/10/10 07:46:20.121900 juicefs[712137] \u003cINFO\u003e: flush session 1: [FlushSession@base.go:994]\n"}
+{"Time":"2026-10-10T07:46:20.122630466+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Output":"2026/10/10 07:46:20.122558 juicefs[712137] \u003cINFO\u003e: close session 1: \u003cnil\u003e [CloseSession@base.go:983]\n"}
+{"Time":"2026-10-10T07:46:20.123095742+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Output":"--- FAIL: TestIdleWriteAutomaticObjects (75.12s)\n"}
+{"Time":"2026-10-10T07:46:20.123120019+08:00","Action":"fail","Package":"github.com/juicedata/juicefs/pkg/meta","Test":"TestIdleWriteAutomaticObjects","Elapsed":75.12}
+{"Time":"2026-10-10T07:46:20.123127334+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Output":"FAIL\n"}
+{"Time":"2026-10-10T07:46:20.132339692+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/meta","Output":"FAIL\tgithub.com/juicedata/juicefs/pkg/meta\t75.290s\n"}
+{"Time":"2026-10-10T07:46:20.132379697+08:00","Action":"fail","Package":"github.com/juicedata/juicefs/pkg/meta","Elapsed":75.291}

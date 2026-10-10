@@ -1,0 +1,54 @@
+{
+  "result": "C15_V3_SEQWRITE_2H_FUNCTIONAL_COMPLETE",
+  "epoch": 1791172324.0996218,
+  "binary_sha256": "c2307d90c9184c7d48a9770c8d775a093671496c5569d0e5f7c81d594d7b3b6f",
+  "formal_windows": 2,
+  "total_written_bytes": 319975063552,
+  "full_crc": "PASS",
+  "automatic_clean_before_crc": true,
+  "private_unmounted": true,
+  "original_mount_preserved": true,
+  "data_preserved": true,
+  "layout_repeated": false,
+  "manual_compact_gc_during_formal": false,
+  "final_health": {
+    "epoch": 1791172325.231101,
+    "label": "complete",
+    "pool": {
+      "stored": 407684521388,
+      "stored_data": 407684513792,
+      "stored_omap": 7596,
+      "objects": 1554525,
+      "kb_used": 597194148,
+      "bytes_used": 611526806658,
+      "data_bytes_used": 611526795264,
+      "omap_bytes_used": 11394,
+      "percent_used": 0.33693546056747437,
+      "max_avail": 802293743616,
+      "quota_objects": 0,
+      "quota_bytes": 0,
+      "dirty": 0,
+      "rd": 126508846,
+      "rd_bytes": 11323329165312,
+      "wr": 50791841,
+      "wr_bytes": 6733117425664,
+      "compress_bytes_used": 0,
+      "compress_under_bytes": 0,
+      "stored_raw": 611526770688,
+      "avail_raw": 1203440630246
+    },
+    "health": {
+      "status": "HEALTH_OK",
+      "checks": {},
+      "mutes": []
+    },
+    "pgs": [
+      {
+        "state_name": "active+clean",
+        "count": 161
+      }
+    ],
+    "mem_available": 266476802048
+  },
+  "automatic_next_stage": false
+}

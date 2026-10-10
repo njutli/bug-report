@@ -1,0 +1,19 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-mod=readonly",
+    "-p",
+    "1",
+    "-race",
+    "-count=1",
+    "-timeout=300s",
+    "-run",
+    "^TestIdleWriteAutomaticObjects$",
+    "-json",
+    "./pkg/meta"
+  ],
+  "exit_code": 1,
+  "elapsed_s": 101.31881380081177,
+  "source": "stock"
+}

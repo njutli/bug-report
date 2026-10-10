@@ -1,0 +1,8 @@
+{"Time":"2026-10-04T17:18:11.236117501+08:00","Action":"start","Package":"github.com/juicedata/juicefs/pkg/vfs"}
+{"Time":"2026-10-04T17:18:11.41517635+08:00","Action":"run","Package":"github.com/juicedata/juicefs/pkg/vfs","Test":"TestCompact"}
+{"Time":"2026-10-04T17:18:11.415228022+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/vfs","Test":"TestCompact","Output":"=== RUN   TestCompact\n"}
+{"Time":"2026-10-04T17:18:11.479394205+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/vfs","Test":"TestCompact","Output":"--- PASS: TestCompact (0.06s)\n"}
+{"Time":"2026-10-04T17:18:11.479461034+08:00","Action":"pass","Package":"github.com/juicedata/juicefs/pkg/vfs","Test":"TestCompact","Elapsed":0.06}
+{"Time":"2026-10-04T17:18:11.479478185+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/vfs","Output":"PASS\n"}
+{"Time":"2026-10-04T17:18:12.489943569+08:00","Action":"output","Package":"github.com/juicedata/juicefs/pkg/vfs","Output":"ok  \tgithub.com/juicedata/juicefs/pkg/vfs\t1.253s\n"}
+{"Time":"2026-10-04T17:18:12.490008962+08:00","Action":"pass","Package":"github.com/juicedata/juicefs/pkg/vfs","Elapsed":1.254}

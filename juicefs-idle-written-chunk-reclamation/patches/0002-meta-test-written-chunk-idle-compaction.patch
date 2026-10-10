@@ -1,0 +1,827 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <a1151488180@gmail.com>
+Date: Sat, 10 Oct 2026 08:00:00 +0800
+Subject: [PATCH 2/2] meta: test written-chunk idle compaction
+
+Cover low record counts, five complete overwrite generations, ordinary
+snapshot tails, new writes during inspection, cooldown, metadata/object/
+commit failures, cancellation, ordering, limits and valid nonoverlap.
+Use production timer duration and real vfs.Compact with SQLite/memory
+objects to verify CRC and obsolete-source deletion without user Read.
+The automatic object test also compiles on upstream as a negative control.
+
+Base: JuiceFS v1.4.1 (0b90c7db5a929ae6adc5faad948d108efd2c99f9)
+
+Assisted-by: gpt 6
+Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
+---
+ pkg/meta/idle_write_fixture_test.go   |  260 ++++++++++++++++++++++
+ pkg/meta/idle_write_test.go           |  399 +++++++++++++++++++++++++++++++++
+ pkg/meta/idle_write_automatic_test.go |  131 +++++++++++
+ 3 files changed, 790 insertions(+)
+
+diff --git a/pkg/meta/idle_write_fixture_test.go b/pkg/meta/idle_write_fixture_test.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/meta/idle_write_fixture_test.go
+@@ -0,0 +1,260 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package meta
++
++import (
++	"fmt"
++	"os"
++	"path/filepath"
++	"sync"
++	"syscall"
++	"testing"
++	"time"
++)
++
++// These test-only exports let the external-package object test exercise the
++// ordinary entry and observe raw metadata without issuing additional user IO.
++// They also compile on the unmodified release.
++func RunNativeCompactForTest(m Meta, inode Ino) {
++	m.getBase().compactChunk(inode, 0, false, false, 0)
++}
++
++func NativeCompactIdleForTest(m Meta) bool {
++	b := m.getBase()
++	b.Lock()
++	defer b.Unlock()
++	return len(b.compacting) == 0
++}
++
++func NativeCompactHistoryForTest(m Meta, inode Ino) ([]Slice, syscall.Errno) {
++	raw, st := m.getBase().en.doRead(Background(), inode, 0)
++	var result []Slice
++	for _, s := range raw {
++		result = append(result, Slice{Id: s.id, Size: s.size, Off: s.off, Len: s.len})
++	}
++	return result, st
++}
++
++type compactRetryGate struct {
++	ch   chan struct{}
++	once sync.Once
++}
++
++func (g *compactRetryGate) release() { g.once.Do(func() { close(g.ch) }) }
++
++type compactRetryEvent struct {
++	inode Ino
++	call  int
++}
++
++type compactRetryEngine struct {
++	engine
++	f *compactRetryFixture
++}
++
++func (e *compactRetryEngine) doRead(ctx Context, inode Ino, index uint32) ([]*slice, syscall.Errno) {
++	e.f.mu.Lock()
++	e.f.reads[inode]++
++	n := e.f.reads[inode]
++	hook := e.f.afterRead
++	e.f.mu.Unlock()
++	ss, st := e.engine.doRead(ctx, inode, index)
++	if hook != nil {
++		hook(inode, n)
++	}
++	return ss, st
++}
++
++type compactRetryFixture struct {
++	client    Meta
++	m         *baseMeta
++	original  engine
++	mu        sync.Mutex
++	owners    map[uint64]Ino
++	reads     map[Ino]int
++	calls     map[Ino]int
++	holds     map[compactRetryEvent]*compactRetryGate
++	fail      map[Ino]bool
++	gates     []*compactRetryGate
++	started   chan compactRetryEvent
++	runs      sync.WaitGroup
++	afterRead func(Ino, int)
++	active    int
++	peak      int
++}
++
++func newCompactRetryFixture(t *testing.T, backend string) *compactRetryFixture {
++	t.Helper()
++	conf := testConfig()
++	conf.NoBGJob, conf.MaxDeletes = true, 0
++	var client Meta
++	var err error
++	switch backend {
++	case "sqlite":
++		client, err = newSQLMeta("sqlite3", filepath.Join(t.TempDir(), "retry.db"), conf)
++	case "redis":
++		socket := os.Getenv("COMPACT_RETRY_REDIS_SOCKET")
++		if socket == "" {
++			t.Skip("set COMPACT_RETRY_REDIS_SOCKET to a dedicated test Redis socket")
++		}
++		client, err = newRedisMeta("unix", socket+"?db=0", conf)
++	default:
++		client, err = newKVMeta("memkv", t.Name(), conf)
++	}
++	if err != nil {
++		t.Fatal(err)
++	}
++	if err = client.Reset(); err != nil {
++		t.Fatal(err)
++	}
++	if err = client.Init(testFormat(), true); err != nil {
++		t.Fatal(err)
++	}
++	m := client.getBase()
++	m.sessCtx = Background()
++	f := &compactRetryFixture{client: client, m: m, original: m.en,
++		owners: make(map[uint64]Ino), reads: make(map[Ino]int), calls: make(map[Ino]int),
++		holds: make(map[compactRetryEvent]*compactRetryGate), fail: make(map[Ino]bool),
++		started: make(chan compactRetryEvent, 128)}
++	m.en = &compactRetryEngine{engine: m.en, f: f}
++	m.OnMsg(DeleteSlice, func(...interface{}) error { return nil })
++	m.OnMsg(CompactChunk, func(args ...interface{}) error {
++		ss := args[0].([]Slice)
++		f.mu.Lock()
++		inode := f.owners[ss[0].Id]
++		f.owners[args[1].(uint64)] = inode
++		f.calls[inode]++
++		event := compactRetryEvent{inode, f.calls[inode]}
++		gate, fail := f.holds[event], f.fail[inode]
++		f.active++
++		f.peak = max(f.peak, f.active)
++		f.mu.Unlock()
++		f.started <- event
++		if gate != nil {
++			<-gate.ch
++		}
++		f.mu.Lock()
++		f.active--
++		f.mu.Unlock()
++		if fail {
++			return fmt.Errorf("injected compaction failure")
++		}
++		return nil
++	})
++	t.Cleanup(func() {
++		for _, g := range f.gates {
++			g.release()
++		}
++		f.wait(t)
++		m.sessCtx.Cancel()
++		if err := client.Shutdown(); err != nil {
++			t.Error(err)
++		}
++	})
++	return f
++}
++
++func (f *compactRetryFixture) gate() *compactRetryGate {
++	g := &compactRetryGate{ch: make(chan struct{})}
++	f.gates = append(f.gates, g)
++	return g
++}
++
++func (f *compactRetryFixture) hold(inode Ino, call int) *compactRetryGate {
++	g := f.gate()
++	f.holds[compactRetryEvent{inode, call}] = g
++	return g
++}
++
++func (f *compactRetryFixture) write(t *testing.T, inode Ino, n int) {
++	t.Helper()
++	for i := 0; i < n; i++ {
++		var id uint64
++		if st := f.m.NewSlice(Background(), &id); st != 0 {
++			t.Fatal(st)
++		}
++		f.mu.Lock()
++		f.owners[id] = inode
++		f.mu.Unlock()
++		var count int
++		var delta dirStat
++		var attr Attr
++		if st := f.original.doWrite(Background(), inode, 0, 0,
++			Slice{Id: id, Size: 64 << 10, Len: 64 << 10}, time.Now(), &count, &delta, &attr); st != 0 {
++			t.Fatal(st)
++		}
++	}
++}
++
++func (f *compactRetryFixture) file(t *testing.T, name string, n int) Ino {
++	t.Helper()
++	var inode Ino
++	if st := f.m.Create(Background(), RootInode, name, 0600, 0, 0, &inode, nil); st != 0 {
++		t.Fatal(st)
++	}
++	f.write(t, inode, n)
++	return inode
++}
++
++func (f *compactRetryFixture) run(inode Ino, force bool) <-chan struct{} {
++	done := make(chan struct{})
++	f.runs.Add(1)
++	go func() {
++		defer f.runs.Done()
++		defer close(done)
++		f.m.compactChunk(inode, 0, false, force, 0)
++	}()
++	return done
++}
++
++func (f *compactRetryFixture) next(t *testing.T) compactRetryEvent {
++	t.Helper()
++	select {
++	case event := <-f.started:
++		return event
++	case <-time.After(2 * time.Second):
++		t.Fatal("COMPACT_RETRY_MISSING: no compaction after a busy slot was released")
++		return compactRetryEvent{}
++	}
++}
++
++func (f *compactRetryFixture) wait(t *testing.T) {
++	t.Helper()
++	done := make(chan struct{})
++	go func() { f.runs.Wait(); close(done) }()
++	select {
++	case <-done:
++	case <-time.After(5 * time.Second):
++		t.Fatal("compaction caller did not finish")
++	}
++	deadline := time.Now().Add(5 * time.Second)
++	for !NativeCompactIdleForTest(f.client) {
++		if time.Now().After(deadline) {
++			t.Fatal("compaction slots did not drain")
++		}
++		time.Sleep(time.Millisecond)
++	}
++}
++
++func (f *compactRetryFixture) records(t *testing.T, inode Ino) int {
++	t.Helper()
++	ss, st := f.original.doRead(Background(), inode, 0)
++	if st != 0 {
++		t.Fatal(st)
++	}
++	return len(ss)
++}
+diff --git a/pkg/meta/idle_write_test.go b/pkg/meta/idle_write_test.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/meta/idle_write_test.go
+@@ -0,0 +1,399 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package meta
++
++import (
++	"fmt"
++	"sync"
++	"syscall"
++	"testing"
++	"time"
++)
++
++func idleWriteFixture(t *testing.T, backend string) *compactRetryFixture {
++	f := newCompactRetryFixture(t, backend)
++	f.m.conf.NoBGJob = false
++	return f
++}
++
++func writeIdleData(t *testing.T, f *compactRetryFixture, inode Ino, pos uint32) {
++	t.Helper()
++	var id uint64
++	if st := f.m.NewSlice(Background(), &id); st != 0 {
++		t.Fatal(st)
++	}
++	f.mu.Lock()
++	f.owners[id] = inode
++	f.mu.Unlock()
++	if st := f.m.Write(Background(), inode, 0, pos, Slice{Id: id, Size: 64 << 10, Len: 64 << 10}, time.Now()); st != 0 {
++		t.Fatal(st)
++	}
++}
++
++func idlePendingWrites(m *baseMeta) int {
++	m.Lock()
++	defer m.Unlock()
++	return len(m.idleWrites)
++}
++
++func TestIdleWriteLowHistory(t *testing.T) {
++	for _, backend := range []string{"memkv", "sqlite", "redis"} {
++		for _, n := range []int{2, 5, 30, 98} {
++			t.Run(fmt.Sprintf("%s/%d", backend, n), func(t *testing.T) {
++				f := idleWriteFixture(t, backend)
++				ino := f.file(t, "data", 0)
++				for i := 0; i < n; i++ {
++					writeIdleData(t, f, ino, 0)
++				}
++				f.m.compactIdleWrite(f.m.sessCtx, time.Now())
++				if f.records(t, ino) != n {
++					t.Fatal("ran before write quiet period")
++				}
++				f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++				if f.records(t, ino) != 1 || idlePendingWrites(f.m) != 1 {
++					t.Fatal("low history not compacted/confirmation lost")
++				}
++				f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(3*idleWriteDelay))
++				if idlePendingWrites(f.m) != 0 {
++					t.Fatal("clean confirmation missing")
++				}
++			})
++		}
++	}
++}
++
++func TestIdleWriteConcurrentTail(t *testing.T) {
++	for _, backend := range []string{"memkv", "sqlite", "redis"} {
++		t.Run(backend, func(t *testing.T) {
++			f := idleWriteFixture(t, backend)
++			ino := f.file(t, "tail", 0)
++			writeIdleData(t, f, ino, 0)
++			writeIdleData(t, f, ino, 0)
++			gate := f.hold(ino, 1)
++			done := make(chan struct{})
++			go func() { defer close(done); f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay)) }()
++			f.next(t)
++			writeIdleData(t, f, ino, 0)
++			gate.release()
++			<-done
++			if f.records(t, ino) != 2 || idlePendingWrites(f.m) != 1 {
++				t.Fatal("concurrent tail lost")
++			}
++			f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++			f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(3*idleWriteDelay))
++			if f.records(t, ino) != 1 || idlePendingWrites(f.m) != 0 {
++				t.Fatal("tail not reclaimed")
++			}
++		})
++	}
++}
++
++func TestIdleWriteDuringCleanRead(t *testing.T) {
++	f := idleWriteFixture(t, "sqlite")
++	ino := f.file(t, "race", 0)
++	writeIdleData(t, f, ino, 0)
++	writeIdleData(t, f, ino, 0)
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++	var once sync.Once
++	f.afterRead = func(Ino, int) { once.Do(func() { writeIdleData(t, f, ino, 0) }) }
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(3*idleWriteDelay))
++	if idlePendingWrites(f.m) != 1 || f.records(t, ino) != 2 {
++		t.Fatal("old clean read discarded new write")
++	}
++	f.afterRead = nil
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(3*idleWriteDelay))
++	if f.records(t, ino) != 1 {
++		t.Fatal("new generation not processed")
++	}
++}
++
++func TestIdleWriteBusyAndValidData(t *testing.T) {
++	f := idleWriteFixture(t, "sqlite")
++	ino := f.file(t, "valid", 0)
++	writeIdleData(t, f, ino, 0)
++	writeIdleData(t, f, ino, 64<<10)
++	f.m.Lock()
++	f.m.compacting[999] = true
++	f.m.Unlock()
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++	if idlePendingWrites(f.m) != 1 {
++		t.Fatal("busy discarded work")
++	}
++	f.m.Lock()
++	delete(f.m.compacting, 999)
++	f.m.Unlock()
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++	if f.records(t, ino) != 2 || f.calls[ino] != 0 || idlePendingWrites(f.m) != 0 {
++		t.Fatal("nonoverlap rewritten")
++	}
++}
++
++type idleWriteFault struct {
++	engine
++	readErr   syscall.Errno
++	commitErr syscall.Errno
++}
++
++func (e *idleWriteFault) doRead(ctx Context, ino Ino, idx uint32) ([]*slice, syscall.Errno) {
++	if e.readErr != 0 {
++		return nil, e.readErr
++	}
++	return e.engine.doRead(ctx, ino, idx)
++}
++func (e *idleWriteFault) doCompactChunk(ino Ino, idx uint32, origin []byte, ss []*slice, skip int, pos uint32, id uint64, size uint32, delayed []byte) syscall.Errno {
++	if e.commitErr != 0 {
++		return e.commitErr
++	}
++	return e.engine.doCompactChunk(ino, idx, origin, ss, skip, pos, id, size, delayed)
++}
++
++func TestIdleWriteFailureCooldown(t *testing.T) {
++	for _, kind := range []string{"read", "object", "commit"} {
++		t.Run(kind, func(t *testing.T) {
++			f := idleWriteFixture(t, "sqlite")
++			ino := f.file(t, "fault", 0)
++			writeIdleData(t, f, ino, 0)
++			writeIdleData(t, f, ino, 0)
++			fault := &idleWriteFault{engine: f.m.en}
++			f.m.en = fault
++			switch kind {
++			case "read":
++				fault.readErr = syscall.EIO
++			case "object":
++				f.fail[ino] = true
++			case "commit":
++				fault.commitErr = syscall.EINVAL
++			}
++			f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++			if f.records(t, ino) != 2 || idlePendingWrites(f.m) != 1 {
++				t.Fatal("failure lost history")
++			}
++			f.m.Lock()
++			ready := f.m.idleWrites[idleWriteKey{ino, 0}].ready
++			f.m.Unlock()
++			if time.Until(ready) < idleWriteDelay-time.Second {
++				t.Fatal("cooldown did not start at completion")
++			}
++			fault.readErr = 0
++			fault.commitErr = 0
++			f.fail[ino] = false
++			f.m.compactIdleWrite(f.m.sessCtx, time.Now())
++			if f.records(t, ino) != 2 {
++				t.Fatal("retry before cooldown")
++			}
++			f.m.compactIdleWrite(f.m.sessCtx, ready.Add(time.Second))
++			if f.records(t, ino) != 1 {
++				t.Fatal("recovery missing")
++			}
++		})
++	}
++}
++
++func TestIdleWriteCancellation(t *testing.T) {
++	f := idleWriteFixture(t, "sqlite")
++	ino := f.file(t, "cancel", 0)
++	writeIdleData(t, f, ino, 0)
++	writeIdleData(t, f, ino, 0)
++	gate := f.hold(ino, 1)
++	done := make(chan struct{})
++	go func() { defer close(done); f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay)) }()
++	f.next(t)
++	f.m.sessCtx.Cancel()
++	gate.release()
++	<-done
++	f.m.Lock()
++	active := len(f.m.compacting)
++	f.m.Unlock()
++	if active != 0 {
++		t.Fatal("slot leaked")
++	}
++}
++
++func TestIdleWriteQueueLimit(t *testing.T) {
++	f := idleWriteFixture(t, "memkv")
++	for i := 0; i < idleWriteLimit+1; i++ {
++		f.m.noteIdleWrite(Ino(i+100), 0, 2)
++	}
++	if idlePendingWrites(f.m) != idleWriteLimit {
++		t.Fatal("queue cap violated")
++	}
++	f.m.noteIdleWrite(100, 0, 2)
++	f.m.Lock()
++	gen := f.m.idleWrites[idleWriteKey{100, 0}].generation
++	f.m.Unlock()
++	if gen != 2 {
++		t.Fatal("full queue failed to update tracked generation")
++	}
++}
++
++func TestIdleWriteOldestAndFailureRotation(t *testing.T) {
++	f := idleWriteFixture(t, "sqlite")
++	a, b := f.file(t, "a", 0), f.file(t, "b", 0)
++	for _, ino := range []Ino{a, b} {
++		writeIdleData(t, f, ino, 0)
++		writeIdleData(t, f, ino, 0)
++	}
++	f.m.Lock()
++	f.m.idleWrites[idleWriteKey{a, 0}].ready = time.Now().Add(-2 * time.Second)
++	f.m.idleWrites[idleWriteKey{b, 0}].ready = time.Now().Add(-time.Second)
++	f.m.Unlock()
++	f.fail[a] = true
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now())
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now())
++	if f.calls[a] != 1 || f.calls[b] != 1 || f.records(t, b) != 1 {
++		t.Fatal("old failure starved ready work")
++	}
++}
++
++func TestIdleWriteOrdinarySnapshotTail(t *testing.T) {
++	for _, backend := range []string{"memkv", "sqlite", "redis"} {
++		t.Run(backend, func(t *testing.T) {
++			f := idleWriteFixture(t, backend)
++			ino := f.file(t, "ordinary-tail", 0)
++			gate := f.hold(ino, 1)
++			for i := 0; i < 99; i++ {
++				writeIdleData(t, f, ino, 0)
++			}
++			f.next(t)
++			for i := 0; i < 5; i++ {
++				writeIdleData(t, f, ino, 0)
++			}
++			gate.release()
++			f.wait(t)
++			if f.records(t, ino) != 6 {
++				t.Fatal("did not retain expected prefix tail")
++			}
++			f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++			if f.records(t, ino) != 1 {
++				t.Fatal("ordinary snapshot tail not reclaimed")
++			}
++		})
++	}
++}
++
++func TestIdleWriteLargePrefixProgress(t *testing.T) {
++	f := idleWriteFixture(t, "sqlite")
++	ino := f.file(t, "large", 2105)
++	f.m.noteIdleWrite(ino, 0, 2105)
++	for i := 0; i < 4; i++ {
++		f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++	}
++	if f.records(t, ino) != 1 || idlePendingWrites(f.m) != 0 || f.calls[ino] != 3 {
++		t.Fatal("finite prefix batches failed to drain")
++	}
++}
++
++func TestIdleWriteWorkerCloseJoins(t *testing.T) {
++	f := idleWriteFixture(t, "sqlite")
++	ino := f.file(t, "close", 0)
++	writeIdleData(t, f, ino, 0)
++	writeIdleData(t, f, ino, 0)
++	gate := f.hold(ino, 1)
++	f.m.Lock()
++	f.m.idleWrites[idleWriteKey{ino, 0}].ready = time.Now().Add(-time.Second)
++	f.m.Unlock()
++	f.m.sessWG.Add(1)
++	go f.m.compactIdleWrites(f.m.sessCtx)
++	f.next(t)
++	done := make(chan error, 1)
++	go func() { done <- f.client.CloseSession() }()
++	select {
++	case <-done:
++		t.Fatal("close did not wait for worker")
++	case <-time.After(30 * time.Millisecond):
++	}
++	gate.release()
++	select {
++	case err := <-done:
++		if err != nil {
++			t.Fatal(err)
++		}
++	case <-time.After(5 * time.Second):
++		t.Fatal("close hung")
++	}
++	if idlePendingWrites(f.m) != 0 {
++		t.Fatal("close did not clear tracking")
++	}
++}
++
++func TestIdleWriteSlowFailure(t *testing.T) {
++	f := idleWriteFixture(t, "sqlite")
++	ino := f.file(t, "slow", 0)
++	writeIdleData(t, f, ino, 0)
++	writeIdleData(t, f, ino, 0)
++	f.m.OnMsg(CompactChunk, func(...interface{}) error {
++		time.Sleep(200 * time.Millisecond)
++		return fmt.Errorf("slow backend failure")
++	})
++	f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++	completed := time.Now()
++	f.m.Lock()
++	ready := f.m.idleWrites[idleWriteKey{ino, 0}].ready
++	f.m.Unlock()
++	if ready.Sub(completed) < idleWriteDelay-50*time.Millisecond {
++		t.Fatal("operation elapsed time consumed retry cooldown")
++	}
++}
++
++func TestIdleWriteFiveFullVersions(t *testing.T) {
++	for _, backend := range []string{"memkv", "sqlite", "redis"} {
++		t.Run(backend, func(t *testing.T) {
++			f := idleWriteFixture(t, backend)
++			ino := f.file(t, "five-versions", 0)
++			for round := 0; round < 5; round++ {
++				for pos := uint32(0); pos < ChunkSize; pos += 16 << 20 {
++					var id uint64
++					if st := f.m.NewSlice(Background(), &id); st != 0 {
++						t.Fatal(st)
++					}
++					f.owners[id] = ino
++					if st := f.m.Write(Background(), ino, 0, pos, Slice{Id: id, Size: 16 << 20, Len: 16 << 20}, time.Now()); st != 0 {
++						t.Fatal(st)
++					}
++				}
++			}
++			if f.records(t, ino) != 20 || f.calls[ino] != 0 {
++				t.Fatal("unexpected original trigger")
++			}
++			f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++			ss, st := f.original.doRead(Background(), ino, 0)
++			if st != 0 || len(ss) != 1 || ss[0].size != ChunkSize {
++				t.Fatal("full overwrite history not compacted")
++			}
++		})
++	}
++}
++
++func TestIdleWriteDisabled(t *testing.T) {
++	for _, mode := range []string{"readonly", "no-bgjob", "cancel"} {
++		t.Run(mode, func(t *testing.T) {
++			f := idleWriteFixture(t, "memkv")
++			switch mode {
++			case "readonly":
++				f.m.conf.ReadOnly = true
++			case "no-bgjob":
++				f.m.conf.NoBGJob = true
++			case "cancel":
++				f.m.sessCtx.Cancel()
++			}
++			f.m.noteIdleWrite(2, 0, 2)
++			if idlePendingWrites(f.m) != 0 {
++				t.Fatal("disabled tracking active")
++			}
++		})
++	}
++}
+diff --git a/pkg/meta/idle_write_automatic_test.go b/pkg/meta/idle_write_automatic_test.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/meta/idle_write_automatic_test.go
+@@ -0,0 +1,131 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package meta_test
++
++import (
++	"bytes"
++	"context"
++	"fmt"
++	"hash/crc32"
++	"path/filepath"
++	"testing"
++	"time"
++
++	"github.com/juicedata/juicefs/pkg/chunk"
++	"github.com/juicedata/juicefs/pkg/meta"
++	"github.com/juicedata/juicefs/pkg/object"
++	"github.com/juicedata/juicefs/pkg/vfs"
++)
++
++// Compiles on upstream unchanged. No direct compaction call or user Read before
++// freezing the observed automatic result. Uses the production timer duration.
++func TestIdleWriteAutomaticObjects(t *testing.T) {
++	blob, err := object.CreateStorage("mem", t.Name(), "", "", "")
++	if err != nil {
++		t.Fatal(err)
++	}
++	m := meta.NewClient("sqlite3://"+filepath.Join(t.TempDir(), "objects.db"), meta.DefaultConf())
++	if err = m.Init(&meta.Format{Name: "idle-write", UUID: "idle-write", Storage: "mem", BlockSize: 64, Compression: "none"}, true); err != nil {
++		t.Fatal(err)
++	}
++	conf := chunk.Config{BlockSize: 64 << 10, Compress: "none", MaxUpload: 2, MaxDownload: 2, BufferSize: 8 << 20, CacheDir: "memory", GetTimeout: time.Second, PutTimeout: time.Second}
++	store := chunk.NewCachedStore(blob, conf, nil)
++	m.OnMsg(meta.CompactChunk, func(args ...interface{}) error {
++		return vfs.Compact(conf, store, args[0].([]meta.Slice), args[1].(uint64), args[2].(uint8))
++	})
++	m.OnMsg(meta.DeleteSlice, func(args ...interface{}) error { return store.Remove(args[0].(uint64), int(args[1].(uint32))) })
++	if err = m.NewSession(true); err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() { _ = m.CloseSession(); _ = m.Shutdown() })
++	var ino meta.Ino
++	if st := m.Create(meta.Background(), meta.RootInode, "data", 0600, 0, 0, &ino, nil); st != 0 {
++		t.Fatal(st)
++	}
++	expected := make([]byte, 96<<10)
++	var old []meta.Slice
++	key := func(id uint64, index, size int) string {
++		return fmt.Sprintf("chunks/%d/%d/%d_%d_%d", id/1000000, id/1000, id, index, size)
++	}
++	for _, w := range []struct {
++		pos, size int
++		value     byte
++	}{{0, 96 << 10, 11}, {16 << 10, 32 << 10, 29}, {80 << 10, 16 << 10, 37}} {
++		var id uint64
++		if st := m.NewSlice(meta.Background(), &id); st != 0 {
++			t.Fatal(st)
++		}
++		data := bytes.Repeat([]byte{w.value}, w.size)
++		writer := store.NewWriter(id, 0)
++		if n, e := writer.WriteAt(data, 0); e != nil || n != len(data) {
++			t.Fatalf("write %d %v", n, e)
++		}
++		if e := writer.Finish(w.size); e != nil {
++			t.Fatal(e)
++		}
++		for off := 0; off < w.size; off += conf.BlockSize {
++			if _, e := blob.Head(context.Background(), key(id, off/conf.BlockSize, min(conf.BlockSize, w.size-off))); e != nil {
++				t.Fatal(e)
++			}
++		}
++		if st := m.Write(meta.Background(), ino, 0, uint32(w.pos), meta.Slice{Id: id, Size: uint32(w.size), Len: uint32(w.size)}, time.Now()); st != 0 {
++			t.Fatal(st)
++		}
++		old = append(old, meta.Slice{Id: id, Size: uint32(w.size)})
++		copy(expected[w.pos:w.pos+w.size], data)
++	}
++	deadline := time.Now().Add(75 * time.Second)
++	var final meta.Slice
++	for {
++		raw, st := meta.NativeCompactHistoryForTest(m, ino)
++		if st != 0 {
++			t.Fatal(st)
++		}
++		if len(raw) == 1 && meta.NativeCompactIdleForTest(m) {
++			final = raw[0]
++			break
++		}
++		if time.Now().After(deadline) {
++			t.Fatalf("IDLE_WRITE_TRIGGER_MISSING records=%d", len(raw))
++		}
++		time.Sleep(20 * time.Millisecond)
++	}
++	page := chunk.NewPage(make([]byte, len(expected)))
++	defer page.Release()
++	n, e := store.NewReader(final.Id, int(final.Size)).ReadAt(context.Background(), page, int(final.Off))
++	if e != nil || n != len(expected) || !bytes.Equal(page.Data, expected) || crc32.ChecksumIEEE(page.Data) != crc32.ChecksumIEEE(expected) {
++		t.Fatal("content/CRC mismatch", n, e)
++	}
++	for {
++		left := 0
++		for _, s := range old {
++			for off := 0; off < int(s.Size); off += conf.BlockSize {
++				if _, e := blob.Head(context.Background(), key(s.Id, off/conf.BlockSize, min(conf.BlockSize, int(s.Size)-off))); e == nil {
++					left++
++				}
++			}
++		}
++		if left == 0 {
++			break
++		}
++		if time.Now().After(deadline) {
++			t.Fatal("old objects retained", left)
++		}
++		time.Sleep(20 * time.Millisecond)
++	}
++	t.Log("automatic_timer=PASS bytes=98304 CRC=PASS source_objects_deleted=PASS")
++}

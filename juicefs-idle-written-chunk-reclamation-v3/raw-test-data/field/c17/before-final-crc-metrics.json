@@ -1,0 +1,12 @@
+{
+  "epoch": 1791262422.0304801,
+  "fuse_bytes": {
+    "read": 0.0,
+    "write": 235169382400.0
+  },
+  "fio_bytes": {
+    "read": 0,
+    "write": 235169382400
+  },
+  "cold_user_file_io_unchanged": true
+}

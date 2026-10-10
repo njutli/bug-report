@@ -1,0 +1,312 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <a1151488180@gmail.com>
+Date: Sat, 10 Oct 2026 08:00:00 +0800
+Subject: [PATCH 1/2] meta: compact written chunks after an idle interval
+
+Remember chunks with multiple records after successful Write calls.
+A serial session worker checks chunks after one minute without a local
+write and reuses the native batch planner, prefix commit and deletion.
+Retain entries until a later clean read; generations preserve new writes.
+Reuse the probe snapshot rather than reading it a second time.
+
+Use a bounded process-local map and completion-relative cooldown. ReadOnly
+and NoBGJob disable registration. No new CLI, engine interface, metadata
+format, busy retry map or non-Write mutation tracking is introduced.
+The one-minute delay is a proposed policy, not a hard reclamation SLA.
+Existing backend reads are still full-value reads.
+
+Base: JuiceFS v1.4.1 (0b90c7db5a929ae6adc5faad948d108efd2c99f9)
+
+Assisted-by: gpt 6
+Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
+---
+ pkg/meta/base.go       |   52 ++++++++++------
+ pkg/meta/idle_write.go |  158 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 191 insertions(+), 19 deletions(-)
+
+diff --git a/pkg/meta/base.go b/pkg/meta/base.go
+--- a/pkg/meta/base.go
++++ b/pkg/meta/base.go
+@@ -291,6 +291,9 @@
+ 	umounting    bool
+ 	sesMu        sync.Mutex
+ 	aclCache     aclAPI.Cache
++
++	idleWrites       map[idleWriteKey]*idleWrite
++	idleWriteWarning time.Time
+ 
+ 	sessCtx Context
+ 	sessWG  sync.WaitGroup
+@@ -805,6 +808,8 @@
+ 	m.startDeleteSliceTasks() // start MaxDeletes tasks
+ 
+ 	if !m.conf.NoBGJob {
++		m.sessWG.Add(1)
++		go m.compactIdleWrites(ctx)
+ 		m.sessWG.Add(4)
+ 		go m.cleanupDeletedFiles(ctx)
+ 		go m.cleanupSlices(ctx)
+@@ -2171,6 +2176,7 @@
+ 	var attr Attr
+ 	st := m.en.doWrite(ctx, inode, indx, off, slice, mtime, &numSlices, &delta, &attr)
+ 	if st == 0 {
++		m.noteIdleWrite(inode, indx, numSlices)
+ 		m.updateParentStat(ctx, inode, attr.Parent, delta.length, delta.space)
+ 		m.updateUserGroupStat(ctx, attr.Uid, attr.Gid, delta.space, 0)
+ 		if numSlices%100 == 99 || numSlices > 350 {
+@@ -2817,22 +2823,35 @@
+ 	}
+ 	m.compacting[k] = true
+ 	m.Unlock()
+-	defer func() {
+-		m.Lock()
+-		delete(m.compacting, k)
+-		m.Unlock()
++	finished := func() bool {
++		defer func() {
++			m.Lock()
++			delete(m.compacting, k)
++			m.Unlock()
++		}()
++		return m.compactChunkOnce(inode, indx, once, tierID, nil)
+ 	}()
+-
+-	ss, st := m.en.doRead(Background(), inode, indx)
++	if finished && force {
++		m.compactChunk(inode, indx, once, force, tierID)
++	}
++}
++
++// The caller owns the compaction slot. Idle checks pass their existing snapshot.
++func (m *baseMeta) compactChunkOnce(inode Ino, indx uint32, once bool, tierID int, ss []*slice) bool {
++	idle := ss != nil
++	var st syscall.Errno
++	if !idle {
++		ss, st = m.en.doRead(Background(), inode, indx)
++	}
+ 	if st != 0 {
+-		return
++		return false
+ 	}
+ 	if ss == nil {
+ 		logger.Errorf("Corrupt value for inode %d chunk indx %d", inode, indx)
+-		return
++		return false
+ 	}
+ 	if once && len(ss) < maxSlices {
+-		return
++		return false
+ 	}
+ 	if len(ss) > maxCompactSlices {
+ 		ss = ss[:maxCompactSlices]
+@@ -2841,7 +2860,7 @@
+ 	compacted := ss[skipped:]
+ 	pos, size, slices := compactChunk(compacted)
+ 	if len(compacted) < 2 || size == 0 {
+-		return
++		return false
+ 	}
+ 	for _, s := range ss[:skipped] {
+ 		if pos+size > s.pos && s.pos+s.len > pos {
+@@ -2855,13 +2874,13 @@
+ 
+ 	var id uint64
+ 	if st = m.NewSlice(Background(), &id); st != 0 {
+-		return
++		return false
+ 	}
+ 	logger.Debugf("compact %d:%d: skipped %d slices (%d bytes) %d slices (%d bytes)", inode, indx, skipped, pos, len(compacted), size)
+ 	if tierID == -1 {
+ 		var attr Attr
+ 		if eno := m.GetAttr(Background(), inode, &attr); eno != 0 {
+-			return
++			return false
+ 		}
+ 		tierID = int(attr.Tier)
+ 	}
+@@ -2870,7 +2889,7 @@
+ 		if !strings.Contains(err.Error(), "not exist") && !strings.Contains(err.Error(), "not found") {
+ 			logger.Warnf("compact %d %d with %d slices: %s", inode, indx, len(compacted), err)
+ 		}
+-		return
++		return false
+ 	}
+ 
+ 	var dsbuf []byte
+@@ -2898,12 +2917,7 @@
+ 			inode, indx, st, id, size)
+ 	}
+ 
+-	if force {
+-		m.Lock()
+-		delete(m.compacting, k)
+-		m.Unlock()
+-		m.compactChunk(inode, indx, once, force, tierID)
+-	}
++	return st == 0 || !idle // Preserve ordinary force's original continuation rule.
+ }
+ 
+ func (m *baseMeta) Compact(ctx Context, inode Ino, concurrency int, preFunc, postFunc func()) syscall.Errno {
+diff --git a/pkg/meta/idle_write.go b/pkg/meta/idle_write.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/meta/idle_write.go
+@@ -0,0 +1,158 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package meta
++
++import (
++	"syscall"
++	"time"
++)
++
++const idleWriteDelay = time.Minute
++const idleWriteLimit = 65536
++
++type idleWriteKey struct {
++	inode Ino
++	index uint32
++}
++
++type idleWrite struct {
++	ready      time.Time
++	generation uint64
++}
++
++// Protected by baseMeta's mutex. Only successful public Writes register work.
++func (m *baseMeta) noteIdleWrite(inode Ino, index uint32, records int) {
++	if m.conf.ReadOnly || m.conf.NoBGJob {
++		return
++	}
++	m.Lock()
++	defer m.Unlock()
++	if m.sessCtx == nil || m.sessCtx.Canceled() {
++		return
++	}
++	key := idleWriteKey{inode, index}
++	e := m.idleWrites[key]
++	if e == nil {
++		if records <= 1 {
++			return
++		}
++		if m.idleWrites == nil {
++			m.idleWrites = make(map[idleWriteKey]*idleWrite)
++		}
++		if len(m.idleWrites) == idleWriteLimit {
++			if time.Since(m.idleWriteWarning) >= time.Minute {
++				m.idleWriteWarning = time.Now()
++				logger.Warnf("idle write compaction tracking full; some chunks omitted")
++			}
++			return
++		}
++		e = &idleWrite{}
++		m.idleWrites[key] = e
++	}
++	e.generation++
++	e.ready = time.Now().Add(idleWriteDelay)
++}
++
++func (m *baseMeta) compactIdleWrites(ctx Context) {
++	defer m.sessWG.Done()
++	defer func() { m.Lock(); m.idleWrites = nil; m.Unlock() }()
++	ticker := time.NewTicker(time.Second)
++	defer ticker.Stop()
++	for {
++		select {
++		case <-ctx.Done():
++			return
++		case <-ticker.C:
++			m.compactIdleWrite(ctx, time.Now())
++		}
++	}
++}
++
++// One batch per tick. Oldest ready entries go first; failures rotate by cooldown.
++func (m *baseMeta) compactIdleWrite(ctx Context, now time.Time) {
++	m.Lock()
++	if ctx.Canceled() || len(m.compacting) != 0 {
++		m.Unlock()
++		return
++	}
++	var key idleWriteKey
++	var entry *idleWrite
++	for k, e := range m.idleWrites {
++		if !e.ready.After(now) && (entry == nil || e.ready.Before(entry.ready)) {
++			key, entry = k, e
++		}
++	}
++	if entry == nil {
++		m.Unlock()
++		return
++	}
++	generation := entry.generation
++	k := uint64(key.inode) + (uint64(key.index) << 40)
++	m.compacting[k] = true
++	m.Unlock()
++	clean := false
++	defer func() {
++		m.Lock()
++		defer m.Unlock()
++		delete(m.compacting, k)
++		if ctx.Canceled() {
++			return
++		}
++		if entry.generation != generation {
++			return
++		}
++		if clean {
++			delete(m.idleWrites, key)
++		} else {
++			entry.ready = time.Now().Add(idleWriteDelay)
++		}
++	}()
++	ss, st := m.en.doRead(ctx, key.inode, key.index)
++	if st == syscall.ENOENT {
++		clean = true
++		return
++	}
++	if st != 0 || ss == nil || ctx.Canceled() {
++		return
++	}
++	if len(ss) <= maxCompactSlices {
++		var raw, live uint64
++		for _, s := range ss {
++			if s.id != 0 {
++				raw += uint64(s.len)
++			}
++		}
++		for _, s := range buildSlice(ss) {
++			if s.Id != 0 {
++				live += uint64(s.Len)
++			}
++		}
++		if raw == live {
++			clean = true
++			return
++		}
++	}
++	m.Lock()
++	changed := entry.generation != generation
++	m.Unlock()
++	if changed || ctx.Canceled() {
++		return
++	}
++	// Keep the entry until a later read confirms clean. Use the original batch
++	// planner, prefix/CAS and deletion; do not retain this snapshot across ticks.
++	m.compactChunkOnce(key.inode, key.index, false, -1, ss)
++}

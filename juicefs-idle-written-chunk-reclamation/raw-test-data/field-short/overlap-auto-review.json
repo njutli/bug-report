@@ -1,0 +1,134 @@
+{
+  "result": "B_INDEPENDENT_REVIEW_PASS",
+  "phase": "B",
+  "frozen_sha256": "338303f2ef40791ad634194a54f40a906ec67aa2540ecd7446fa238ab9bd20c0",
+  "archive_sha256": "b9619130431c3ec5bb2bf9404a2eba9e55594f43706a885197cff00330db964f",
+  "user_write_bytes": 25904021504,
+  "per_initial_pass_seconds": [
+    62.11,
+    77.257,
+    78.246,
+    91.409,
+    94.527
+  ],
+  "live_bytes": 4294967296,
+  "obsolete_deleted": 1447,
+  "write_events": 1380,
+  "successful_compact_commits": 131,
+  "trace_events": 8000,
+  "trace_no_gaps_or_drops": true,
+  "overlap": {
+    "selected_req": 67,
+    "inode": 19462,
+    "chunk": 0,
+    "object_start_epoch": 1791600100.2330534,
+    "object_end_epoch": 1791600122.2380195,
+    "intersection_seconds": {
+      "B-write-target": 3.4736340045928955,
+      "B-read-seq": 21.89813232421875,
+      "B-read-rand": 21.896664142608643
+    },
+    "foreground": {
+      "B-write-target": {
+        "start_epoch": 1791600100.338359,
+        "end_epoch": 1791600103.8119931,
+        "read_bytes": 0,
+        "write_bytes": 134217728,
+        "read_runtime_ms": 0,
+        "write_runtime_ms": 1849,
+        "read_clat_p99_ns": null,
+        "write_clat_p99_ns": 21626880
+      },
+      "B-read-seq": {
+        "start_epoch": 1791600100.3398871,
+        "end_epoch": 1791600221.398204,
+        "read_bytes": 503316480,
+        "write_bytes": 0,
+        "read_runtime_ms": 120001,
+        "write_runtime_ms": 0,
+        "read_clat_p99_ns": 233832448,
+        "write_clat_p99_ns": null
+      },
+      "B-read-rand": {
+        "start_epoch": 1791600100.3413553,
+        "end_epoch": 1791600221.399126,
+        "read_bytes": 503316480,
+        "write_bytes": 0,
+        "read_runtime_ms": 120001,
+        "write_runtime_ms": 0,
+        "read_clat_p99_ns": 219152384,
+        "write_clat_p99_ns": null
+      }
+    },
+    "same_chunk_writes_before_idle_finish": 1,
+    "idle_finish": {
+      "chunk": 0,
+      "clean": false,
+      "compacting": 0,
+      "event": "idle_finish",
+      "generation": 2,
+      "inode": 19462,
+      "ns": 1791600122254359064,
+      "pending": 64,
+      "req": 0,
+      "selected_generation": 1,
+      "seq": 6544
+    },
+    "generation_changed": true,
+    "target_write_ranges": [
+      {
+        "chunk": 0,
+        "pos": 0,
+        "len": 67108864,
+        "id": 10818982
+      },
+      {
+        "chunk": 1,
+        "pos": 0,
+        "len": 67108864,
+        "id": 10818983
+      }
+    ],
+    "later_live_commit": {
+      "chunk": 0,
+      "event": "commit",
+      "id": 10819046,
+      "inode": 19462,
+      "ns": 1791600480038429563,
+      "req": 130,
+      "seq": 7709,
+      "size": 67108864,
+      "status": 0
+    },
+    "later_plan_sources": [
+      [
+        0,
+        10818981,
+        67108864,
+        0,
+        67108864
+      ],
+      [
+        0,
+        10818982,
+        67108864,
+        0,
+        67108864
+      ]
+    ],
+    "later_clean_finish": {
+      "chunk": 0,
+      "clean": true,
+      "compacting": 0,
+      "event": "idle_finish",
+      "generation": 2,
+      "inode": 19462,
+      "ns": 1791600543232320470,
+      "pending": 1,
+      "req": 0,
+      "selected_generation": 2,
+      "seq": 7971
+    },
+    "latest_write_source_preserved": true
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "result": "FINAL_INDEPENDENT_REVIEW_PASS",
+  "closure": {
+    "result": "CLOSED_PASS",
+    "epoch": 1791600831.5892406,
+    "original_mount": "110 /mnt/juicefs JuiceFS:juicefs-prod fuse.juicefs",
+    "juicefs_mounts": [
+      "/mnt/juicefs JuiceFS:juicefs-prod fuse.juicefs"
+    ],
+    "private_mount_absent": true,
+    "private_worker_absent": true,
+    "private_parent_absent": true,
+    "no_fio": true,
+    "metrics_port_closed": true,
+    "files": 16,
+    "retained_logical_bytes": 4294967296,
+    "file_identity_unchanged": true,
+    "ceph_health": {
+      "status": "HEALTH_OK",
+      "checks": {},
+      "mutes": []
+    },
+    "pool_available_GiB": 729.9451293945312,
+    "db_spill_bytes": 0,
+    "trace_stats": {
+      "emitted": 8207,
+      "logged": 8207,
+      "queued": 0,
+      "dropped": 0
+    },
+    "trace_events": 8208
+  },
+  "archive_sha256": "8723354550763f069a63d1d324f37c52ae40a2d88beedaee22034c2fe5b8f435",
+  "archive_bytes": 1095277,
+  "total_user_write_bytes": 25904021504,
+  "crc": {
+    "R01": {
+      "bytes": 4294967296,
+      "seconds": 36.785,
+      "fio_sha256": "46f4a0530ac64ed64718ed5f57b6a3b0b7013828d2be5cf95532bcf282d03279"
+    },
+    "B": {
+      "bytes": 4294967296,
+      "seconds": 37.196,
+      "fio_sha256": "166b20c29190f0a499bcd65b817b23e624efb5aaf0fef024461aff123ddcd2ed"
+    }
+  },
+  "A_stop_to_freeze_seconds": 641.9562695026398,
+  "B_stop_to_freeze_seconds": 348.2348415851593,
+  "successful_commit_sources_total": {
+    "idle_batch": 127,
+    "native_batch": 4
+  },
+  "health_samples": 64,
+  "health_status_counts": {
+    "HEALTH_OK": 64
+  },
+  "pool_min_available_GiB": 715.0426635742188,
+  "DB_min_free_GiB": 296.37420654296875,
+  "DB_spill_seen": false,
+  "RSS_peak_MiB": 943.8125,
+  "RSS_last_sample": {
+    "epoch": 1791600776.8221538,
+    "MiB": 343.17578125
+  },
+  "context_canceled_read_warnings": 30,
+  "client_error_lines": [],
+  "start_epoch": 1791598835.2780426,
+  "closed_epoch": 1791600831.5892406
+}

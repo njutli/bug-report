@@ -1,0 +1,19 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-mod=readonly",
+    "-p",
+    "1",
+    "-race",
+    "-count=1",
+    "-timeout=300s",
+    "-run",
+    "^(TestMemKVClient|TestSQLiteClient|TestBadgerClient)$",
+    "-json",
+    "./pkg/meta"
+  ],
+  "exit_code": 1,
+  "elapsed_s": 98.7503011226654,
+  "source": "source"
+}

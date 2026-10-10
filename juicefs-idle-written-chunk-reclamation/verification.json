@@ -1,0 +1,16 @@
+{
+  "files_verified": 37,
+  "focused_race": {
+    "pass": 108
+  },
+  "upstream_expected_failure": {
+    "fail": 1
+  },
+  "broad_client_race": "FAIL on both upstream and candidate",
+  "client_nonrace": "PASS",
+  "build": "PASS",
+  "replay_source": null,
+  "field_short_summary_checks": "PASS; supplied audits, not a new full trace replay",
+  "candidate_field_acceptance": false,
+  "candidate_field_acceptance_scope": "Long-term/production acceptance is not established"
+}

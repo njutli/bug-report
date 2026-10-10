@@ -1,0 +1,21 @@
+{
+  "result": "A_INDEPENDENT_REVIEW_PASS",
+  "phase": "A",
+  "frozen_sha256": "e668ad4d1fbc7de21c463e819098d37c7c34efadb2a22a14bec5f6c570e5f23c",
+  "archive_sha256": "52344e9039c9580e53f212a3c0b15c4015dbdda862a88930266babbf2bb37887",
+  "user_write_bytes": 21474836480,
+  "per_initial_pass_seconds": [
+    62.11,
+    77.257,
+    78.246,
+    91.409,
+    94.527
+  ],
+  "live_bytes": 4294967296,
+  "obsolete_deleted": 1189,
+  "write_events": 1187,
+  "successful_compact_commits": 66,
+  "trace_events": 5902,
+  "trace_no_gaps_or_drops": true,
+  "overlap": null
+}

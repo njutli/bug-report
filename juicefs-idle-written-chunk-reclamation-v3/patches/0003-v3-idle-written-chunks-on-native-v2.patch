@@ -1,0 +1,593 @@
+diff --git a/pkg/meta/base.go b/pkg/meta/base.go
+--- a/pkg/meta/base.go
++++ b/pkg/meta/base.go
+@@ -275,23 +275,25 @@
+ 	conf *Config
+ 	fmt  *Format
+ 
+-	root         Ino
+-	txlocks      [nlocks]sync.Mutex // Pessimistic locks to reduce conflict
+-	subTrash     internalNode
+-	sid          uint64
+-	nextTxnId    uint64
+-	of           *openfiles
+-	removedFiles map[Ino]bool
+-	compacting   map[uint64]bool
+-	compactTodo  map[uint64]func()
+-	maxDeleting  chan struct{}
+-	dslices      chan Slice // slices to delete
+-	symlinks     *symlinkCache
+-	msgCallbacks *msgCallbacks
+-	reloadCb     []func(*Format)
+-	umounting    bool
+-	sesMu        sync.Mutex
+-	aclCache     aclAPI.Cache
++	root          Ino
++	txlocks       [nlocks]sync.Mutex // Pessimistic locks to reduce conflict
++	subTrash      internalNode
++	sid           uint64
++	nextTxnId     uint64
++	of            *openfiles
++	removedFiles  map[Ino]bool
++	compacting    map[uint64]bool
++	compactTodo   map[uint64]func()
++	idleCompactMu sync.Mutex
++	idleCompact   *idleCompactState
++	maxDeleting   chan struct{}
++	dslices       chan Slice // slices to delete
++	symlinks      *symlinkCache
++	msgCallbacks  *msgCallbacks
++	reloadCb      []func(*Format)
++	umounting     bool
++	sesMu         sync.Mutex
++	aclCache      aclAPI.Cache
+ 
+ 	sessCtx Context
+ 	sessWG  sync.WaitGroup
+@@ -608,6 +610,7 @@
+ 	reg.MustRegister(m.opDist)
+ 	reg.MustRegister(m.opCount)
+ 	reg.MustRegister(m.opDuration)
++	m.initIdleCompactMetrics(reg)
+ }
+ 
+ func (m *baseMeta) timeit(method string, start time.Time) {
+@@ -806,6 +809,7 @@
+ 	m.startDeleteSliceTasks() // start MaxDeletes tasks
+ 
+ 	if !m.conf.NoBGJob {
++		m.startIdleCompact(ctx)
+ 		m.sessWG.Add(4)
+ 		go m.cleanupDeletedFiles(ctx)
+ 		go m.cleanupSlices(ctx)
+@@ -983,6 +987,7 @@
+ 	m.compactTodo = nil
+ 	m.Unlock()
+ 	m.sessWG.Wait()
++	m.clearIdleCompact()
+ 	m.stopDeleteSliceTasks()
+ 	logger.Infof("close session %d: %v", m.sid, err)
+ 	return err
+@@ -2083,6 +2088,10 @@
+ }
+ 
+ func (m *baseMeta) Read(ctx Context, inode Ino, indx uint32, slices *[]Slice) (st syscall.Errno) {
++	if m.idleCompactEnabled() {
++		m.beginIdleCompactIO()
++		defer m.endIdleCompactIO()
++	}
+ 	defer func() {
+ 		if st == 0 {
+ 			m.touchAtime(ctx, inode, nil)
+@@ -2163,6 +2172,10 @@
+ }
+ 
+ func (m *baseMeta) Write(ctx Context, inode Ino, indx uint32, off uint32, slice Slice, mtime time.Time) syscall.Errno {
++	if m.idleCompactEnabled() {
++		m.beginIdleCompactIO()
++		defer m.endIdleCompactIO()
++	}
+ 	defer m.timeit("Write", time.Now())
+ 	f := m.of.find(inode)
+ 	if f != nil {
+@@ -2175,6 +2188,7 @@
+ 	var attr Attr
+ 	st := m.en.doWrite(ctx, inode, indx, off, slice, mtime, &numSlices, &delta, &attr)
+ 	if st == 0 {
++		m.noteIdleCompactWrite(inode, indx, numSlices)
+ 		m.updateParentStat(ctx, inode, attr.Parent, delta.length, delta.space)
+ 		m.updateUserGroupStat(ctx, attr.Uid, attr.Gid, delta.space, 0)
+ 		if numSlices%100 == 99 || numSlices > 350 {
+@@ -2833,6 +2847,11 @@
+ 
+ // compactChunkAdmitted runs with its slot already reserved in m.compacting.
+ func (m *baseMeta) compactChunkAdmitted(inode Ino, indx uint32, once, force bool, tierID int) {
++	m.compactChunkAdmittedWithFinish(inode, indx, once, force, tierID, nil)
++}
++
++// Keep the admission reservation through the optional final metadata check.
++func (m *baseMeta) compactChunkAdmittedWithFinish(inode Ino, indx uint32, once, force bool, tierID int, finish func()) {
+ 	k := uint64(inode) + (uint64(indx) << 40)
+ 	released := false
+ 	release := func() {
+@@ -2840,24 +2859,12 @@
+ 			return
+ 		}
+ 		released = true
+-		m.Lock()
+-		delete(m.compacting, k)
+-		if m.sessCtx != nil && m.sessCtx.Canceled() {
+-			m.compactTodo = nil
+-		} else if len(m.compacting) <= 10 {
+-			for next, run := range m.compactTodo {
+-				if !m.compacting[next] {
+-					delete(m.compactTodo, next)
+-					// Transfer one slot atomically; a retry must not be rejected again.
+-					m.compacting[next] = true
+-					go run()
+-					break
+-				}
+-			}
+-		}
+-		m.Unlock()
++		m.releaseCompactSlot(k)
+ 	}
+ 	defer release()
++	if finish != nil {
++		defer finish() // Executed before release; never race another same-chunk compactor.
++	}
+ 	if m.sessCtx != nil && m.sessCtx.Canceled() {
+ 		return
+ 	}
+@@ -2940,6 +2947,26 @@
+ 	if force {
+ 		release() // Do not release a transferred slot again when recursion unwinds.
+ 		m.compactChunk(inode, indx, once, force, tierID)
++	}
++}
++
++// Used by normal batches and by an idle inspection that finds no work. Preserve
++// V2's atomic one-slot handoff, including busy triggers received during a probe.
++func (m *baseMeta) releaseCompactSlot(k uint64) {
++	m.Lock()
++	defer m.Unlock()
++	delete(m.compacting, k)
++	if m.sessCtx != nil && m.sessCtx.Canceled() {
++		m.compactTodo = nil
++	} else if len(m.compacting) <= 10 {
++		for next, run := range m.compactTodo {
++			if !m.compacting[next] {
++				delete(m.compactTodo, next)
++				m.compacting[next] = true
++				go run()
++				break
++			}
++		}
+ 	}
+ }
+ 
+diff --git a/pkg/meta/config.go b/pkg/meta/config.go
+--- a/pkg/meta/config.go
++++ b/pkg/meta/config.go
+@@ -41,7 +41,8 @@
+ 	SkipDirNlink       int
+ 	CaseInsensi        bool
+ 	ReadOnly           bool
+-	NoBGJob            bool // disable background jobs like clean-up, backup, etc.
++	NoBGJob            bool          // disable background jobs like clean-up, backup, etc.
++	IdleCompactDelay   time.Duration // opt-in, process-local compaction after metadata IO is quiet
+ 	OpenCache          time.Duration
+ 	OpenCacheLimit     uint64 // max number of files to cache (soft limit)
+ 	Heartbeat          time.Duration
+@@ -61,6 +62,13 @@
+ }
+ 
+ func (c *Config) SelfCheck() {
++	if c.IdleCompactDelay < 0 {
++		logger.Warnf("negative idle-compact-delay disables idle compaction")
++		c.IdleCompactDelay = 0
++	} else if c.IdleCompactDelay > 0 && c.IdleCompactDelay < time.Second {
++		logger.Warnf("idle-compact-delay should not be less than 1 second")
++		c.IdleCompactDelay = time.Second
++	}
+ 	if c.MaxDeletes == 0 {
+ 		logger.Warnf("Deleting object will be disabled since max-deletes is 0")
+ 	}
+diff --git a/pkg/meta/idle_compact.go b/pkg/meta/idle_compact.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/meta/idle_compact.go
+@@ -0,0 +1,318 @@
++/*
++ * JuiceFS, Copyright 2026 Juicedata, Inc.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package meta
++
++import (
++	"container/list"
++	"syscall"
++	"time"
++
++	"github.com/prometheus/client_golang/prometheus"
++)
++
++const idleCompactQueueLimit = 65536
++
++type idleCompactKey struct {
++	inode Ino
++	index uint32
++}
++
++type idleCompactEntry struct {
++	key        idleCompactKey
++	generation uint64
++	ready      time.Time
++	failures   uint8
++	element    *list.Element // nil while this entry is being inspected
++}
++
++type idleCompactState struct {
++	pending       map[idleCompactKey]*idleCompactEntry
++	queue         list.List
++	lastIO        time.Time
++	activeIO      int
++	busy          bool
++	workerStarted bool
++	limit         int
++	overflow      uint64
++	checks        uint64
++	attempts      uint64
++	lastWarning   time.Time
++}
++
++func (m *baseMeta) idleCompactEnabled() bool {
++	return m.conf.IdleCompactDelay > 0 && !m.conf.NoBGJob && !m.conf.ReadOnly
++}
++
++// Called with idleCompactMu held. Entries are process-local, not crash recovery.
++func (m *baseMeta) idleCompactStateLocked() *idleCompactState {
++	if m.idleCompact == nil {
++		m.idleCompact = &idleCompactState{pending: make(map[idleCompactKey]*idleCompactEntry), limit: idleCompactQueueLimit}
++	}
++	return m.idleCompact
++}
++
++func (m *baseMeta) beginIdleCompactIO() {
++	m.idleCompactMu.Lock()
++	s := m.idleCompactStateLocked()
++	s.activeIO++
++	s.lastIO = time.Now()
++	m.idleCompactMu.Unlock()
++}
++
++func (m *baseMeta) endIdleCompactIO() {
++	m.idleCompactMu.Lock()
++	s := m.idleCompactStateLocked()
++	s.activeIO--
++	s.lastIO = time.Now()
++	m.idleCompactMu.Unlock()
++}
++
++func (m *baseMeta) noteIdleCompactWrite(inode Ino, index uint32, records int) {
++	if !m.idleCompactEnabled() || (m.sessCtx != nil && m.sessCtx.Canceled()) {
++		return
++	}
++	key := idleCompactKey{inode, index}
++	m.idleCompactMu.Lock()
++	s := m.idleCompactStateLocked()
++	if e := s.pending[key]; e != nil {
++		// A write during inspection must survive completion of the old generation.
++		e.generation++
++		e.ready = time.Time{}
++		e.failures = 0
++	} else if records > 1 {
++		if len(s.pending) >= s.limit {
++			s.overflow++
++			warn := time.Since(s.lastWarning) >= time.Minute
++			if warn {
++				s.lastWarning = time.Now()
++			}
++			m.idleCompactMu.Unlock()
++			if warn {
++				logger.Warnf("idle compaction tracking is full (%d chunks); some history is NOT tracked; check idle_compact_queue_overflow_total or use controlled maintenance", idleCompactQueueLimit)
++			}
++			return
++		}
++		e := &idleCompactEntry{key: key, generation: 1}
++		e.element = s.queue.PushBack(e)
++		s.pending[key] = e
++	}
++	m.idleCompactMu.Unlock()
++}
++
++func (m *baseMeta) clearIdleCompact() {
++	m.idleCompactMu.Lock()
++	if s := m.idleCompact; s != nil {
++		clear(s.pending)
++		s.queue.Init()
++	}
++	m.idleCompactMu.Unlock()
++}
++
++func (m *baseMeta) startIdleCompact(ctx Context) {
++	if !m.idleCompactEnabled() {
++		return
++	}
++	m.idleCompactMu.Lock()
++	s := m.idleCompactStateLocked()
++	if s.workerStarted {
++		m.idleCompactMu.Unlock()
++		return
++	}
++	s.workerStarted = true
++	m.sessWG.Add(1)
++	m.idleCompactMu.Unlock()
++	go func() {
++		defer m.sessWG.Done()
++		defer func() {
++			m.clearIdleCompact()
++			m.idleCompactMu.Lock()
++			m.idleCompact.workerStarted = false
++			m.idleCompactMu.Unlock()
++		}()
++		period := min(time.Second, max(10*time.Millisecond, m.conf.IdleCompactDelay/2))
++		ticker := time.NewTicker(period)
++		defer ticker.Stop()
++		for {
++			select {
++			case <-ctx.Done():
++				return
++			case <-ticker.C:
++				// Synchronous: at most one new idle batch per client and tick.
++				m.idleCompactStep(time.Now())
++			}
++		}
++	}()
++}
++
++// Data-byte overlap, not merely several valid non-overlapping records.
++// Reuse buildSlice's latest-wins semantics; reference/deletion stays in the engine.
++func idleCompactHasHistory(ss []*slice) bool {
++	var raw, live uint64
++	for _, s := range ss {
++		if s.id != 0 {
++			raw += uint64(s.len)
++		}
++	}
++	for _, s := range buildSlice(ss) {
++		if s.Id != 0 {
++			live += uint64(s.Len)
++		}
++	}
++	return raw > live
++}
++
++// The timestamp parameter allows deterministic scheduling tests without waits.
++func (m *baseMeta) idleCompactStep(now time.Time) {
++	if !m.idleCompactEnabled() || m.sessCtx == nil || m.sessCtx.Canceled() {
++		return
++	}
++	m.idleCompactMu.Lock()
++	s := m.idleCompactStateLocked()
++	if s.busy || s.activeIO != 0 || now.Sub(s.lastIO) < m.conf.IdleCompactDelay {
++		m.idleCompactMu.Unlock()
++		return
++	}
++	var e *idleCompactEntry
++	for el := s.queue.Front(); el != nil; el = el.Next() {
++		if candidate := el.Value.(*idleCompactEntry); !now.Before(candidate.ready) {
++			e = candidate
++			break
++		}
++	}
++	if e == nil {
++		m.idleCompactMu.Unlock()
++		return
++	}
++	s.queue.Remove(e.element)
++	e.element = nil
++	s.busy = true
++	generation := e.generation
++	lastIO := s.lastIO
++	s.checks++
++	m.idleCompactMu.Unlock()
++
++	remaining, failed := true, false
++	defer func() {
++		m.idleCompactMu.Lock()
++		defer m.idleCompactMu.Unlock()
++		s.busy = false
++		if m.sessCtx.Canceled() {
++			clear(s.pending)
++			s.queue.Init()
++			return
++		}
++		if e.generation != generation {
++			// noteIdleCompactWrite updated the entry while the old snapshot ran.
++			e.ready = time.Time{}
++			e.failures = 0
++		} else if !remaining {
++			delete(s.pending, e.key)
++			return
++		} else {
++			if failed {
++				e.failures = min(e.failures+1, 6)
++			} else {
++				e.failures = 0
++			}
++			// No immediate retry chain; even no-progress/failure has a cooldown.
++			e.ready = now.Add(min(5*time.Minute, 5*time.Second*time.Duration(1<<e.failures)))
++		}
++		e.element = s.queue.PushBack(e) // round-robin, not repeated map-first selection
++	}()
++
++	// Reserve BEFORE reading history, so a same-chunk compactor cannot mutate
++	// the metadata snapshot during the probe. Never hold the admission mutex
++	// over metadata/object RPCs; the reservation alone provides exclusion.
++	k := uint64(e.key.inode) + (uint64(e.key.index) << 40)
++	m.Lock()
++	if m.sessCtx.Canceled() || len(m.compacting) != 0 || len(m.compactTodo) != 0 {
++		m.Unlock()
++		return
++	}
++	m.compacting[k] = true
++	m.Unlock()
++	owned := true
++	defer func() {
++		if owned {
++			m.releaseCompactSlot(k)
++		}
++	}()
++
++	ss, st := m.en.doRead(m.sessCtx, e.key.inode, e.key.index)
++	if st != 0 {
++		remaining, failed = st != syscall.ENOENT, st != syscall.ENOENT
++		return
++	}
++	if ss == nil {
++		failed = true
++		return
++	}
++	if !idleCompactHasHistory(ss) {
++		remaining = false
++		return
++	}
++
++	m.idleCompactMu.Lock()
++	if s.activeIO != 0 || !s.lastIO.Equal(lastIO) {
++		m.idleCompactMu.Unlock()
++		return // Foreground IO resumed during the metadata inspection.
++	}
++	if m.sessCtx.Canceled() {
++		m.idleCompactMu.Unlock()
++		return
++	}
++	s.attempts++
++	m.idleCompactMu.Unlock()
++	owned = false // The ordinary body now owns release, including on early error.
++	m.compactChunkAdmittedWithFinish(e.key.inode, e.key.index, false, false, -1, func() {
++		ss, st = m.en.doRead(m.sessCtx, e.key.inode, e.key.index)
++		if st == syscall.ENOENT {
++			remaining = false
++		} else if st != 0 || ss == nil {
++			failed = true
++		} else {
++			remaining = idleCompactHasHistory(ss)
++			failed = remaining // retain failures/no-progress, but never spin
++		}
++	})
++}
++
++func (m *baseMeta) initIdleCompactMetrics(reg prometheus.Registerer) {
++	if !m.idleCompactEnabled() {
++		return
++	}
++	value := func(kind string) float64 {
++		m.idleCompactMu.Lock()
++		defer m.idleCompactMu.Unlock()
++		s := m.idleCompactStateLocked()
++		switch kind {
++		case "pending":
++			return float64(len(s.pending))
++		case "overflow":
++			return float64(s.overflow)
++		case "checks":
++			return float64(s.checks)
++		default:
++			return float64(s.attempts)
++		}
++	}
++	reg.MustRegister(prometheus.NewGaugeFunc(prometheus.GaugeOpts{Name: "idle_compact_pending_chunks", Help: "Process-local tracked chunks, including current inspection."}, func() float64 { return value("pending") }))
++	for _, kind := range []string{"overflow", "checks", "attempts"} {
++		kind := kind
++		reg.MustRegister(prometheus.NewCounterFunc(prometheus.CounterOpts{Name: "idle_compact_queue_" + kind + "_total", Help: "Idle compaction " + kind + ". Overflow means coverage is incomplete."}, func() float64 { return value(kind) }))
++	}
++}
+diff --git a/cmd/flags.go b/cmd/flags.go
+--- a/cmd/flags.go
++++ b/cmd/flags.go
+@@ -310,6 +310,10 @@
+ 			Name:  "no-bgjob",
+ 			Usage: "disable background jobs (clean-up, backup, etc.)",
+ 		},
++		&cli.DurationFlag{
++			Name:  "idle-compact-delay",
++			Usage: "experimental: compact overwritten chunks written by this client after metadata read/write is quiet for this duration (0 disables; process-local, bounded queue)",
++		},
+ 		&cli.StringFlag{
+ 			Name:  "atime-mode",
+ 			Value: "noatime",
+diff --git a/cmd/mount.go b/cmd/mount.go
+--- a/cmd/mount.go
++++ b/cmd/mount.go
+@@ -339,6 +339,7 @@
+ 	conf.SkipDirNlink = c.Int("skip-dir-nlink")
+ 	conf.ReadOnly = readOnly
+ 	conf.NoBGJob = c.Bool("no-bgjob")
++	conf.IdleCompactDelay = c.Duration("idle-compact-delay")
+ 	conf.OpenCache = utils.Duration(c.String("open-cache"))
+ 	conf.OpenCacheLimit = c.Uint64("open-cache-limit")
+ 	conf.Heartbeat = utils.Duration(c.String("heartbeat"))
+diff --git a/docs/en/experimental-idle-compaction.md b/docs/en/experimental-idle-compaction.md
+new file mode 100644
+--- /dev/null
++++ b/docs/en/experimental-idle-compaction.md
+@@ -0,0 +1,45 @@
++# Experimental process-local idle compaction (V3 candidate)
++
++This is a test candidate, not a production reclamation guarantee. It retains
++native busy-admission retries and adds an opt-in mechanism for overwritten
++chunks that never reach ordinary Write thresholds, including low-count tails
++left after a compaction snapshot.
++
++Enable with `juicefs mount --idle-compact-delay=2m ...` (default `0`, disabled).
++`--no-bgjob` and read-only mounts disable the new worker. Positive configured
++delays below one second are clamped to one second by metadata config validation.
++
++Only successful writes performed by this metadata client create tracking entries;
++there is no volume scan, metadata format change, or restart discovery. Each entry
++uses a write generation so writes arriving during an older batch are retained.
++The worker waits until metadata Read/Write has been quiet, checks overlap using
++latest-wins slice reconstruction, and reuses ordinary compaction and engine CAS
++replacement/deletion. Valid non-overlapping slices are not rewritten.
++
++The new worker is serial and starts at most one batch per timer tick (at most
++once a second for a delay of two minutes). It does not start a batch while an
++existing compactor is active or while metadata IO has resumed during inspection.
++An already started object RPC is not preempted when foreground IO resumes: up to
++one idle batch may overlap it. This is NOT a bandwidth limiter, global cluster
++idle detector, or a guarantee of zero foreground performance impact. Multiple
++clients each have their own worker. The native ordinary admission gate is unchanged.
++
++Tracking is process-local and capped at 65,536 distinct chunks per client.
++Overflow increments `juicefs_idle_compact_queue_overflow_total` and emits a
++rate-limited warning: chunks that overflow are not guaranteed to be reclaimed.
++The inherited native busy retry map is separate and remains uncapped.
++Pending/check/attempt metrics are also exported. Errors or no progress retain
++tracked entries with cooldown/exponential backoff, capped at five minutes;
++the worker cannot guarantee reclamation while backend errors persist.
++
++Session cancellation stops new idle work and discards the process-local tracking.
++An in-flight object compaction must finish before the new worker joins; there is
++no unsafe forced cancellation. After restart/remount, pre-existing untracked
++history requires new writes or controlled maintenance. Other clients' writes
++are not discovered. Shared slice references and trash retention are still
++respected by the original metadata engine.
++
++Accept changes using no-user-read idle observations before final CRC. Reading
++files can independently trigger ordinary compaction and must not be used to
++manufacture a reclamation pass. Real TiKV/Ceph and long-duration validation are
++still required before deployment.
