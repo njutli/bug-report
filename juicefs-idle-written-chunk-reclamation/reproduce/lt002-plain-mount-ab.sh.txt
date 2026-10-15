@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+
+# Thin orchestration of the existing shell reproduction. Approved 2026-10-10.
+# No CRC, file reads, metadata dump, manual compact/GC, deletion, or forced unmount.
+ROOT=/data/reliability-lt-results/20261010-LT002-PLAIN-MOUNT-AB
+MNT=/mnt/juicefs
+META=tikv://192.168.11.11:2379,192.168.11.13:2379,192.168.11.14:2379/juicefs-prod
+CEPH=(sudo -n /usr/bin/ceph --conf /etc/ceph/ceph.conf --keyring /etc/ceph/ceph.client.admin.keyring -n client.admin)
+
+event() { printf '[%s] %s\n' "$(date '+%F %T %z')" "$*" | tee -a "$ROOT/events.log"; }
+no_fio() { if pgrep -x fio >/dev/null; then event 'REFUSE: fio still running'; return 1; fi; }
+safe_mount() { [[ $(findmnt -rn -M /mnt/juicefs -o SOURCE,FSTYPE) == 'JuiceFS:juicefs-prod fuse.juicefs' ]]; }
+quiet() {
+    no_fio
+    curl --fail --silent --show-error --max-time 15 http://127.0.0.1:9572/metrics |
+        awk '/^juicefs_object_request_uploading[{ ]|^juicefs_staging_blocks[{ ]/ {n++; if ($NF != 0) bad=1} END {exit(n < 2 || bad)}'
+}
+config() {
+    sudo -n cat /mnt/juicefs/.config | jq -e --arg v "$1" '
+        .Version == $v and .Format.UUID == "3e54dcc4-991e-425a-8e76-16c9c1fb6836"
+        and .Format.BlockSize == 256 and .Format.TrashDays == 0
+        and .Meta.Subdir == "" and .Meta.NoBGJob == false and .Meta.ReadOnly == false
+        and .Meta.MaxDeletes == 10 and .Chunk.CacheSize == 0
+        and .Chunk.Writeback == false and .Chunk.MaxUpload == 150
+        and .BackupMeta == 0 and .FuseOpts.EnableWriteback == false
+        and .FuseOpts.OtherCaps == 0' >/dev/null
+}
+restore_original() {
+    sudo -n /tmp/juicefs-1.4.1-patched mount -d --max-uploads 150 --cache-size 0 tikv://192.168.11.11:2379,192.168.11.13:2379,192.168.11.14:2379/juicefs-prod /mnt/juicefs
+    safe_mount
+    sudo -n cat /mnt/juicefs/.config | jq -e '
+        .Version == "1.4.1+unknown" and .Format.UUID == "3e54dcc4-991e-425a-8e76-16c9c1fb6836"
+        and .Meta.Subdir == "" and .Meta.NoBGJob == false
+        and .Chunk.CacheSize == 0 and .Chunk.Writeback == false and .Chunk.MaxUpload == 150
+        and .BackupMeta == 3600000000000 and .FuseOpts.OtherCaps == 0' >/dev/null
+    event ORIGINAL_MOUNT_RESTORED
+}
+failed() {
+    local rc=$?
+    trap - ERR
+    event "STOP_PRESERVE rc=$rc; no new writes or next arm"
+    if ! findmnt -rn -M /mnt/juicefs >/dev/null; then
+        restore_original || event 'RESTORE_FAILED: operator review required'
+    fi
+    exit "$rc"
+}
+
+[[ $(id -u) == 1000 && " $(hostname -I) " == *' 192.168.11.12 '* ]]
+[[ $(realpath -e -- "$ROOT") == "$ROOT" && $(realpath -e -- "$MNT") == "$MNT" ]]
+[[ $(realpath -e -- "${BASH_SOURCE[0]}") == "$ROOT/lt002-plain-mount-ab.sh" ]]
+exec 9>"$ROOT/run.lock"
+flock -n 9
+[[ ! -e "$ROOT/started" ]]
+no_fio
+safe_mount
+[[ $(findmnt -rn -M /mnt/juicefs -o ID) == 110 ]]
+[[ $(findmnt -rn -t fuse.juicefs -o TARGET | wc -l) == 2 ]]
+sha256sum --check "$ROOT/binaries.sha256"
+sudo -n cat /mnt/juicefs/.config | jq '{Version,Pid,BackupMeta,Format:{UUID:.Format.UUID,BlockSize:.Format.BlockSize,TrashDays:.Format.TrashDays},Meta:{Subdir:.Meta.Subdir,NoBGJob:.Meta.NoBGJob,MaxDeletes:.Meta.MaxDeletes},Chunk:{CacheSize:.Chunk.CacheSize,Writeback:.Chunk.Writeback,MaxUpload:.Chunk.MaxUpload},FuseOpts}' > "$ROOT/original-config-safe.json"
+[[ $(jq -r .Pid "$ROOT/original-config-safe.json") == 14504 ]]
+quiet
+sudo -n /usr/bin/fuser -m /mnt/juicefs > "$ROOT/original-open-pids.txt" 2>/dev/null || [[ $? == 1 ]]
+[[ ! -s "$ROOT/original-open-pids.txt" ]]
+"${CEPH[@]}" df detail -f json > "$ROOT/admission.json"
+jq -e '.pools[] | select(.name=="juicefs-data") | .stats.max_avail >= 472446402560' "$ROOT/admission.json" >/dev/null
+date '+%F %T %z' > "$ROOT/started"
+trap failed ERR
+event BEGIN_APPROVED_PLAIN_MOUNT_AB
+
+# Close the finished two-hour round before switching the original mount.
+[[ $(findmnt -rn -M /data/reliability-lt-results/20261010-LT002-V4-SEQWRITE-2H/mnt -o ID) == 113 ]]
+sudo -n /usr/bin/fusermount3 -u /data/reliability-lt-results/20261010-LT002-V4-SEQWRITE-2H/mnt
+event PREVIOUS_PRIVATE_MOUNT_CLOSED
+sudo -n /usr/bin/fusermount3 -u /mnt/juicefs
+
+sudo -n env CEPH_ADMIN_SOCKET=none CEPH_LOG_FILE=none /data/reliability-lt-results/20260929-LT002-C8-PURE/code/juicefs-lt002-pure-upstream mount -d --cache-size 0 --max-uploads 150 --backup-meta 0 --metrics 127.0.0.1:9572 --log=/data/reliability-lt-results/20261010-LT002-PLAIN-MOUNT-AB/A/client.log -o allow_other,default_permissions tikv://192.168.11.11:2379,192.168.11.13:2379,192.168.11.14:2379/juicefs-prod /mnt/juicefs
+config '1.4.1+2026-07-30.0b90c7d-lt002-pure-upstream'
+event A_UPSTREAM_BEGIN
+"${CEPH[@]}" df detail -f json > "$ROOT/A/before.json"
+bash "$ROOT/juicefs-overwrite-manual-check.sh" --mount /mnt/juicefs --hours 1 --interval 300 | tee "$ROOT/A/execution.log"
+"${CEPH[@]}" df detail -f json > "$ROOT/A/after.json"
+config '1.4.1+2026-07-30.0b90c7d-lt002-pure-upstream'
+quiet
+event A_OBSERVATION_COMPLETE
+sudo -n /usr/bin/fusermount3 -u /mnt/juicefs
+
+sudo -n env CEPH_ADMIN_SOCKET=none CEPH_LOG_FILE=none /data/reliability-lt-results/20261010-LT002-V4-SEQWRITE-2H/code/juicefs-idle-written-trace mount -d --cache-size 0 --max-uploads 150 --backup-meta 0 --metrics 127.0.0.1:9572 --log=/data/reliability-lt-results/20261010-LT002-PLAIN-MOUNT-AB/B/client.log -o allow_other,default_permissions tikv://192.168.11.11:2379,192.168.11.13:2379,192.168.11.14:2379/juicefs-prod /mnt/juicefs
+config '1.4.1+2026-07-30.0b90c7d-idle-written-trace-776a542'
+event B_V4_BEGIN
+"${CEPH[@]}" df detail -f json > "$ROOT/B/before.json"
+bash "$ROOT/juicefs-overwrite-manual-check.sh" --mount /mnt/juicefs --hours 1 --interval 300 | tee "$ROOT/B/execution.log"
+"${CEPH[@]}" df detail -f json > "$ROOT/B/after.json"
+config '1.4.1+2026-07-30.0b90c7d-idle-written-trace-776a542'
+quiet
+event B_OBSERVATION_COMPLETE
+
+# No per-slice proof is claimed. If the pool observation is inconclusive,
+# leave the V4 mount alive for review instead of cancelling its queued work.
+before=$(jq -r '.pools[]|select(.name=="juicefs-data")|.stats.stored' "$ROOT/B/before.json")
+after=$(jq -r '.pools[]|select(.name=="juicefs-data")|.stats.stored' "$ROOT/B/after.json")
+if (( after > before + 5368709120 )); then
+    event B_SPACE_NOT_YET_CONVERGED_PRESERVE_MOUNT_FOR_REVIEW
+    exit 0
+fi
+sleep 60
+quiet
+"${CEPH[@]}" df detail -f json > "$ROOT/B/drain.json"
+jq -e --slurp '([.[0].pools[],.[1].pools[]]|map(select(.name=="juicefs-data"))) as $p | $p[0].stats.objects == $p[1].stats.objects and $p[0].stats.stored == $p[1].stats.stored' "$ROOT/B/after.json" "$ROOT/B/drain.json" >/dev/null
+sudo -n /usr/bin/fusermount3 -u /mnt/juicefs
+restore_original
+date '+%F %T %z' > "$ROOT/completed"
+event AB_COMPLETE_DATA_PRESERVED_REVIEW_REQUIRED

@@ -1,128 +1,122 @@
-# 已确认问题：低记录数覆盖写停止后没有合并触发
+# JuiceFS覆盖写停写后保留历史空间：最简复现与RFC提议
 
-## 1. 实测现象与根因
+## 1. 测试环境与现象
 
-R01/R02是两个独立真实TiKV/Ceph子目录，用上游v1.4.1加事件观测执行。没有回收策略修改；观测有额外开销，不能称完全未修改的二进制或零性能扰动。
+测试架构为 **JuiceFS文件系统＋TiKV元数据引擎＋Ceph对象存储**：
 
-| 项目 | R01 | R02 |
+```text
+fio → /mnt/juicefs → Linux VFS/FUSE → JuiceFS客户端
+                                      ├─ TiKV：文件属性、chunk/slice映射
+                                      └─ Ceph RADOS：实际文件内容的block对象
+```
+
+客户端为 `node2`，TiKV和Ceph后端部署在 `node1`、`node3`、`node4` 上，Ceph有6个OSD。JuiceFS卷名为 `juicefs-prod`，挂载点为 `/mnt/juicefs`，文件内容保存在采用EC 4+2纠删码的Ceph对象池 `juicefs-data`。
+
+基线是JuiceFS v1.4.1，commit `0b90c7db5a929ae6adc5faad948d108efd2c99f9`。参数为BlockSize=256 KiB、TrashDays=0、读缓存/writeback/`async_dio`关闭、正常后台任务开启、MaxUpload=150、MaxDeletes=10、backup-meta=0。
+
+**同一后端串行执行上游/RFC对照**，每侧另建16×256 MiB文件，初始化后完整覆盖四遍，累计写入20 GiB，最后停止文件IO60分钟：
+
+| 项目 | 上游v1.4.1 | 所附RFC方案 |
 |---|---:|---:|
-| 文件/逻辑数据 | 16×256MiB / 4GiB | 同左 |
-| 初始化+四次完整覆盖写 | 20GiB | 20GiB |
-| 成功Write事件 | 1376 | 1388 |
-| 64个chunk记录数范围 | 9～30 | 10～27 |
-| 目标chunk的合并请求 | 0 | 0 |
-| 冷期源引用/完全覆盖历史 | 20/16GiB | 20/16GiB |
-| 六份冷期FSTree | 相同 | 相同 |
-| 最后成功doWrite事件至冻结 | 3612.356秒 | 3610.768秒 |
-| 人工合并后源引用/历史 | 4/0GiB | 4/0GiB |
-| 成功人工提交 | 64 | 64 |
-| 旧源slice删除成功响应 | 1376 | 1388 |
-| 全量CRC | 4GiB PASS | 4GiB PASS |
+| 最终逻辑文件大小 | 4 GiB | 4 GiB |
+| 累计用户写入 | 20 GiB | 20 GiB |
+| 停写60分钟后，本轮新增的容量占用 | **20 GiB** | **4 GiB** |
+| 含EC 4+2冗余的本轮新增占用 | 30 GiB | 6 GiB |
+| 当前有效数据占保存数据量的比例 | **20%** | **100%** |
+| 当前有效数据占含冗余容量的比例 | **13.3%** | **66.7%** |
+| fio错误 | 0 | 0 |
 
-Write事件按顺序精确重放为最终原始映射，记录计数连续1..N，所有触发表达式false；序号无缺口、emitted=logged、queue/drop=0。R02全局trace含R01维护事件，归因按各轮inode过滤。每轮16GiB残留是有效数据的400%、源引用的80%。
+停止读写60分钟后，上游版本仍比测试前多占用20 GiB空间；补丁版本最后只多占用4 GiB，与当前文件大小一致。
 
-人工合并和CRC发生在冷期冻结之后，不算自动回收。对象删除成功是回调响应，不是盘面逐block独立读取证明。旧大规模现场不具备相同完整trace，不能将其全部残留归入这两轮结论。
+也就是说，上游版本本轮保存的20 GiB数据中，只有4 GiB是当前文件的有效内容，其余16 GiB已被覆盖，却仍占着空间。算上EC 4+2冗余，Ceph统计的本轮容量占用增加了30 GiB；补丁版本回收后增加了6 GiB，其中4 GiB是有效内容，2 GiB是正常冗余，不是未回收历史。
 
-[逐chunk结果和独立复核](raw-test-data/README.md)包含原归档hash。原因实验和当前候选的测试明确分开。
+含冗余的容量取自原始JSON中的 `stats.bytes_used`，不等同于包含DB/WAL等开销的整盘实际占用。上表比例按每轮测试前后的容量差值计算，不是整个池的空间利用率。
 
-## 2. 写入过程与定位
+## 2. 最简复现步骤
 
-### 2.1 先分清数据和“数据在哪里”的记录
+前提：被测版本已正常挂载；没有其他池写入或维护工作；可执行fio及 `ceph df detail`。输出保存到被测卷之外。单侧本次实测约67分钟，其中停写观察60分钟。
 
-以一个文件的前1MiB为例，它位于该文件的第0个chunk内：
+**以下仅为帮助理解的流程示例，不是本次实测执行的脚本原文件。** 实际使用的负载脚本和JSON采集命令见本节末尾；核查所附数据或复测时，以实际脚本为准。
 
-| 名称 | 在这个例子中代表什么 | 保存在哪里 |
-|---|---|---|
-| inode | 标识这个文件 | 元数据引擎 |
-| chunk | 文件按64MiB划分的逻辑区域；第0个chunk覆盖文件偏移 `[0,64MiB)` | 逻辑划分，不是一个必须原地覆盖的64MiB对象 |
-| slice数据 | 一次形成的、有独立ID的数据，如下面的A、B、C | 拆成block对象保存到对象存储 |
-| slice映射记录 | “chunk的哪段位置，对应哪个slice的哪段数据” | 元数据引擎，例如TiKV |
-| block对象 | 按配置BlockSize拆分的实际数据对象 | 对象存储，例如Ceph |
-
-一条映射包含 `pos、id、size、off、len`：chunk内起点、源slice ID、源完整大小、源内偏移、引用长度。它编码后只有24字节，却可以引用MiB级数据。
-
-**下面用A/B/C表示不同slice的数据，而不是三个文件。** 为便于讲解，假定每一步写入的数据都形成一个slice，并在下一步开始前完成数据和映射提交。实际一次应用write可能拆成多次FUSE请求，VFS也可能合并或切分数据，不能把应用write次数、block对象数、Meta.Write次数直接画等号。
-
-### 2.2 第一次写入：把1MiB的A写到文件开头
-
-整体顺序如下。箭头表示处理和依赖关系，**不表示全部在应用write的同一个同步调用栈中完成**：
-
-```text
-应用写入文件的 [0,1MiB)，内容记为A
-  → 内核通过FUSE把写请求交给JuiceFS
-  → VFS writer定位到chunk 0，接收并组织slice数据
-  → flushData调用底层writer.Finish，完成该slice的数据写出
-  → 通知commitThread：这个slice的数据处理已结束
-  → commitThread检查成功后调用Meta.Write，提交A的映射
-  → baseMeta.Write调用engine.doWrite，把映射保存到元数据后端
-  → 成功返回这个chunk当前的记录数numSlices
-  → baseMeta.Write按numSlices判断是否请求合并
+```bash
+set -euo pipefail
+MNT=/mnt/juicefs
+TEST_DIR=$(mktemp -d "$MNT/overwrite-repro-XXXXXX")
+sample() {
+    date '+%F %T %z'
+    df -h "$TEST_DIR"
+    ceph df detail
+}
+sample
+for wave in 0 1 2 3 4; do
+    BS=16M
+    CREATE=0
+    if (( wave == 0 )); then BS=4M; CREATE=1; fi
+    fio --directory="$TEST_DIR" --name=lt --filename_format='lt.$jobnum.0' \
+        --filesize=256M --size=256M --numjobs=16 --ioengine=psync --iodepth=1 \
+        --direct=1 --fallocate=none --rw=write --allow_file_create="$CREATE" \
+        --bs="$BS" --refill_buffers=1 --end_fsync=1
+    sample
+done
+for point in {1..12}; do
+    sleep 300
+    sample
+done
 ```
 
-逐步解释：
+初始化4 GiB后，后四遍只覆盖原文件，不新建文件。观察期间不读取文件内容、不执行人工compact/GC，也不删除文件。观察结束后保留目录。
 
-1. **FUSE Write是文件写请求入口。** 请求带文件句柄、文件偏移和数据，不是直接向TiKV写文件内容。
-2. **VFS writer负责组织数据。** 它把文件偏移换成chunk编号和chunk内偏移，选择或创建slice writer，缓冲/分块写出数据。有些block可在Finish之前已经上传。
-3. **Finish完成的是slice的数据写出，不是历史合并。** `flushData`会冻结该slice的数据范围并调用底层writer的Finish。按本次原因实验的writeback关闭配置，成功后相关数据上传已经完成；不同缓存/writeback配置的持久性边界需另行区分。
-4. **commitThread负责随后提交映射。** 每个活跃chunk的提交goroutine按slice创建顺序等待数据处理完成，成功才调用Meta.Write；若数据阶段失败，不进入这次正常映射提交。它不是等文件关闭才统一启动的线程。
-5. **Meta.Write写的是“数据在哪里”，不是再次上传1MiB的A。** Meta.Write是接口入口，实际进入公共的baseMeta.Write，再调用当前后端的engine.doWrite。TiKV属于KV引擎实现；Redis、SQL有各自实现。
-6. **engine.doWrite成功后才检查记录数。** 此时A的映射已经保存；上游用当前chunk的记录数决定要不要另外请求compaction。映射提交成功不等于已合并，也不等于旧对象已删除。
+比较补丁方案时，先卸载上游版本的挂载，再用补丁版本挂载同一卷，在新目录中按相同参数重复测试。上游测试文件保留，**用每轮测试前后Ceph池容量占用的差值，计算本轮多占用了多少空间**，不能直接比较两轮结束时的池总占用。
 
-A提交后，第0个chunk的状态是：
+容量占用通过 `ceph df detail` 记录，比较的是 `juicefs-data` 池测试前后多占用了多少空间。具体记录和每五分钟的观察结果见[测试报告](test-report.md)。
 
-```text
-元数据原始记录：[A: pos=0, size=1MiB, off=0, len=1MiB]
-当前可见内容：  文件 [0,1MiB) → A
-numSlices：    1
+### 实际使用的脚本与JSON采集
+
+本次实际执行的是两个脚本，而不是单独一个负载脚本：
+
+- [lt002-plain-mount-ab.sh.txt](reproduce/lt002-plain-mount-ab.sh.txt)：完整外层执行脚本，调用负载脚本，并在每侧调用前后生成 `before.json` / `after.json`。
+- [juicefs-overwrite-manual-check.sh](reproduce/juicefs-overwrite-manual-check.sh)：内层负载脚本，只生成fio日志和 `space.log`，不生成JSON。
+
+外层脚本涉及挂载切换，因此以 `.sh.txt` 附上，**只供核查执行过程，不要在其他环境原样执行**。
+内层脚本创建独立文件集，执行五遍写入，生成 `fio-0.log`～`fio-4.log` 和 `space.log`；停写后按实际经过的一小时观察，不执行读文件、CRC、compact/GC或删除。
+
+```bash
+bash reproduce/juicefs-overwrite-manual-check.sh --mount /mnt/juicefs --hours 1 --interval 300
 ```
 
-如果BlockSize为256KiB，A的数据对应4个block对象，**元数据这里仍只有1条slice映射，不是4条**。
+复现前可按自身环境调整脚本中的结果目录和Ceph查询命令，保持fio参数和观察时长不变。结果目录需可写，日志保存在被测卷之外。
 
-### 2.3 第二次写入：用B覆盖中间256KiB
+`before.json` / `after.json` 由外层执行脚本在测试前后采集，命令如下。`ROOT` 指向结果目录，`CEPH` 是该脚本中的Ceph查询命令数组：
 
-现在把文件 `[256KiB,512KiB)` 改成B。B走同样的流程：数据写出完成，再提交映射。本例中已提交的A不会被就地改写，元数据追加B的记录：
+```bash
+# 上游版本已经挂载时执行
+"${CEPH[@]}" df detail -f json > "$ROOT/A/before.json"
+bash "$ROOT/juicefs-overwrite-manual-check.sh" --mount /mnt/juicefs --hours 1 --interval 300 | tee "$ROOT/A/execution.log"
+"${CEPH[@]}" df detail -f json > "$ROOT/A/after.json"
 
-```text
-原始记录（按提交顺序）：
-  A：文件 [0,1024KiB)   → A的 [0,1024KiB)
-  B：文件 [256,512KiB)  → B的 [0,256KiB)
-
-读取时的有效布局（后写覆盖先写）：
-  [0,256KiB)    → A的前256KiB
-  [256,512KiB)  → B的256KiB
-  [512,1024KiB) → A的后512KiB
+# 正常卸载并切换为补丁版本后执行；不是两组连续使用同一个挂载进程
+"${CEPH[@]}" df detail -f json > "$ROOT/B/before.json"
+bash "$ROOT/juicefs-overwrite-manual-check.sh" --mount /mnt/juicefs --hours 1 --interval 300 | tee "$ROOT/B/execution.log"
+"${CEPH[@]}" df detail -f json > "$ROOT/B/after.json"
 ```
 
-这里有**2条原始记录、3段可见片段**。Write触发判断使用的是前者，即 `numSlices=2`。A还有768KiB可见数据，其源slice也不能作为全无效数据直接删除。
+测试及停写观察期间，需保持对应版本的客户端挂载运行。
 
-### 2.4 第三次写入：用C完整覆盖这1MiB
+## 3. 原因分析：逻辑覆盖不等于解除旧引用
 
-再把文件 `[0,1MiB)` 全部改成C，数据写出和映射提交后：
+JuiceFS把文件按64 MiB划分为逻辑chunk；一次形成的slice有独立ID，并按卷的BlockSize拆成Ceph对象。元数据保存 `pos/id/size/off/len` 映射记录，编码为24字节。
 
-```text
-原始记录仍保存： [A, B, C]       → numSlices=3
-当前读取只需要： [C]             → 1MiB有效数据
-源slice完整容量：1MiB+256KiB+1MiB = 2.25MiB
-完全被覆盖的源： A和B            → 1.25MiB
-```
-
-**读到的是新内容，不代表旧引用已经从元数据中移除。** 读侧可以根据后写优先规则算出只读C，但这个计算本身不把持久化的 `[A,B,C]` 改成 `[C]`，也不直接删除A/B的对象。
-
-在这个简化例子中，若合并处理了这三条记录，后续过程是：
+普通写入的处理关系为：
 
 ```text
-读取历史[A,B,C]，计算有效布局只有C
-  → 按有效布局写出合并结果D（1MiB）
-  → 元数据事务校验原历史前缀，替换为[D]
-  → 减少A/B/C的源引用
-  → 无其他共享引用、无Trash保留等约束时，删除旧源block对象
+VFS组织slice数据 → 数据写出完成 → Meta.Write/engine.doWrite追加映射
+                                             ↓
+                              按chunk当前记录数判断是否请求合并
 ```
 
-如果合并期间又提交了E，提交逻辑应保留新尾部，结果为 `[D,E]`。因此“逻辑覆盖”“移除历史引用”“删除实际对象”是三个不同阶段。
+后写覆盖先写只改变最终可见布局，不会因此直接移除全部旧映射和旧对象。例如同一区间先写A再写B，读时可以选择B，但持久化历史仍可能包含[A,B]。旧源slice仍被历史映射引用时，不能由Ceph直接删除；TrashDays=0也不能代替解除这些引用。
 
-### 2.5 为什么写完这些数据后，上游没有请求合并
-
-上游 `pkg/meta/base.go`的`baseMeta.Write`：
+上游 `pkg/meta/base.go` 的写侧触发条件为：
 
 ```go
 if numSlices%100 == 99 || numSlices > 350 {
@@ -134,43 +128,33 @@ if numSlices%100 == 99 || numSlices > 350 {
 }
 ```
 
-该条件为99/199/299等确定性计数，不是1%随机概率。达到2500是同步once保护，但本两轮**从未达到任何写触发点**，不是同步保护失效。低记录历史不会因等待时间变长而进入该条件。
+它按记录数量触发，不按历史容量或等待时间触发。少量大slice的覆盖可能留下很多历史字节，却尚未达到第一次99条的触发点；停写后没有新的Write再次检查。符合条件的读或显式维护可以另外触发，但本实验的观察阶段没有这些操作。
 
-代入上面的例子：A/B/C提交后，当前记录数依次为1、2、3，均不满足外层条件。**流程走到了“判断是否合并”，但判断结果一直为否，因此根本没有发出Write侧合并请求。** 停写后没有新的Meta.Write来执行这一判断，等待一分钟或一小时也不会把3条变成99条。
+因此，需要确认：**低记录数覆盖写后停止读写时保留历史，是预期的空间/合并开销取舍，还是应有其他后台机制继续处理？**
 
-### 2.6 对应到本次4GiB实测：少量记录为什么能留下16GiB历史
+## 4. RFC修复提议
 
-再用一个贴近实验量级的简化模型：一个64MiB chunk，每遍完整写入假定形成4条独立16MiB映射，轮与轮完全覆盖，期间没有合并、没有共享引用。
+保留原有写侧触发条件，增加“成功写入时登记，停写后检查，确认无覆盖历史才结束”的处理路径：
 
-| 完整写入遍数（含初始化） | 每chunk原始记录数 | 当前有效数据 | 源slice完整容量 | 完全被覆盖的历史 |
-|---|---:|---:|---:|---:|
-| 1 | 4 | 64MiB | 64MiB | 0 |
-| 2 | 8 | 64MiB | 128MiB | 64MiB |
-| 5 | 20 | 64MiB | 320MiB | 256MiB |
+1. **登记。** 普通Write成功提交映射后，按 `(inode, chunk index)` 跟踪有多条记录的chunk；已有项遇到新Write时更新代次和到期时间。待办只在本客户端内存中，上限65536项。
+2. **检查。** 每个允许后台任务的可写客户端新增一个后台检查协程，负责定期查看待办表。每个chunk从本客户端最近一次成功Write起，等待一分钟后才可以被检查。该协程每秒检查一次，每次最多选择一个已到期的chunk处理；一次处理尚未结束，就不会开始下一项，也不会为每个chunk单独创建协程。
+3. **合并。** 对不超过1000条的记录，比较原始映射累计引用长度与最终有效长度；没有重叠历史就结束，否则复用原有单批合并。更大记录集继续使用原有有限批次规划。
+4. **跟进。** 成功合并一次后仍保留待办，之后重新读取确认；失败则冷却后重试。新Write改变代次时，旧检查不能删除待办或覆盖新的等待时间。元数据提交继续校验旧前缀并保留并发追加尾部。
+5. **删除。** 合并解除旧slice引用后，由原有删除流程处理满足条件的对象；共享引用、TrashDays等规则保留。不通过直接删除后端对象绕过元数据。
 
-20条记录仍远低于第一次99条触发点，却已引用5倍于有效数据的源容量。chunk的64MiB限制的是文件**逻辑地址范围**，不是历次覆盖写的源容量之和。
+### 成本与边界
 
-将同样的五代完整覆盖模式扩展到64个chunk：
+- **停写一分钟不保证立即回收。** 每个chunk分别计时，但上述后台检查协程发现本客户端还有合并任务未结束时，会保留待办、暂不开始本次检查，等后续定时检查再尝试。这些合并任务也可能来自其他chunk；如果持续存在，就可能让已停写chunk的回收长期延后。因此，一分钟只是开始检查前的等待时间，不是回收完成时间。
+- **合并是真实数据IO。** 按最终可见布局读取所需有效数据，再以新slice ID上传新block对象，并在解除引用后删除旧对象；不是仅整理元数据，也不是直接复用旧对象键。新增触发机会可能增加后端读写竞争。
+- **共享客户端锁。** 登记、待办选取及合并标记结算使用已有 `baseMeta` 锁；扫描为O(pending)。这不是TiKV集群全局锁，但大待办表仍可能增加客户端锁竞争。
+- **有界不等于不遗漏。** 满表时新chunk可能不被登记，并打印限频告警；已有项仍可更新。待办不持久化，不保证重启后补处理，也不覆盖其他客户端或Copy/Truncate/打洞等非Write操作。
+- **关闭不是强制中断。** 关闭客户端会话时，会通知上述后台检查协程退出，并等待已经开始的操作返回；后端操作仍沿用原有取消机制，没有新增强制中断时限。只读及 `NoBGJob=true` 客户端不登记待办，也不启动该后台检查协程。
 
-```text
-当前逻辑数据：64 × 64MiB  = 4GiB
-全部源容量：  64 × 320MiB = 20GiB
-覆盖历史：    64 × 256MiB = 16GiB
-```
+## 5. 补丁与材料
 
-这里“每遍4条、最后20条”只是讲解模型，**不是对fio的16MiB请求和slice个数做一一对应**。真实R01/R02每chunk是9～30/10～27条；20GiB源引用和16GiB历史来自实际映射核算。两者说明同一件事：**以记录数量为条件的触发，在少量大slice覆盖后可能还没到门槛，但无效历史容量已经很大。** 源容量也不等同于含压缩、副本/EC等因素的Ceph raw used。
+实现补丁仅修改 `pkg/meta/base.go`、新增 `pkg/meta/idle_write.go`；测试另附。
 
-代码对照：固定上游`pkg/vfs/writer.go`的`flushData`、`commitThread`和`pkg/meta/base.go`的`baseMeta.Write`。上述调用链和数据/映射区别已在本报告展开，不依赖额外的内部代码阅读文档。
-
-读侧缓存未命中且>=5条原始/可见映射可以请求合并；显式compact/GC也可触发。两轮执行器先写、再冷期、再人工维护/CRC；trace证明没有合格读触发请求，不把“没有request”单独解释成“没有任何用户读”。
-
-**根因范围：低记录数普通覆盖写缺少停写后的后续合并机会。** busy丢请求虽可另行复现，但不发生在这两轮；Copy/Truncate/打洞和全局元数据静默策略也不是这两轮证明必须改造的部分。
-
-## 3. 修复提议
-
-### 3.1 改动范围和应用方式
-
-实现补丁仅修改`pkg/meta/base.go`并新增`pkg/meta/idle_write.go`，+191/-19；测试单独放在0002。没有新CLI、元数据格式、跨引擎reader接口、busy请求队列或Copy/Truncate/打洞通知。原Write触发条件保持不变。
+在干净固定上游基线上应用：
 
 ```sh
 REPORT=/absolute/path/to/juicefs-idle-written-chunk-reclamation
@@ -178,38 +162,4 @@ git apply "$REPORT/patches/0001-meta-compact-written-chunks-after-idle.patch"
 git apply "$REPORT/patches/0002-meta-test-written-chunk-idle-compaction.patch"
 ```
 
-只对前述干净固定基线按序应用。补丁含作者、日期、说明和署名；**没有`--idle-compact-delay`参数**，一分钟是当前提案的固定策略，不是生产回收SLA。
-
-### 3.2 登记、检查和重试
-
-成功`engine.doWrite`后，若chunk有多条记录则登记`(inode, index)`；已有登记项后续每次成功Write均更新代次和ready，即使记录数已变少。可写session且`NoBGJob=false`才启用。
-
-每个chunk一分钟没有**本客户端的成功Write**后有检查机会；其他chunk的IO、用户Read不重置它。一个串行session worker每秒tick至多处理一个到期chunk，当前客户端有任意compactor时先让出，避免另起无界并发。
-
-worker预留原compacting槽，调用现有`doRead`取得原始历史，不通过公开Read触发合并。记录数不超过1000时，比较原始非hole引用长度与latest-wins有效长度；确认没有覆盖历史才出队。发现覆盖则复用原单批合并及该快照。成功合并不立即出队，随后再检查确认；读取、对象或提交失败及未确认完成时保留待办，从实际完成时刻再冷却一分钟。
-
-这里比较的长度仅用于判断是否有覆盖，**不是源slice完整容量统计，也不直接决定对象可否删除**。非nil空列表或ENOENT可判无工作；nil/读取失败不能当作干净。超过1000条时不额外对全历史buildSlice，仍尝试原有限单批，并不保证所有历史布局最终清空。
-
-### 3.3 新写入和对象安全
-
-检查期间不提前移除待办。探查后、开始对象合并前核对代次；结算时再次核对。若同chunk有新Write，则保留其更新的ready，不让旧检查删除新工作。若新Write发生在对象处理阶段，继续依赖原元数据提交的origin前缀校验保留并发尾部，再由后续检查处理。
-
-`compactChunkOnce`只提取原单批主体：普通调用仍自行读取，idle调用复用探查快照；原`skipSome`、最多1000条单批、布局、对象重写及引用删除规则保留。普通force在本批释放槽后才递归，避免外层defer误删后继任务槽；idle自身负责释放槽，不重复释放。
-
-流程仍为：有效数据重写→原事务前缀校验/替换、保留尾部→减少源引用→满足原删除条件后删block。共享引用、TrashDays及MaxDeletes仍约束删除；不能越过这些条件强删旧对象。提交失败的孤立产物仍按上游语义处理。
-
-### 3.4 成本和适用边界
-
-- 待办为进程内有界map，最多65536个chunk；选取时在原metadata mutex内扫描map，成本O(pending)。满时保留已登记项、限频告警，新增未登记项没有兜底发现。
-- 后端`doRead`仍可能全量读取KV/SQL value或Redis列表；1000限制是单批规划上限，不是RPC读取字节、内存或全步骤CPU硬上限。
-- 单worker和busy让出不等于带宽限速或零前台竞争；批次开始后，前台读写与其他普通合并可以同时发生。持续后端错误会每分钟重试。
-- 新worker纳入原`sessWG`；CloseSession会等待在途检查/批次退出。但已开始的对象回调、提交和不响应ctx的后端读取沿用原取消边界，没有新增硬关闭期限，也没有改造所有普通compactor生命周期。
-- 只跟踪本进程成功普通Write；不保证跨重启恢复、其他客户端历史、非Write修改或溢出遗漏。它不是全卷历史扫描器，不能声称所有历史最终回收、完全无成本或绝对无新问题。
-
-## 4. 已验证和待验证
-
-本地三后端36专项×3 race通过；真实timer＋对象用例不依赖配置注入或合成时间，使用一分钟生产等待，CRC/源删除通过。相同公开操作的上游负控在75秒后失败于缺触发断言。
-
-2026-10-10，同一候选已完成**两轮独立真实TiKV/Ceph短验证**：不读取用户数据、不人工compact/GC，历史引用自动收敛至0、有效引用4 GiB，随后全量CRC通过；另一次前后台交叠验证观察到同chunk新Write、代次保留及后续自动回收。完整方法、数据和实际负载偏差见[test-report](test-report.md)。
-
-扩大客户端race在上游/候选都失败，不能声称全套race无问题。长期运行、近容量扫描成本、生产前台延迟/吞吐回归和慢后端关闭边界仍未完整验收；进行中的两小时顺序覆盖写也不预先记PASS。此补丁仍是针对已确认原因的窄范围提案，短功能通过不等于生产可用。
+实测结果见[测试报告](test-report.md)，两侧的fio日志和空间记录直接列在[原始数据目录](raw-test-data/README.md)，无需下载或解压压缩包。

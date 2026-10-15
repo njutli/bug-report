@@ -1,72 +1,96 @@
-# Candidate validation: local tests and real-backend short checks
+# Simple field comparison: upstream/RFC reclamation on a normal mount
 
-## 1. Local environment and results
+## 1. Goal and method
 
-New executions use Go 1.26.0 Linux/amd64, GOMAXPROCS=4, offline modules and read-only dependencies. Focused tests use memkv, SQLite and an exclusive Redis Unix socket.
+Compare whether **upstream JuiceFS and the patched version reclaim old data after the same file set is repeatedly overwritten and file IO stops**.
 
-| Run | Outcome |
-|---|---|
-| Focused race | 36 leaves × 3 = 108 passes, no failures/skips/race |
-| Upstream automatic object control | Expected failure after 75 seconds: three records remain, IDLE_WRITE_TRIGGER_MISSING |
-| Non-race client regressions | MemKV/SQLite/Badger pass |
-| Broad client race, candidate | FAIL, race reported |
-| Same broad client race, upstream | FAIL, race reported |
-| Generic development build | PASS |
+Client `node2` ran the arms serially on the same TiKV/Ceph volume, with JuiceFS mounted at `/mnt/juicefs`. The baseline was v1.4.1, commit `0b90c7db5a929ae6adc5faad948d108efd2c99f9`; the other arm tested the RFC processing approach.
 
-Broader races concern reused-client format initialization and asynchronous deletion state; the proposal does not redesign all lifecycle handling or remove test assertions. Original logs and package failures are retained.
+- Each arm created a separate 16 × 256 MiB file set: 4 GiB.
+- Initialize once with bs=4 MiB, then fully overwrite four times with bs=16 MiB. Each pass wrote 4 GiB; total writes were 20 GiB.
+- fio: 16 jobs, psync/QD1, direct=1, fallocate=none, refill_buffers=1, end_fsync=1; no file creation after initialization.
+- Volume/mount: BlockSize=256 KiB, TrashDays=0, cache-size=0, writeback/`async_dio` disabled, MaxUpload=150, MaxDeletes=10, NoBGJob=false, backup-meta=0.
+- Record `df -h` and `ceph df detail` before writing, after each pass and every five minutes during 60 idle minutes.
+- No file-content reads, CRC, manual compact/GC, deletion or per-slice observation.
+- Preserve the upstream test files and use a new directory for the patched run. For each run, subtract the space used before the test from the space used afterward to calculate how much extra space it used.
 
-Focused coverage includes low record counts, five complete overwrite generations, native 99-record snapshot tails, writes during object work/clean inspection, valid nonoverlap, busy deferral, read/object/commit errors, completion-relative cooldown, finite large histories, oldest-ready scheduling, capacity, disabled states and close during worker IO.
+The complete outer file, [lt002-plain-mount-ab.sh.txt](reproduce/lt002-plain-mount-ab.sh.txt), switches client versions and collects JSON space records before the test and after idle observation. It calls [juicefs-overwrite-manual-check.sh](reproduce/juicefs-overwrite-manual-check.sh) to run the overwrite test.
 
-The automatic object test compiles unchanged on upstream and uses a real session timer, the production one-minute delay, CachedStore/vfs.Compact and memory ObjectStorage. It freezes metadata convergence before reading 98304 bytes and checking content/CRC and deletion of old blocks. Upstream does not trigger within 75 seconds; the candidate passes all three runs. This is not Ceph or soak acceptance.
+The inner script creates a separate test subdirectory beneath the JuiceFS mount. fio only initializes and overwrites the 16 test files in that subdirectory. `fio-0.log` through `fio-4.log` contain the five write passes' results; `space.log` contains the output of `df -h` and `ceph df detail`, recording filesystem and Ceph space usage. Logs are saved outside the tested JuiceFS volume.
 
-## 2. Reproduction and artifact verification
+The [reproduction section](bug-report.en.md#2-simple-reproduction) distinguishes the flow example from these two original files. The data came from the actual execution, not a rerun of the example.
 
-Apply the implementation and test patches as described in the bug report. With an exclusive COMPACT_RETRY_REDIS_SOCKET:
+## 2. Results
 
-```sh
-GOTOOLCHAIN=local GOPROXY=off GOMAXPROCS=4 go test -mod=readonly -p 1 -race -count=3 -timeout=300s -run '^TestIdleWrite' -json ./pkg/meta
-GOTOOLCHAIN=local GOPROXY=off GOMAXPROCS=4 go test -mod=readonly -p 1 -count=1 -timeout=300s -run '^(TestMemKVClient|TestSQLiteClient|TestBadgerClient)$' -json ./pkg/meta
-python3 tools/verify.py
-python3 tools/verify.py --upstream /path/to/clean/juicefs-v1.4.1
+| Metric | Upstream v1.4.1 | Attached RFC approach |
+|---|---:|---:|
+| Logical file set | 4 GiB | 4 GiB |
+| Total user writes | 20 GiB | 20 GiB |
+| fio outcome | Five successful passes; all 80 job results error=0 | Same |
+| Idle observation | 60 minutes, 12 samples | Same |
+| Extra pool space used by this run | **20 GiB** | **4 GiB** |
+| Space used beyond the current file size | **16 GiB** | **0 GiB** |
+
+Space usage here means the amount of data stored in Ceph pool `juicefs-data`, excluding extra space for replicas or erasure coding. Subtract the recorded byte count before each test from the count afterward:
+
+```text
+Upstream: 446177189292 - 424702352812 = 21474836480 bytes = 20 GiB
+RFC:      450472156588 - 446177189292 =  4294967296 bytes =  4 GiB
 ```
 
-For the upstream automatic control, copy only idle_write_fixture_test.go and idle_write_automatic_test.go and run the automatic test; other tests depend on the new implementation. The artifact verifier checks hashes and recorded summaries; --upstream applies patches in a separate temporary copy without modifying the supplied baseline. It does not rerun Go or cluster workloads. Internal reading notes are not required in the submission.
+Upstream pool space usage did not decrease during the 60-minute observation. Five-minute records from the patched run showed usage approaching its final level about 10–15 minutes after writes stopped. At 60 minutes, only 4 GiB more space was used than before the test. Checking every five minutes does not give an exact completion second.
 
-## 3. TiKV/Ceph short checks completed on 2026-10-10
+**After file IO stopped, the patched version automatically reclaimed old overwrite data, leaving only as much extra space used as the current file set's size.** This round observes space changes without CRC or per-slice deletion checks.
 
-The Linux client used TiKV metadata and Ceph objects. The fixed upstream baseline plus patch 0001 and observation-only instrumentation was used, with no B-catchup or older reclamation policy. Implementation SHA256: `776a542192a63595c5a5dbd039a03d16b601b24fa285a6e65cf057118ca10a5a`; observed binary SHA256: `05d0417f90282e4b15aa123f5e52b81b0bfd2bf1756977827f74f929e5293dcb`. The same binary and production one-minute delay were used in both rounds.
+## 3. Evidence and checks
 
-Each independent round initialized 16 × 256 MiB files with bs=4M, then performed four explicit full overwrites with bs=16M: 4 GiB logical data, 20 GiB user writes. Settings: 16 jobs, psync/QD1, direct=1, fallocate=none, refill_buffers=1 and end_fsync=1 per pass. Writes carried CRC32C headers at 256 KiB intervals, without immediate readback. Per-job errors, bytes, IO counts and file identities were checked. Automatic evidence was frozen without user reads or manual maintenance before full CRC.
+| Artifact | Contents |
+|---|---|
+| [Upstream run](raw-test-data/upstream/) | Five fio logs, `before.json` / `after.json` space records and `space.log` observations |
+| [Patched run](raw-test-data/patched/) | Same |
 
-Volume/mount settings: BlockSize=256 KiB, TrashDays=0, read cache/writeback/async_dio disabled, MaxUpload=150, MaxDeletes=10, NoBGJob=false and BackupMeta=0. Source-reference sizes are deduplicated by slice ID; completely shadowed sizes count only sources with no live fragment. They are not raw Ceph usage or cumulative deleted-object bytes.
+`fio-0.log` is initialization; `fio-1.log` through `fio-4.log` are the four full overwrites. `space.log` records usage before writes, after each pass and every five idle minutes. The JSON records preserve exact byte counts used to calculate the 20 GiB and 4 GiB results. Files are directly accessible and retain their original contents; see the [data index](raw-test-data/README.md).
 
-| Metric | First independent round | Independent repeat A | Foreground overlap B |
-|---|---:|---:|---:|
-| User writes | 20 GiB | 20 GiB | Additional 4 GiB + 128 MiB |
-| Successful Meta.Write events | 1226 | 1187 | 193 in B |
-| Successful compaction commits | 66 idle | 66 idle | 61 idle + 4 native in B |
-| Frozen references / shadowed history | 4 / 0 GiB | 4 / 0 GiB | 4 / 0 GiB |
-| Obsolete slices with deletion success | 1228 | 1189 | 1447 cumulative A+B |
-| Stop-to-evidence-freeze | 641.903 s | 641.956 s | 348.235 s |
-| Pending/compacting and in-flight upload/deletion | Zero | Zero | Zero |
-| Subsequent full CRC | 4 GiB PASS, 37.056 s | 4 GiB PASS, 36.785 s | 4 GiB PASS, 37.196 s |
+Artifact verification:
 
-Repeat A's no-read snapshots show references/shadowed history decreasing from 19.9375/15.9375 through 17.25/13.25 and 13.75/9.75 to 4/0 GiB. The first round did not retain a valid immediate-stop snapshot; do not attribute the same curve to it. Freeze intervals include sampling/review overhead and are not universal reclamation SLAs. Files retained their identities and private mounts closed normally.
+```sh
+sha256sum -c SHA256SUMS
+```
 
-### Actual overlap and limitations
+This checks file integrity without rerunning tests. The submission includes this simple reproduction's raw data and the two focused automated-test logs below, not broader investigations, build logs or long-running test data.
 
-A selected idle object batch lasted 22.005 seconds. A successful Write to that same chunk changed generation 1 to 2 during the batch; settlement retained the entry. A later automatic commit included the new Write and previous compacted output, followed by a clean generation-2 inspection and passing CRC.
+## 4. Automated tests from patch 0002
 
-The overlap included a 128 MiB write and two 120-second reads at 4 MiB/s. All fio errors were zero. Write clat P99 was 21.627 ms; sequential/random read P99 was 233.832/219.152 ms. There was no matched upstream latency A/B, so zero foreground performance regression is not established.
+Patch 0002 adds tests only and does not participate in normal client builds. The focused tests cover compaction timing, concurrent writes, failures and retries, session shutdown, the tracking limit, content integrity after automatic compaction and deletion of old objects. These results are separate from the TiKV/Ceph space comparison above.
 
-The planned size=64M/loops=2 write was incorrectly described as two passes over the same chunk. Actual IO covered adjacent chunks 0 and 1 once each. One real Write overlapped the selected chunk's batch; two separate Writes to the same chunk were not tested. B also had user reads and native compactions, so its entire reclamation cannot be attributed to idle; the two no-read rounds provide that evidence.
+Local test environment: Go 1.26.0 and a dedicated Redis 8.0.5 instance.
 
-The first collector initially snapshotted an older subtree. Those snapshots were excluded; the five fio writes were correct and were not repeated. Only explicit-subtree observation was repaired; target inode matching and gap-free trace were rechecked, with the binary unchanged.
+Focused regression command:
 
-The [evidence index](raw-test-data/README.md) contains independent field summaries and archive hashes. Full sanitized archives are retained and available on request; the submission does not include credentials or user file contents. Overlap's 64 health samples were HEALTH_OK, with six OSDs up/in and no BlueFS spill. Read-side context-canceled warnings were retained; passing fio/CRC without an upstream A/B does not prove no change in their frequency.
+```sh
+export COMPACT_RETRY_REDIS_SOCKET=/path/to/dedicated/redis.sock
+go test -mod=readonly -p 1 -race -count=3 -timeout=300s -run '^TestIdleWrite' -json ./pkg/meta
+```
 
-## 4. Remaining boundaries
+Run the command from the JuiceFS source root after applying the patches. Tests call internal interfaces without mounting a filesystem: mechanism tests use memkv, SQLite or Redis metadata with simulated object callbacks; the automatic object case uses SQLite, in-memory object storage and the real `vfs.Compact` path. All cases are included in the focused regression totals below.
 
-The cause experiments are not candidate tests. Local passes and these short functional checks do not establish sustained full-load capacity, production latency/throughput, near-65536-entry scan costs, persistent-error retry cost or slow-backend shutdown bounds. Restart recovery, other-client histories, non-Write mutations and overflow recovery are outside the proposal. Broader race failures remain recorded.
+`redis.sock` is the Unix socket of an already-running, dedicated Redis instance, not a database file. Test initialization clears DB 0 of that instance. Without this variable, Redis subtests are skipped.
 
-The current two-hour sequential overwrite's automatic reclamation/CRC acceptance is not yet complete and is not marked PASS. Further checks and their coverage are in the [field checklist](field-validation.md).
+| Test | Result | Original log |
+|---|---|---|
+| Focused regression | 15 top-level tests and 36 leaf cases, each repeated three times: 108 passes, no failures or skips, no race reports | [focused-race.log](raw-test-data/automated/focused-race.log) |
+| Automatic object negative control on unmodified upstream | Reported `IDLE_WRITE_TRIGGER_MISSING records=3` after approximately 75 seconds, failing as expected and demonstrating that the test detects the missing idle trigger | [stock-negative.log](raw-test-data/automated/stock-negative.log) |
+
+For the upstream negative control, do not apply patch 0001. Copy only `idle_write_fixture_test.go` and `idle_write_automatic_test.go` from patch 0002 into the upstream tree, then run:
+
+```sh
+go test -mod=readonly -p 1 -race -count=1 -timeout=300s -run '^TestIdleWriteAutomaticObjects$' -json ./pkg/meta
+```
+
+These are focused `TestIdleWrite` results. The in-memory object test does not replace the real TiKV/Ceph space verification above.
+
+## 5. Scope
+
+- The comparison is **20 GiB of extra space used by upstream versus 4 GiB with the patch**. This test does not measure throughput benefits or set a deadline for reclamation.
+- The patch's background checks can be postponed for a long time if compactions on other chunks in the same client remain active. Overflow omissions, locked scanning and actual backend compaction IO remain considerations.
+- Feedback is welcome on triggering policy and resource trade-offs.

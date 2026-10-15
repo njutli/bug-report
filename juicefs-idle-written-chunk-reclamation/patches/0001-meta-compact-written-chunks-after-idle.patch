@@ -1,19 +1,23 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Li Lingfeng <a1151488180@gmail.com>
 Date: Sat, 10 Oct 2026 08:00:00 +0800
-Subject: [PATCH 1/2] meta: compact written chunks after an idle interval
+Subject: [RFC PATCH 1/2] meta: compact written chunks after an idle interval
 
-Remember chunks with multiple records after successful Write calls.
-A serial session worker checks chunks after one minute without a local
-write and reuses the native batch planner, prefix commit and deletion.
-Retain entries until a later clean read; generations preserve new writes.
-Reuse the probe snapshot rather than reading it a second time.
+Repeated overwrites can leave old slices referenced in chunk metadata
+even though the logical file size stays unchanged. Write-side compaction
+depends on the mapping record count; below its trigger, covered data can
+remain after writes stop if there are no later reads or manual
+compaction.
 
-Use a bounded process-local map and completion-relative cooldown. ReadOnly
-and NoBGJob disable registration. No new CLI, engine interface, metadata
-format, busy retry map or non-Write mutation tracking is introduced.
-The one-minute delay is a proposed policy, not a hard reclamation SLA.
-Existing backend reads are still full-value reads.
+Give these chunks another compaction opportunity after they become idle,
+while keeping the existing write-side trigger unchanged.
+
+Keep a bounded, client-local set of successfully written chunks with
+multiple records. A single background goroutine checks them after one
+minute without a local write, reuses existing compaction and deletion,
+and rechecks until clean. It yields while this client has other
+compactions in progress. Tracking is session-local; no persistent
+metadata format or CLI changes are introduced.
 
 Base: JuiceFS v1.4.1 (0b90c7db5a929ae6adc5faad948d108efd2c99f9)
 
@@ -207,7 +211,7 @@ new file mode 100644
 +		if m.idleWrites == nil {
 +			m.idleWrites = make(map[idleWriteKey]*idleWrite)
 +		}
-+		if len(m.idleWrites) == idleWriteLimit {
++		if len(m.idleWrites) >= idleWriteLimit {
 +			if time.Since(m.idleWriteWarning) >= time.Minute {
 +				m.idleWriteWarning = time.Now()
 +				logger.Warnf("idle write compaction tracking full; some chunks omitted")

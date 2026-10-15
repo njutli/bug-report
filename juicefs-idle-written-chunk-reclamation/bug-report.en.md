@@ -1,45 +1,166 @@
-# Confirmed cause: low-record overwrite history has no post-write trigger
+# Overwrite history retained after writes stop: simple reproduction and RFC
 
-## 1. Observation and cause
+## 1. Environment and observation
 
-Two isolated TiKV/Ceph experiments used upstream JuiceFS v1.4.1, commit `0b90c7db5a929ae6adc5faad948d108efd2c99f9`, plus observation-only instrumentation. Each used 16 × 256 MiB files, initialization and four full overwrites: 4 GiB logical data and 20 GiB total user writes. R01/R02 recorded 1376/1388 successful metadata Writes; all 64 chunks remained at 9–30/10–27 records. Exact event replay matches the raw mappings, record counts are continuous, trigger predicates are false, and the complete trace contains no target compaction request or busy rejection.
+The stack is **JuiceFS filesystem + TiKV metadata engine + Ceph object storage**:
 
-Six idle snapshots per round remained identical for at least 60 minutes: 20 GiB of distinct source slices remained referenced, including 16 GiB entirely shadowed by later writes. These are deduplicated full-slice reference sizes, not Ceph physical disk usage. After freezing this evidence, manual compaction succeeded on 64 chunks, references became 4 GiB, source deletion callbacks succeeded and full CRC passed.
+```text
+fio → /mnt/juicefs → Linux VFS/FUSE → JuiceFS client
+                                      ├─ TiKV: attributes and chunk/slice mappings
+                                      └─ Ceph RADOS: block objects with file content
+```
 
-The file-content path is FUSE Write → VFS slice writer → data Finish → commitThread → Meta.Write → engine.doWrite. File data is stored as block objects; metadata stores ordered slice mappings. A slice mapping has `pos/id/size/off/len`, and one slice may comprise several block objects. New mappings append to history; read-time latest-wins layout computation does not itself remove persistent old references. Application writes, metadata records and block objects are not one-to-one.
+The client is `node2`; TiKV and Ceph run on `node1`, `node3` and `node4`, with six Ceph OSDs. The JuiceFS volume `juicefs-prod` is mounted at `/mnt/juicefs`, with file content stored in Ceph pool `juicefs-data` using EC 4+2 erasure coding.
 
-Upstream Write triggers on `numSlices%100 == 99 || numSlices > 350`, using the current per-chunk record count. Below 2500 it requests ordinary asynchronous compaction; at or above 2500 it uses synchronous once. The predicate is deterministic, not a 1% probability. Five full versions can reference five times the live data while still leaving far fewer than 99 records. Waiting does not increase the count. Reads or explicit maintenance may later trigger compaction, but were absent before the evidence was frozen.
+The baseline is JuiceFS v1.4.1, commit `0b90c7db5a929ae6adc5faad948d108efd2c99f9`. Settings: BlockSize=256 KiB, TrashDays=0, read cache/writeback/`async_dio` disabled, ordinary background jobs enabled, MaxUpload=150, MaxDeletes=10, backup-meta=0.
 
-This establishes a missing post-write opportunity in these two low-record-count rounds, not a busy-admission or synchronous-once failure. Instrumentation adds overhead; successful deletion callbacks are not independent physical-sector measurements. Older field history cannot all be attributed to this mechanism without its missing trace. See the [cause evidence](raw-test-data/README.md).
+**Upstream and RFC arms ran serially on the same backend.** Each created a separate 16 × 256 MiB file set, initialized it, fully overwrote it four times, and stopped file IO for 60 minutes:
 
-## 2. Proposed change
+| Metric | Upstream v1.4.1 | Attached RFC approach |
+|---|---:|---:|
+| Final logical file size | 4 GiB | 4 GiB |
+| Total user writes | 20 GiB | 20 GiB |
+| Extra pool space used after 60 idle minutes | **20 GiB** | **4 GiB** |
+| Extra pool space, including EC 4+2 redundancy | 30 GiB | 6 GiB |
+| Current live data / stored data | **20%** | **100%** |
+| Current live data / space including redundancy | **13.3%** | **66.7%** |
+| fio errors | 0 | 0 |
 
-The implementation patch modifies `pkg/meta/base.go` and adds `pkg/meta/idle_write.go` (+191/-19); tests are separate. Apply implementation patch 0001, then test patch 0002 to the clean fixed baseline. No new CLI, metadata format, engine reader interface, busy-request queue or Copy/Truncate/hole tracking is added. There is **no `--idle-compact-delay` option**. The native Write predicate is unchanged.
+After 60 minutes without file IO, upstream JuiceFS still used 20 GiB more pool space than before the test. The patched run ended with only 4 GiB of extra space used, matching the current file set's size.
 
-### Registration and scheduling
+Only 4 GiB of upstream's 20 GiB stored by this run was current file content; the other 16 GiB had been overwritten but still occupied space. Including EC 4+2 redundancy, Ceph reported 30 GiB of extra space used. After reclamation, the patched run used 6 GiB of extra space: 4 GiB of live content plus 2 GiB of normal redundancy, not unreclaimed history.
 
-After successful `doWrite`, remember `(inode, chunk index)` when it has multiple records. Further successful Writes update an existing entry's generation and ready time, even if its record count has decreased. Writable sessions with background jobs enabled activate registration.
+Usage including redundancy comes from `stats.bytes_used` in the raw JSON records; it is not a measurement of total device usage including DB/WAL and other overhead. These ratios use each run's before/after differences, not whole-pool utilization.
 
-One minute without a successful **local-client Write to that chunk** makes it eligible; reads and writes to other chunks do not reset it. One serial session worker processes at most one eligible entry per tick, and defers admission while any client-local compactor is active. This is not global client or cluster idleness.
+## 2. Simple reproduction
 
-The worker reserves the existing compaction slot and calls native `doRead` for the raw history, without invoking public Read. With at most 1000 records it compares non-hole raw mapping lengths with latest-wins live lengths: no covered data means the entry can be removed. This is an overlap check, not full-slice capacity accounting or permission to delete objects. Otherwise it reuses the native batch planner with the same snapshot. A successful batch remains pending until a later clean inspection; errors and unconfirmed work cool down for one minute from actual completion. ENOENT or a non-nil empty list may be clean; nil or failed reads may not.
+Prerequisites: the tested version is mounted normally, no other pool writers or maintenance are active, and fio and `ceph df detail` are available. Save output outside the tested volume. Each measured arm took about 67 minutes, including 60 idle minutes.
 
-### New writes and object safety
+**The following is a flow example for explanation, not the original script executed for these measurements.** The actual workload script and JSON collection commands are provided below; use them when checking the supplied evidence or reproducing the test.
 
-Keep the entry while inspecting it. Check generation after probing and again at settlement so an old check cannot discard new work. A Write during object processing is preserved by the native origin-prefix/CAS commit and a later check. Do not force-delete source objects: shared references, TrashDays and MaxDeletes continue to apply.
+```bash
+set -euo pipefail
+MNT=/mnt/juicefs
+TEST_DIR=$(mktemp -d "$MNT/overwrite-repro-XXXXXX")
+sample() {
+    date '+%F %T %z'
+    df -h "$TEST_DIR"
+    ceph df detail
+}
+sample
+for wave in 0 1 2 3 4; do
+    BS=16M
+    CREATE=0
+    if (( wave == 0 )); then BS=4M; CREATE=1; fi
+    fio --directory="$TEST_DIR" --name=lt --filename_format='lt.$jobnum.0' \
+        --filesize=256M --size=256M --numjobs=16 --ioengine=psync --iodepth=1 \
+        --direct=1 --fallocate=none --rw=write --allow_file_create="$CREATE" \
+        --bs="$BS" --refill_buffers=1 --end_fsync=1
+    sample
+done
+for point in {1..12}; do
+    sleep 300
+    sample
+done
+```
 
-`compactChunkOnce` extracts the native batch body; ordinary callers still read normally and the idle caller reuses its probe. Native skipSome, the 1000-record batch limit, object rewrite, prefix replacement and deletion semantics remain. Ordinary force recursion starts only after the current slot is released; the idle caller releases its own slot once.
+After the 4 GiB initialization, the remaining passes overwrite existing files without creating new ones. During observation, do not read file content, run CRC, invoke manual compact/GC or delete files. Preserve the directory afterward.
+
+To test the patch, unmount the upstream client, mount the same volume using the patched binary, and repeat with identical parameters in a new directory. Preserve the upstream test files: **for each run, compare the space used in the Ceph pool before and after the test to calculate how much extra space it used**, rather than directly comparing the pool totals at the end of the two runs.
+
+Record pool space usage with `ceph df detail` and compare how much extra space the `juicefs-data` pool used before and after each test. The records and five-minute observations are in the [test report](test-report.en.md).
+
+### Actual script and JSON collection
+
+The measurements used two scripts, not the workload script alone:
+
+- [lt002-plain-mount-ab.sh.txt](reproduce/lt002-plain-mount-ab.sh.txt): the complete outer execution script; calls the workload and collects `before.json` / `after.json` around each run.
+- [juicefs-overwrite-manual-check.sh](reproduce/juicefs-overwrite-manual-check.sh): the inner workload; produces fio logs and `space.log`, not JSON.
+
+The outer script switches mounts and is attached as `.sh.txt` **for inspection only; do not execute it unchanged in another environment**.
+
+The inner script creates a separate file set, runs the five write passes and produces `fio-0.log` through `fio-4.log` plus `space.log`. It observes one actual elapsed hour after writes stop, without file-content reads, CRC, manual compact/GC or deletion.
+
+```bash
+bash reproduce/juicefs-overwrite-manual-check.sh --mount /mnt/juicefs --hours 1 --interval 300
+```
+
+Adapt the script's result directory and Ceph query command to your environment without changing fio parameters or observation duration. Use a writable result directory outside the tested volume.
+
+The outer execution script collects `before.json` and `after.json` before and after each test using the commands below. `ROOT` points to the result directory; `CEPH` is that script's Ceph query command array:
+
+```bash
+# Run with upstream JuiceFS already mounted
+"${CEPH[@]}" df detail -f json > "$ROOT/A/before.json"
+bash "$ROOT/juicefs-overwrite-manual-check.sh" --mount /mnt/juicefs --hours 1 --interval 300 | tee "$ROOT/A/execution.log"
+"${CEPH[@]}" df detail -f json > "$ROOT/A/after.json"
+
+# Run after a normal unmount and switch to the patched client
+"${CEPH[@]}" df detail -f json > "$ROOT/B/before.json"
+bash "$ROOT/juicefs-overwrite-manual-check.sh" --mount /mnt/juicefs --hours 1 --interval 300 | tee "$ROOT/B/execution.log"
+"${CEPH[@]}" df detail -f json > "$ROOT/B/after.json"
+```
+
+Keep the intended client version mounted throughout writes and idle observation.
+
+## 3. Analysis: logical overwrite is not reference removal
+
+JuiceFS divides files into logical 64 MiB chunks. Each slice has an independent ID and is split into Ceph objects according to BlockSize. Metadata stores `pos/id/size/off/len` records encoded in 24 bytes; one slice containing multiple block objects does not imply multiple mapping records.
+
+The ordinary write path is:
+
+```text
+VFS prepares slice data → data output completes → Meta.Write/engine.doWrite appends mapping
+                                                     ↓
+                                      check current per-chunk record count
+```
+
+Latest-wins layout computation changes visible file content, but does not itself remove persistent historical mappings and objects. For example, after writing A and then B to the same range, reading can select B while history still contains [A,B]. Ceph cannot directly delete old sources still referenced by those mappings. TrashDays=0 is not a substitute for releasing them.
+
+The native Write trigger in `pkg/meta/base.go` is:
+
+```go
+if numSlices%100 == 99 || numSlices > 350 {
+    if numSlices < maxSlices {
+        go m.compactChunk(inode, indx, false, false, int(attr.Tier))
+    } else {
+        m.compactChunk(inode, indx, true, false, int(attr.Tier))
+    }
+}
+```
+
+This depends on record count, not retained bytes or elapsed time. A few large overwrite slices can retain substantial history before the first 99-record trigger; after writes stop, no new Write rechecks that condition. Qualified reads or explicit maintenance can provide other opportunities, but neither occurred during this experiment's observation.
+
+We ask maintainers whether **retaining low-record-count overwrite history after file IO stops is an intentional space/compaction trade-off, or whether another background mechanism should handle it**.
+
+## 4. RFC proposal
+
+Keep the native Write predicate and add registration on successful writes, post-write inspection and follow-up until clean:
+
+1. **Register.** Track `(inode, chunk index)` after a successful ordinary Write if it has multiple records. Further Writes update an existing entry's generation and ready time. Entries are client-local and capped at 65536.
+2. **Inspect.** Each writable client with background jobs enabled starts one background inspection goroutine to check the pending entries. Each chunk becomes eligible one minute after its most recent successful local Write. The goroutine checks once per second and selects at most one eligible chunk at a time. It does not start the next item until the current operation returns, and does not create a goroutine for each chunk.
+3. **Compact.** For up to 1000 records, compare summed raw reference lengths with the latest-wins live length. A clean layout needs no rewrite; covered history uses native single-batch compaction. Larger histories use native bounded planning.
+4. **Follow up.** Keep the entry after a batch and reread later; failures cool down before retry. A changed generation prevents an older inspection from deleting or rescheduling newer work. Native prefix validation retains concurrently appended tails.
+5. **Delete.** Release old references through compaction and use native deletion for eligible objects, retaining shared-reference and TrashDays rules. Do not bypass metadata by directly removing backend objects.
 
 ### Costs and limitations
 
-- The process-local map is capped at 65536 chunks. Selecting the oldest eligible entry scans it under the existing metadata mutex, O(pending). Overflow logs rate-limited warnings and may omit new keys.
-- Backend reads remain full-value/list reads. The batch limit is not an RPC byte, memory or whole-step CPU budget. Histories over 1000 records use native limited batches; convergence is not proven for every layout.
-- One worker and busy deferral do not cap bandwidth or guarantee zero foreground competition once a batch starts. Persistent backend errors retry once per minute.
-- The worker joins the existing session wait group. CloseSession may wait for in-flight backend/object operations with native cancellation semantics; no hard close deadline or general ordinary-compactor lifecycle redesign is added.
-- Restart recovery, other clients' history, non-Write mutations and omitted overflow entries are outside scope. This is not a full-volume history scanner or a promise that all retained history will eventually be reclaimed.
+- **One idle minute does not guarantee immediate reclamation.** Each chunk has its own timer. However, if the background inspection goroutine finds any unfinished compaction in this client, it keeps the pending entry and defers the attempt until a later timer check. Those compactions may involve other chunks; continuous activity can therefore postpone reclamation of an already idle chunk indefinitely. One minute is a waiting period before inspection, not a reclamation completion time.
+- **Compaction performs actual data IO.** Read required live data, upload new block objects under a new slice ID, then delete old objects after reference release. This is not just metadata tidying or reuse of existing object keys. More processing opportunities can increase backend contention.
+- **A shared client lock is used.** Registration, selection and compaction-marker settlement use the existing `baseMeta` mutex. Selection scans O(pending) entries. This is not a TiKV cluster-global lock, but large pending sets can increase client contention.
+- **Bounded tracking can omit work.** New keys may be omitted at capacity, with rate-limited warnings; existing entries can still update. Entries are not persistent and do not guarantee restart recovery, other-client history or Copy/Truncate/hole-operation coverage.
+- **Cancellation is cooperative.** Closing the client session requests the background inspection goroutine to exit and waits for already-started operations to return. Backend operations retain their existing cancellation mechanism, without a new forced-interruption deadline. Read-only and `NoBGJob=true` clients neither register pending entries nor start this goroutine.
 
-## 3. Validation status
+## 5. Patches and evidence
 
-Local focused race tests passed 108 executions across three engines. A real-object automatic test with the production one-minute timer failed on upstream after 75 seconds with no trigger, and passed with the candidate. Broader client race tests failed on both upstream and candidate; no full-suite race success is claimed.
+The implementation modifies `pkg/meta/base.go` and adds `pkg/meta/idle_write.go`; tests are separate. It adds no CLI or persistent metadata format and no `--idle-compact-delay` option.
 
-On 2026-10-10 the same candidate completed two independent TiKV/Ceph short checks: without user reads or manual compaction, references converged to 4 GiB with no fully shadowed history, followed by full CRC. A foreground-overlap check also observed a new Write to the active chunk, generation retention and subsequent reclamation. The [test report](test-report.en.md) records data, workload deviations and remaining checks. Long-term operation, production latency/throughput regression, near-capacity scanning cost and slow-backend shutdown remain unaccepted; the two-hour sequential overwrite's final reclamation/CRC acceptance is still pending.
+Apply to the clean fixed upstream baseline:
+
+```sh
+REPORT=/absolute/path/to/juicefs-idle-written-chunk-reclamation
+git apply "$REPORT/patches/0001-meta-compact-written-chunks-after-idle.patch"
+git apply "$REPORT/patches/0002-meta-test-written-chunk-idle-compaction.patch"
+```
+
+Results are in the [test report](test-report.en.md). The [raw-data index](raw-test-data/README.md) links directly to both runs' fio logs and space records; no archive download or extraction is needed.

@@ -1,30 +1,36 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Li Lingfeng <a1151488180@gmail.com>
 Date: Sat, 10 Oct 2026 08:00:00 +0800
-Subject: [PATCH 2/2] meta: test written-chunk idle compaction
+Subject: [RFC PATCH 2/2] meta: test written-chunk idle compaction
 
-Cover low record counts, five complete overwrite generations, ordinary
-snapshot tails, new writes during inspection, cooldown, metadata/object/
-commit failures, cancellation, ordering, limits and valid nonoverlap.
-Use production timer duration and real vfs.Compact with SQLite/memory
-objects to verify CRC and obsolete-source deletion without user Read.
-The automatic object test also compiles on upstream as a negative control.
+Verify that overwritten history below the normal write-side compaction
+threshold can be reclaimed after writes stop, without additional file
+reads or manual compaction, while preserving current file contents.
+
+Cover concurrent writes, compaction failures and retries, session
+cancellation, and bounded tracking. Also check that non-overlapping
+data does not cause unnecessary compaction.
+
+Add an object-level test using SQLite metadata, in-memory storage and
+the real vfs.Compact path. It waits for automatic compaction before
+checking content, CRC and deletion of old objects. The same test can
+run on unmodified upstream as a negative control.
 
 Base: JuiceFS v1.4.1 (0b90c7db5a929ae6adc5faad948d108efd2c99f9)
 
 Assisted-by: gpt 6
 Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
 ---
- pkg/meta/idle_write_fixture_test.go   |  260 ++++++++++++++++++++++
- pkg/meta/idle_write_test.go           |  399 +++++++++++++++++++++++++++++++++
- pkg/meta/idle_write_automatic_test.go |  131 +++++++++++
- 3 files changed, 790 insertions(+)
+ pkg/meta/idle_write_fixture_test.go   |  256 ++++++++++++++++++++
+ pkg/meta/idle_write_test.go           |  425 +++++++++++++++++++++++++++++++++
+ pkg/meta/idle_write_automatic_test.go |  131 ++++++++++
+ 3 files changed, 812 insertions(+)
 
 diff --git a/pkg/meta/idle_write_fixture_test.go b/pkg/meta/idle_write_fixture_test.go
 new file mode 100644
 --- /dev/null
 +++ b/pkg/meta/idle_write_fixture_test.go
-@@ -0,0 +1,260 @@
+@@ -0,0 +1,256 @@
 +/*
 + * JuiceFS, Copyright 2026 Juicedata, Inc.
 + *
@@ -53,13 +59,9 @@ new file mode 100644
 +	"time"
 +)
 +
-+// These test-only exports let the external-package object test exercise the
-+// ordinary entry and observe raw metadata without issuing additional user IO.
++// These test-only exports let the external-package object test observe
++// compaction state and raw metadata without issuing additional user IO.
 +// They also compile on the unmodified release.
-+func RunNativeCompactForTest(m Meta, inode Ino) {
-+	m.getBase().compactChunk(inode, 0, false, false, 0)
-+}
-+
 +func NativeCompactIdleForTest(m Meta) bool {
 +	b := m.getBase()
 +	b.Lock()
@@ -289,7 +291,7 @@ diff --git a/pkg/meta/idle_write_test.go b/pkg/meta/idle_write_test.go
 new file mode 100644
 --- /dev/null
 +++ b/pkg/meta/idle_write_test.go
-@@ -0,0 +1,399 @@
+@@ -0,0 +1,425 @@
 +/*
 + * JuiceFS, Copyright 2026 Juicedata, Inc.
 + *
@@ -530,6 +532,22 @@ new file mode 100644
 +	if gen != 2 {
 +		t.Fatal("full queue failed to update tracked generation")
 +	}
++	// Defensive case: an oversized table must reject new keys, while existing
++	// keys remain updatable. Normal registration cannot create this state.
++	f.m.Lock()
++	f.m.idleWrites[idleWriteKey{Ino(idleWriteLimit + 1000), 0}] = &idleWrite{}
++	f.m.Unlock()
++	f.m.noteIdleWrite(Ino(idleWriteLimit+1001), 0, 2)
++	if idlePendingWrites(f.m) != idleWriteLimit+1 {
++		t.Fatal("oversized queue accepted a new key")
++	}
++	f.m.noteIdleWrite(100, 0, 2)
++	f.m.Lock()
++	gen = f.m.idleWrites[idleWriteKey{100, 0}].generation
++	f.m.Unlock()
++	if gen != 3 {
++		t.Fatal("oversized queue failed to update tracked generation")
++	}
 +}
 +
 +func TestIdleWriteOldestAndFailureRotation(t *testing.T) {
@@ -546,8 +564,9 @@ new file mode 100644
 +	f.fail[a] = true
 +	f.m.compactIdleWrite(f.m.sessCtx, time.Now())
 +	f.m.compactIdleWrite(f.m.sessCtx, time.Now())
-+	if f.calls[a] != 1 || f.calls[b] != 1 || f.records(t, b) != 1 {
-+		t.Fatal("old failure starved ready work")
++	if f.calls[a] != 1 || f.calls[b] != 1 ||
++		f.records(t, a) != 2 || f.records(t, b) != 1 {
++		t.Fatal("failed history changed or ready work not processed")
 +	}
 +}
 +
@@ -581,8 +600,17 @@ new file mode 100644
 +	f := idleWriteFixture(t, "sqlite")
 +	ino := f.file(t, "large", 2105)
 +	f.m.noteIdleWrite(ino, 0, 2105)
++	wantRecords := []int{1106, 107, 1, 1}
++	wantPending := []int{1, 1, 1, 0}
++	wantCalls := []int{1, 2, 3, 3}
 +	for i := 0; i < 4; i++ {
 +		f.m.compactIdleWrite(f.m.sessCtx, time.Now().Add(2*idleWriteDelay))
++		records, pending, calls := f.records(t, ino), idlePendingWrites(f.m), f.calls[ino]
++		if records != wantRecords[i] || pending != wantPending[i] || calls != wantCalls[i] {
++			t.Fatalf("check %d: records=%d pending=%d calls=%d; want records=%d pending=%d calls=%d",
++				i+1, records, pending, calls, wantRecords[i], wantPending[i], wantCalls[i])
++		}
++		t.Logf("check %d: records=%d pending=%d calls=%d", i+1, records, pending, calls)
 +	}
 +	if f.records(t, ino) != 1 || idlePendingWrites(f.m) != 0 || f.calls[ino] != 3 {
 +		t.Fatal("finite prefix batches failed to drain")
