@@ -1,0 +1,11 @@
+{
+  "sha256": "203a79c21b661bce9c06cdd1589da0ed9ee5238e5d37d71fe46ea78c480978eb",
+  "commit": "0b90c7db5a929ae6adc5faad948d108efd2c99f9",
+  "source": "/mnt/jfs-cache/reliability-lt-results/20261019-IOAMP-CODE-r01/juicefs-ioamp-upstream",
+  "runtime_changes": [],
+  "dependencies": {
+    "run_independent.py": "1d845e714746d070d1e91919e9c1fb513987879cd1abc9e51010ede90caacf04",
+    "independent_health.py": "d43151572acf1321eac2e4e80477ba364e13942cb96e58750a84e1319e9e8f58",
+    "lt157-nov4-parallel-20261016.py": "2ee1b6968a96030847288953913fdd46eefa911de4d908e016896996ce3e6d99"
+  }
+}

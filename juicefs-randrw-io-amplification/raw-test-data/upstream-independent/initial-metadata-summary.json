@@ -1,0 +1,9 @@
+{
+  "epoch": 1792380020.7359607,
+  "files": 128,
+  "logical_bytes": 34359738368,
+  "chunks": 512,
+  "records": 512,
+  "raw_slice_bytes": 34359738368,
+  "exactly_one_64MiB_per_chunk": true
+}

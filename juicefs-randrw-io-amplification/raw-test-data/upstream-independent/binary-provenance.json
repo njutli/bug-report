@@ -1,0 +1,9 @@
+{
+  "group": "U0",
+  "sha256": "203a79c21b661bce9c06cdd1589da0ed9ee5238e5d37d71fe46ea78c480978eb",
+  "commit": "0b90c7db5a929ae6adc5faad948d108efd2c99f9",
+  "version": "juicefs version 1.4.1+2026-07-30.0b90c7d-ioamp-upstream",
+  "preparation_binary_sha256": "203a79c21b661bce9c06cdd1589da0ed9ee5238e5d37d71fe46ea78c480978eb",
+  "runtime_patches": [],
+  "sudo_writes": []
+}
