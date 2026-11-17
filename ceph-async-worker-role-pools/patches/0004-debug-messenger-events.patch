@@ -1,0 +1,354 @@
+From 508724f804f9dfccfc894510bbb7b0c672fa1f94 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <a1151488180@gmail.com>
+Date: Tue, 3 Nov 2026 15:28:52 +0800
+Subject: [RFC PATCH 4/5] debug messenger events
+
+Instrument messenger send and receive events to distinguish send-queue
+waiting from subsequent message processing. Requires message correlation
+context from patch 0003.
+
+Assisted-by: GPT-6 (OpenAI)
+Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
+---
+ src/msg/async/AsyncConnection.cc | 113 +++++++++++++++++++++++++++++++
+ src/msg/async/AsyncConnection.h  |  18 +++++
+ src/msg/async/ProtocolV1.cc      |  10 +++
+ src/msg/async/ProtocolV2.cc      |  10 +++
+ 4 files changed, 151 insertions(+)
+
+diff --git a/src/msg/async/AsyncConnection.cc b/src/msg/async/AsyncConnection.cc
+index 4b26311ea73424c97f652f9259a01165d933faa1..1613c90783c2294cfee142ec4fe6b45845c9df5a 100644
+--- a/src/msg/async/AsyncConnection.cc
++++ b/src/msg/async/AsyncConnection.cc
+@@ -15,6 +15,10 @@
+  */
+ 
+ #include <unistd.h>
++#include <arpa/inet.h>
++#include <netinet/tcp.h>
++#include <sys/ioctl.h>
++#include <linux/sockios.h>
+ 
+ #include "include/Context.h"
+ #include "include/random.h"
+@@ -316,6 +320,109 @@ ssize_t AsyncConnection::write(ceph::buffer::list &bl,
+ 
+ // return the remaining bytes, it may larger than the length of ptr
+ // else return < 0 means error
++namespace {
++std::string t085_endpoint(int fd,bool peer) {
++  sockaddr_storage address{};socklen_t size=sizeof(address);
++  int rc=peer ? getpeername(fd,reinterpret_cast<sockaddr*>(&address),&size)
++              : getsockname(fd,reinterpret_cast<sockaddr*>(&address),&size);
++  if (rc) return "UNKNOWN";
++  char text[INET6_ADDRSTRLEN]{};uint16_t port=0;
++  if (address.ss_family==AF_INET) {
++    auto* a=reinterpret_cast<sockaddr_in*>(&address);
++    if (!inet_ntop(AF_INET,&a->sin_addr,text,sizeof(text))) return "UNKNOWN";
++    port=ntohs(a->sin_port);
++  } else if (address.ss_family==AF_INET6) {
++    auto* a=reinterpret_cast<sockaddr_in6*>(&address);
++    if (!inet_ntop(AF_INET6,&a->sin6_addr,text,sizeof(text))) return "UNKNOWN";
++    port=ntohs(a->sin6_port);
++  } else return "UNKNOWN";
++  return std::string(text)+":"+std::to_string(port);
++}
++void t085_tcp(ceph::t085::SocketInfo& info) {
++  info.snapshot_low=ceph::t085::mono();
++  tcp_info tcp{};socklen_t length=sizeof(tcp);
++  info.tcp_valid=getsockopt(info.fd,IPPROTO_TCP,TCP_INFO,&tcp,&length)==0;
++  if (info.tcp_valid) {
++    info.rtt_us=tcp.tcpi_rtt;info.unacked=tcp.tcpi_unacked;
++    info.retrans=tcp.tcpi_total_retrans;info.cwnd=tcp.tcpi_snd_cwnd;
++  }
++  if (ioctl(info.fd,SIOCOUTQ,&info.outq_bytes)) info.outq_bytes=-1;
++  info.snapshot_high=ceph::t085::mono();
++}
++}
++
++ceph::t085::SocketInfo ceph::t085::inspect_socket(int fd) noexcept {
++  SocketInfo info;info.fd=fd;
++  try {info.local=t085_endpoint(fd,false);info.peer=t085_endpoint(fd,true);t085_tcp(info);}
++  catch (...) {fault("observer_socket_metadata_error");}
++  return info;
++}
++
++void AsyncConnection::t085_frame(Message* message) noexcept {
++  auto context=message->t085_context;
++  if (!context || !ceph::t085::enabled()) return;
++  const uint64_t frame_ready=ceph::t085::mono();
++  const int frame_tid=ceph::t085::current_tid();
++  try {
++    if (!cs) {ceph::t085::fault("observer_missing_socket");return;}
++    if (!t085_sender) t085_sender=std::make_unique<T085Sender>(t085_epoch);
++    auto& socket=context->socket;
++    socket.connection=t085_connection;socket.epoch=t085_epoch;
++    socket.seq=message->get_seq();socket.protocol=msgr2?2:1;socket.fd=cs.fd();
++    socket.priority=message->get_priority();
++    socket.local=t085_endpoint(socket.fd,false);socket.peer=t085_endpoint(socket.fd,true);
++    t085_tcp(socket);
++    const char* stages[3]={"enqueue","dequeue","encode_ready"};
++    for (unsigned i=0;i<3;++i) {
++      if (!context->stamps[i] || (i && context->stamps[i]<context->stamps[i-1])) {
++        ceph::t085::fault("observer_missing_or_inverted_sender_boundary");return;
++      }
++      ceph::t085::message_event(context,stages[i],context->stamps[i],context->stamps[i],context->stamp_tids[i]);
++    }
++    if (context->eager_ready) ceph::t085::message_event(context,"eager_encode_ready",context->eager_ready,context->eager_ready,context->eager_tid);
++    const uint64_t token=t085_sender->token++;
++    if (!t085_sender->frames.emplace(token,context).second) {
++      ceph::t085::fault("observer_duplicate_frame");return;
++    }
++    t085_sender->ledger.frame(token,outgoing_bl.length());
++    ceph::t085::message_event(context,"frame_ready",frame_ready,frame_ready,frame_tid);
++  } catch (...) {ceph::t085::fault("observer_frame_accounting_error");}
++}
++
++void AsyncConnection::t085_sent(uint64_t before,uint64_t after,int64_t rc,uint64_t low,uint64_t high) noexcept {
++  if (!t085_sender) return;
++  try {
++    // Calls observed while each selected frame is pending, including mixed
++    // control/unselected traffic ahead of it; not individual sendmsg counts.
++    for (auto& frame:t085_sender->frames) {
++      auto& info=frame.second->socket;++info.send_calls;
++      if (rc>0 && after>0) ++info.partial_calls;
++      if (rc==0 && before>0) ++info.zero_calls;
++    }
++    for (auto completed:t085_sender->ledger.sent(t085_epoch,before,after,rc,low,high)) {
++      auto found=t085_sender->frames.find(completed.token);
++      if (found==t085_sender->frames.end()) {ceph::t085::fault("observer_unknown_frame");return;}
++      t085_tcp(found->second->socket);
++      ceph::t085::message_event(found->second,"socket_accept",completed.low,completed.high);
++      t085_sender->frames.erase(found);
++    }
++  } catch (...) {ceph::t085::fault("observer_socket_error_or_accounting_failure");}
++}
++
++void AsyncConnection::t085_received(Message* message) noexcept {
++  if (!ceph::t085::enabled() ||
++      (message->get_type()!=MSG_OSD_EC_WRITE && message->get_type()!=MSG_OSD_EC_WRITE_REPLY)) return;
++  auto& r=message->t085_receive;
++  r.low=r.high=ceph::t085::mono();r.connection=t085_connection;r.epoch=t085_epoch;
++  r.tid=ceph::t085::current_tid();
++  r.seq=message->get_seq();r.protocol=msgr2?2:1;r.fd=cs?cs.fd():-1;
++}
++
++void AsyncConnection::t085_reset(const char* reason) noexcept {
++  if (t085_sender && ceph::t085::enabled()) ceph::t085::fault(reason);
++  t085_sender.reset();++t085_epoch;
++}
++
+ ssize_t AsyncConnection::_try_send(bool more)
+ {
+   if (async_msgr->cct->_conf->ms_inject_socket_failures && cs) {
+@@ -328,7 +435,12 @@ ssize_t AsyncConnection::_try_send(bool more)
+   ceph_assert(center->in_thread());
+   ldout(async_msgr->cct, 25) << __func__ << " cs.send " << outgoing_bl.length()
+                              << " bytes" << dendl;
++  const bool t085_observed=t085_sender && ceph::t085::enabled();
++  const uint64_t t085_before=t085_observed?outgoing_bl.length():0;
++  const uint64_t t085_low=t085_observed?ceph::t085::mono():0;
+   ssize_t r = cs.send(outgoing_bl, more);
++  if (t085_observed) t085_sent(t085_before,outgoing_bl.length(),r,t085_low,ceph::t085::mono());
++  else if (t085_sender) t085_sender.reset();
+   if (r < 0) {
+     ldout(async_msgr->cct, 1) << __func__ << " send error: " << cpp_strerror(r) << dendl;
+     return r;
+@@ -620,6 +732,7 @@ bool AsyncConnection::is_queued() const {
+ }
+ 
+ void AsyncConnection::shutdown_socket() {
++  t085_reset("observer_socket_reset");
+   for (auto &&t : register_time_events) center->delete_time_event(t);
+   register_time_events.clear();
+   if (last_tick_id) {
+diff --git a/src/msg/async/AsyncConnection.h b/src/msg/async/AsyncConnection.h
+index 1441631d851a7c42407420cd9c048dd39ed8a647..39d21bcefeead5d7c9dee0cf7dc98837380f64b2 100644
+--- a/src/msg/async/AsyncConnection.h
++++ b/src/msg/async/AsyncConnection.h
+@@ -25,6 +25,9 @@
+ #include <map>
+ #include <functional>
+ #include <optional>
++#include <unordered_map>
++#include "msg/T085SendLedger.h"
++#include "msg/T085Trace.h"
+ 
+ #include "auth/AuthSessionHandler.h"
+ #include "common/ceph_time.h"
+@@ -60,6 +63,21 @@ class AsyncConnection : public Connection {
+                 bool more=false);
+   ssize_t _try_send(bool more=false);
+ 
++  // Only the existing connection writer accesses this optional ledger.
++  struct T085Sender {
++    ::t085::SendLedger ledger;
++    std::unordered_map<uint64_t,ceph::t085::MessageRef> frames;
++    uint64_t token=1;
++    explicit T085Sender(uint64_t epoch):ledger(epoch) {}
++  };
++  std::unique_ptr<T085Sender> t085_sender;
++  uint64_t t085_epoch=1;
++  const uint64_t t085_connection=ceph::t085::state().connection_sequence.fetch_add(1);
++  void t085_frame(Message* message) noexcept;
++  void t085_sent(uint64_t before,uint64_t after,int64_t rc,uint64_t low,uint64_t high) noexcept;
++  void t085_received(Message* message) noexcept;
++  void t085_reset(const char* reason) noexcept;
++
+   void _connect();
+   void _stop();
+   void fault();
+diff --git a/src/msg/async/ProtocolV1.cc b/src/msg/async/ProtocolV1.cc
+index 1265c9b83b55a7a49ef8b1b6eec53504014c817a..fe0dec36a68c792651f4043b5c175a39be743a24 100644
+--- a/src/msg/async/ProtocolV1.cc
++++ b/src/msg/async/ProtocolV1.cc
+@@ -239,6 +239,7 @@ void ProtocolV1::send_message(Message *m) {
+     m->put();
+   } else {
+     m->queue_start = ceph::mono_clock::now();
++    ceph::t085::stamp(m->t085_context,0);
+     m->trace.event("async enqueueing message");
+     out_q[m->get_priority()].emplace_back(out_q_entry_t{
+       std::move(bl), m, is_prepared});
+@@ -267,6 +268,7 @@ void ProtocolV1::prepare_send_message(uint64_t features, Message *m,
+   bl.append(m->get_payload());
+   bl.append(m->get_middle());
+   bl.append(m->get_data());
++  ceph::t085::eager(m->t085_context);
+ }
+ 
+ void ProtocolV1::send_keepalive() {
+@@ -325,6 +327,7 @@ void ProtocolV1::write_event() {
+       if (!m) {
+         break;
+       }
++      ceph::t085::stamp(m->t085_context,1);
+ 
+       if (!connection->policy.lossy) {
+         // put on sent list
+@@ -344,6 +347,8 @@ void ProtocolV1::write_event() {
+ 				 ceph::mono_clock::now() - m->queue_start);
+       }
+ 
++      ceph::t085::stamp(m->t085_context,2);
++
+       r = write_message(m, data, more);
+ 
+       connection->write_lock.lock();
+@@ -954,6 +959,7 @@ CtPtr ProtocolV1::handle_message_footer(char *buffer, int r) {
+   message->set_recv_stamp(recv_stamp);
+   message->set_throttle_stamp(throttle_stamp);
+   message->set_recv_complete_stamp(ceph_clock_now());
++  connection->t085_received(message);
+ 
+   // check received seq#.  if it is old, drop the message.
+   // note that incoming messages may skip ahead.  this is convenient for the
+@@ -1166,6 +1172,7 @@ ssize_t ProtocolV1::write_message(Message *m, ceph::buffer::list &bl, bool more)
+   }
+ 
+   m->trace.event("async writing message");
++  connection->t085_frame(m);
+   ldout(cct, 20) << __func__ << " sending " << m->get_seq() << " " << m
+                  << dendl;
+   ssize_t total_send_size = connection->outgoing_bl.length();
+@@ -1192,6 +1199,7 @@ ssize_t ProtocolV1::write_message(Message *m, ceph::buffer::list &bl, bool more)
+ }
+ 
+ void ProtocolV1::requeue_sent() {
++  connection->t085_reset("observer_message_requeue");
+   write_in_progress = false;
+   if (sent.empty()) {
+     return;
+@@ -1687,6 +1695,7 @@ CtPtr ProtocolV1::handle_connect_reply_2() {
+     connect_seq = 0;
+ 
+     // see session_reset
++    connection->t085_reset("observer_session_reset");
+     connection->outgoing_bl.clear();
+ 
+     return CONTINUE(send_connect_message);
+@@ -2399,6 +2408,7 @@ CtPtr ProtocolV1::replace(const AsyncConnectionRef& existing,
+             std::lock_guard<std::mutex> l(existing->lock);
+             existing->write_lock.lock();
+             exproto->requeue_sent();
++            existing->t085_reset("observer_connection_replaced");
+             existing->outgoing_bl.clear();
+             existing->open_write = false;
+             existing->write_lock.unlock();
+diff --git a/src/msg/async/ProtocolV2.cc b/src/msg/async/ProtocolV2.cc
+index bdef9489d31c3ee605690016d7fba4b3ba238fcf..516340645960c80161ec9f432fa780108eeb6e1f 100644
+--- a/src/msg/async/ProtocolV2.cc
++++ b/src/msg/async/ProtocolV2.cc
+@@ -153,6 +153,7 @@ void ProtocolV2::reset_session() {
+ 
+   connection->dispatch_queue->discard_queue(connection->conn_id);
+   discard_out_queue();
++  connection->t085_reset("observer_session_reset");
+   connection->outgoing_bl.clear();
+ 
+   connection->dispatch_queue->queue_remote_reset(connection);
+@@ -190,6 +191,7 @@ void ProtocolV2::stop() {
+ void ProtocolV2::fault() { _fault(); }
+ 
+ void ProtocolV2::requeue_sent() {
++  connection->t085_reset("observer_message_requeue");
+   write_in_progress = false;
+   if (sent.empty()) {
+     return;
+@@ -423,6 +425,7 @@ void ProtocolV2::prepare_send_message(uint64_t features,
+ 
+   // encode and copy out of *m
+   m->encode(features, 0);
++  ceph::t085::eager(m->t085_context);
+ }
+ 
+ void ProtocolV2::send_message(Message *m) {
+@@ -456,6 +459,7 @@ void ProtocolV2::send_message(Message *m) {
+     ldout(cct, 5) << __func__ << " enqueueing message m=" << m
+                   << " type=" << m->get_type() << " " << *m << dendl;
+     m->queue_start = ceph::mono_clock::now();
++    ceph::t085::stamp(m->t085_context,0);
+     m->trace.event("async enqueueing message");
+     out_queue[m->get_priority()].emplace_back(
+       out_queue_entry_t{is_prepared, m});
+@@ -550,6 +554,7 @@ ssize_t ProtocolV2::write_message(Message *m, bool more) {
+     m->put();
+     return -EILSEQ;
+   }
++  connection->t085_frame(m);
+ 
+   ldout(cct, 5) << __func__ << " sending message m=" << m
+                 << " seq=" << m->get_seq() << " " << *m << dendl;
+@@ -660,6 +665,7 @@ void ProtocolV2::write_event() {
+       if (!out_entry.m) {
+         break;
+       }
++      ceph::t085::stamp(out_entry.m->t085_context,1);
+ 
+       if (!connection->policy.lossy) {
+         // put on sent list
+@@ -680,6 +686,8 @@ void ProtocolV2::write_event() {
+ 				 out_entry.m->queue_start);
+       }
+ 
++      ceph::t085::stamp(out_entry.m->t085_context,2);
++
+       r = write_message(out_entry.m, more);
+ 
+       connection->write_lock.lock();
+@@ -1411,6 +1419,7 @@ CtPtr ProtocolV2::handle_message() {
+   message->set_recv_stamp(recv_stamp);
+   message->set_throttle_stamp(throttle_stamp);
+   message->set_recv_complete_stamp(ceph_clock_now());
++  connection->t085_received(message);
+ 
+   // check received seq#.  if it is old, drop the message.
+   // note that incoming messages may skip ahead.  this is convenient for the
+@@ -2782,6 +2791,7 @@ CtPtr ProtocolV2::reuse_connection(const AsyncConnectionRef& existing,
+           // in own thread". I'm following lockfull schema just in the case.
+           // From performance point of view it should be fine – this happens
+           // far away from hot paths.
++          existing->t085_reset("observer_connection_replaced");
+           existing->outgoing_bl.clear();
+           existing->open_write = false;
+           exproto->session_stream_handlers = std::move(temp_stream_handlers);

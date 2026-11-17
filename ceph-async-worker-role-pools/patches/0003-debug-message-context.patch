@@ -1,0 +1,260 @@
+From 02d5a1af843655d70fe8df0a58c68b9a7b2a76a8 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <a1151488180@gmail.com>
+Date: Tue, 3 Nov 2026 15:28:52 +0800
+Subject: [RFC PATCH 3/5] debug message context
+
+Add sampled message correlation context and send-queue tracking for the
+optional messenger and EC event instrumentation.
+
+Assisted-by: GPT-6 (OpenAI)
+Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
+---
+ src/msg/Message.cc       |   4 ++
+ src/msg/Message.h        |   4 ++
+ src/msg/T085SendLedger.h |  47 +++++++++++++
+ src/msg/T085Trace.h      | 145 +++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 200 insertions(+)
+ create mode 100644 src/msg/T085SendLedger.h
+ create mode 100644 src/msg/T085Trace.h
+
+diff --git a/src/msg/Message.cc b/src/msg/Message.cc
+index d0e8eccb7535e600006fd5ac5f477b5dec7117ac..f2b904df028c8d0872c64eb6e95fbcfde1ad2759 100644
+--- a/src/msg/Message.cc
++++ b/src/msg/Message.cc
+@@ -14,6 +14,10 @@
+ 
+ #include "Message.h"
+ 
++namespace ceph::t085 {
++State& state() noexcept { static State instance; return instance; }
++}
++
+ #include "messages/MPGStats.h"
+ 
+ #include "messages/MGenericMessage.h"
+diff --git a/src/msg/Message.h b/src/msg/Message.h
+index 649df93f07925a0dc1f074246fff241e8b2e2b37..3bf42716511d05cca84b3ca2729abd1de3985927 100644
+--- a/src/msg/Message.h
++++ b/src/msg/Message.h
+@@ -33,6 +33,7 @@
+ #include "include/types.h"
+ #include "msg/Connection.h"
+ #include "msg/MessageRef.h"
++#include "msg/T085Trace.h"
+ #include "msg_types.h"
+ 
+ #ifdef WITH_SEASTAR
+@@ -298,6 +299,9 @@ public:
+ 				   &Message::dispatch_q>> Queue;
+ 
+   ceph::mono_time queue_start;
++  // Observer-only state. No encode/decode or on-disk representation.
++  ceph::t085::MessageRef t085_context;
++  ceph::t085::ReceiveInfo t085_receive;
+ protected:
+   CompletionHook* completion_hook = nullptr; // owned by Messenger
+ 
+diff --git a/src/msg/T085SendLedger.h b/src/msg/T085SendLedger.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..6b1cef20b8094d976aac8ad31e557b9d5b57045f
+--- /dev/null
++++ b/src/msg/T085SendLedger.h
+@@ -0,0 +1,47 @@
++// Frozen t08-5-send-ledger.h accounting core, reused without Ceph dependencies.
++#pragma once
++#include <cstdint>
++#include <deque>
++#include <stdexcept>
++#include <string>
++#include <vector>
++namespace t085 {
++inline uint64_t fnv1a(const std::string& data) {
++  uint64_t h=14695981039346656037ULL;
++  for (unsigned char c:data) h=(h^c)*1099511628211ULL;
++  return h;
++}
++struct Completion {uint64_t token,low,high;};
++struct Pending {uint64_t token,end;};
++class SendLedger {
++  uint64_t accepted=0,generation;
++  bool valid=true;
++  std::deque<Pending> pending;
++public:
++  explicit SendLedger(uint64_t epoch):generation(epoch) {
++    if (!epoch) throw std::invalid_argument("zero socket generation");
++  }
++  void frame(uint64_t token,uint64_t bytes) {
++    if (!valid || !bytes || pending.size()>=256 || UINT64_MAX-accepted<bytes)
++      throw std::invalid_argument("untrackable frame");
++    const uint64_t end=accepted+bytes;
++    if (!pending.empty() && end<=pending.back().end)
++      throw std::invalid_argument("duplicate/reversed frame boundary");
++    pending.push_back({token,end});
++  }
++  std::vector<Completion> sent(uint64_t epoch,uint64_t before,uint64_t after,int64_t rc,uint64_t low,uint64_t high) {
++    if (!valid || epoch!=generation || rc<0 || after>before || low>high ||
++        uint64_t(rc)!=before-after || UINT64_MAX-accepted<before-after) {
++      valid=false;pending.clear();throw std::invalid_argument("socket error/reset/accounting failure");
++    }
++    accepted+=before-after;
++    std::vector<Completion> completed;
++    while (!pending.empty() && pending.front().end<=accepted) {
++      completed.push_back({pending.front().token,low,high});pending.pop_front();
++    }
++    return completed;
++  }
++  void closed() {valid=false;pending.clear();}
++  size_t outstanding() const {return pending.size();}
++};
++} // namespace t085
+diff --git a/src/msg/T085Trace.h b/src/msg/T085Trace.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..eb57f4fd829b4fcf91fb8e9ab9592c4a40ef498e
+--- /dev/null
++++ b/src/msg/T085Trace.h
+@@ -0,0 +1,145 @@
++// Local, default-off 08-5 observer. Never serialized into a Ceph message.
++#pragma once
++#include <array>
++#include <atomic>
++#include <charconv>
++#include <cstdint>
++#include <memory>
++#include <string>
++#include <string_view>
++#include <time.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++#include <vector>
++
++namespace ceph::t085 {
++inline constexpr uint64_t sampling_denominator = 320;
++inline constexpr char sampling_rule[] = "t085-fnv1a64-mod320-v1";
++struct Request {
++  std::string fsid, pg, object, reqid, version;
++  uint64_t tid = 0, interval = 0;
++  int64_t pool = 3;
++  std::string nspace;
++  int primary_osd = -1, primary_shard = -1;
++};
++using RequestRef = std::shared_ptr<const Request>;
++struct SocketInfo {
++  uint64_t connection = 0, epoch = 0, seq = 0;
++  uint64_t snapshot_low = 0, snapshot_high = 0;
++  uint64_t send_calls = 0, partial_calls = 0, zero_calls = 0;
++  int protocol = 0, fd = -1, priority = 0;
++  std::string local, peer;
++  bool tcp_valid = false;
++  uint32_t rtt_us = 0, unacked = 0, retrans = 0, cwnd = 0;
++  int outq_bytes = -1;
++};
++SocketInfo inspect_socket(int fd) noexcept;
++struct MessageContext {
++  RequestRef request;
++  bool reply = false, committed = false, applied = false;
++  int osd = -1, shard = -1, peer_osd = -1, peer_shard = -1;
++  // Enqueue/dequeue/encoding readiness are emitted only after seq is known.
++  std::array<uint64_t,3> stamps{{0,0,0}};
++  std::array<int,3> stamp_tids{{0,0,0}};
++  uint64_t eager_ready = 0;
++  int eager_tid = 0;
++  SocketInfo socket;
++};
++using MessageRef = std::shared_ptr<MessageContext>;
++struct ReceiveInfo {
++  uint64_t low = 0, high = 0, connection = 0, epoch = 0, seq = 0;
++  int protocol = 0, fd = -1, tid = 0;
++};
++struct Shard { int osd, shard; };
++struct Event {
++  const char* stage = "";
++  const Request* request = nullptr;
++  const MessageContext* message = nullptr;
++  const ReceiveInfo* receive = nullptr;
++  const std::vector<Shard>* pending_commit = nullptr;
++  const std::vector<Shard>* pending_apply = nullptr;
++  int osd = -1, shard = -1, peer_osd = -1, peer_shard = -1;
++  bool committed = false, applied = false;
++  uint64_t low = 0, high = 0;
++  int event_tid = 0;
++};
++using Enabled = bool(*)() noexcept;
++using Sink = void(*)(const Event&, uint64_t) noexcept;
++struct State {
++  std::atomic<Enabled> enabled{nullptr};
++  std::atomic<Sink> sink{nullptr};
++  std::atomic<uint64_t> sequence{0}, connection_sequence{1};
++  std::atomic<bool> failed{false};
++};
++State& state() noexcept; // Defined in Message.cc / libceph-common, no osd_tp link.
++inline bool enabled() noexcept {
++  auto& s=state();auto fn=s.enabled.load(std::memory_order_relaxed);
++  return fn && !s.failed.load(std::memory_order_relaxed) && fn();
++}
++inline uint64_t mono() noexcept {
++  timespec ts{};
++  if (clock_gettime(CLOCK_MONOTONIC,&ts)) return 0;
++  return uint64_t(ts.tv_sec)*1000000000ULL+ts.tv_nsec;
++}
++inline int current_tid() noexcept {return static_cast<int>(syscall(SYS_gettid));}
++inline void fault(const char* reason) noexcept {
++  auto& s=state();
++  if (s.failed.exchange(true,std::memory_order_relaxed)) return;
++  auto sink=s.sink.load(std::memory_order_relaxed);
++  if (sink) { Event e;e.stage=reason;e.low=e.high=mono();e.event_tid=current_tid();sink(e,s.sequence.fetch_add(1)); }
++}
++inline void emit(Event e) noexcept {
++  if (!enabled()) return;
++  auto& s=state();const uint64_t seq=s.sequence.fetch_add(1,std::memory_order_relaxed);
++  if (seq>=32767) { fault("observer_event_limit");return; }
++  if (!e.low) e.low=e.high=mono();
++  if (!e.event_tid) e.event_tid=current_tid();
++  if (!e.low || e.low>e.high) {fault("observer_clock_error");return;}
++  auto sink=s.sink.load(std::memory_order_relaxed);if (sink) sink(e,seq);
++}
++inline uint64_t fnv1a(const std::string& data) noexcept {
++  uint64_t h=14695981039346656037ULL;
++  for (unsigned char c:data) h=(h^c)*1099511628211ULL;
++  return h;
++}
++inline bool selected(int64_t pool,const std::string& ns,const std::string& oid) noexcept {
++  if (pool!=3 || !ns.empty()) return false;
++  constexpr char prefix[]="jfs-08-2-20261022-105229-b4m/chunks/";
++  if (oid.compare(0,sizeof(prefix)-1,prefix)) return false;
++  const char* p=oid.data()+sizeof(prefix)-1;const char* end=oid.data()+oid.size();
++  uint64_t n[4]{};const char separators[4]={'/','/','_','_'};
++  for (unsigned i=0;i<4;++i) {
++    auto parsed=std::from_chars(p,end,n[i]);
++    if (parsed.ec!=std::errc() || parsed.ptr==p || parsed.ptr==end || *parsed.ptr!=separators[i]) return false;
++    p=parsed.ptr+1;
++  }
++  if (std::string_view(p,end-p)!="4194304" || n[0]!=n[2]/1000000 || n[1]!=n[2]/1000 || n[3]>=16) return false;
++  try {
++    constexpr char seed[]="t085-method-v1\0" "3\0\0";
++    return fnv1a(std::string(seed,sizeof(seed)-1)+oid)%sampling_denominator==0;
++  } catch (...) {fault("observer_allocation_error");return false;}
++}
++inline MessageRef message(RequestRef request,int osd,int shard,int peer_osd,int peer_shard,bool reply=false) noexcept {
++  if (!request || !enabled()) return {};
++  try {
++    auto m=std::make_shared<MessageContext>();m->request=std::move(request);
++    m->osd=osd;m->shard=shard;m->peer_osd=peer_osd;m->peer_shard=peer_shard;m->reply=reply;
++    return m;
++  } catch (...) {fault("observer_allocation_error");return {};}
++}
++inline void stamp(const MessageRef& m,unsigned index) noexcept {
++  if (!m || !enabled()) return;
++  if (index>=3 || m->stamps[index]) {fault("observer_replay_or_duplicate");return;}
++  m->stamps[index]=mono();
++  m->stamp_tids[index]=current_tid();
++}
++inline void eager(const MessageRef& m) noexcept {
++  if (m && enabled() && !m->stamps[0]) {m->eager_ready=mono();m->eager_tid=current_tid();}
++}
++inline void message_event(const MessageRef& m,const char* stage,uint64_t low=0,uint64_t high=0,int tid=0) noexcept {
++  if (!m) return;
++  Event e;e.stage=stage;e.request=m->request.get();e.message=m.get();
++  e.osd=m->osd;e.shard=m->shard;e.peer_osd=m->peer_osd;e.peer_shard=m->peer_shard;
++  e.low=low;e.high=high;e.event_tid=tid;e.committed=m->committed;e.applied=m->applied;emit(e);
++}
++} // namespace ceph::t085

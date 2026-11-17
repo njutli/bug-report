@@ -1,0 +1,433 @@
+From d3cf7abe2b840782e0b4b65a99b2928798d3dd58 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <a1151488180@gmail.com>
+Date: Tue, 3 Nov 2026 15:28:52 +0800
+Subject: [RFC PATCH 1/5] msgr: add configurable role pools and live
+ per-role connection placement
+
+Add opt-in role-aware connection placement for OSD POSIX AsyncMessenger.
+Split 2..24 actual workers into weighted public and other pools, and
+track live reservations for public, cluster, auxiliary and
+public-loopback roles.
+
+Keep native get_worker() allocation when the policy is disabled. This
+patch does not migrate active connections or balance CPU/byte load.
+
+Assisted-by: GPT-6 (OpenAI)
+Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
+---
+ src/msg/async/AsyncConnection.cc |   7 +-
+ src/msg/async/AsyncConnection.h  |   2 +
+ src/msg/async/AsyncMessenger.cc  |  50 +++++++++++-
+ src/msg/async/AsyncMessenger.h   |   7 ++
+ src/msg/async/ProtocolV1.cc      |   3 +-
+ src/msg/async/ProtocolV2.cc      |   3 +-
+ src/msg/async/Stack.cc           |  37 +++++++++
+ src/msg/async/Stack.h            |   6 ++
+ src/msg/async/T088WorkerPolicy.h | 130 +++++++++++++++++++++++++++++++
+ 9 files changed, 236 insertions(+), 9 deletions(-)
+ create mode 100644 src/msg/async/T088WorkerPolicy.h
+
+diff --git a/src/msg/async/AsyncConnection.cc b/src/msg/async/AsyncConnection.cc
+index 5769c580e0742f1a513877582a6aac1beb28ad34..4b26311ea73424c97f652f9259a01165d933faa1 100644
+--- a/src/msg/async/AsyncConnection.cc
++++ b/src/msg/async/AsyncConnection.cc
+@@ -126,6 +126,7 @@ AsyncConnection::AsyncConnection(CephContext *cct, AsyncMessenger *m, DispatchQu
+     msgr2(m2), state_offset(0),
+     worker(w), center(&w->center),read_buffer(nullptr)
+ {
++  t088_loopback = local;
+ #ifdef UNIT_TESTS_BUILT
+   this->interceptor = m->interceptor;
+ #endif
+@@ -596,11 +597,15 @@ void AsyncConnection::fault()
+   outgoing_bl.clear();
+ }
+ 
++void AsyncConnection::t088_transfer_worker(Worker *to) {
++  async_msgr->t088_transfer_worker(worker, to, t088_loopback);
++}
++
+ void AsyncConnection::_stop() {
+   writeCallback.reset();
+   dispatch_queue->discard_queue(conn_id);
+   async_msgr->unregister_conn(this);
+-  worker->release_worker();
++  async_msgr->t088_release_worker(worker, t088_loopback);
+ 
+   state = STATE_CLOSED;
+   open_write = false;
+diff --git a/src/msg/async/AsyncConnection.h b/src/msg/async/AsyncConnection.h
+index c7f0f9fe86039a77eb4351077dead980a822a7a4..1441631d851a7c42407420cd9c048dd39ed8a647 100644
+--- a/src/msg/async/AsyncConnection.h
++++ b/src/msg/async/AsyncConnection.h
+@@ -217,6 +217,8 @@ private:
+   // used only by "read_until"
+   uint64_t state_offset;
+   Worker *worker;
++  bool t088_loopback = false;
++  void t088_transfer_worker(Worker *to);
+   EventCenter *center;
+ 
+   std::unique_ptr<Protocol> protocol;
+diff --git a/src/msg/async/AsyncMessenger.cc b/src/msg/async/AsyncMessenger.cc
+index d002d60897ca5a4df8d752319ee6fc8bdf39cfbf..9a96694724d287e230d49641cbab3768ca84fedd 100644
+--- a/src/msg/async/AsyncMessenger.cc
++++ b/src/msg/async/AsyncMessenger.cc
+@@ -18,6 +18,7 @@
+ 
+ #include <iostream>
+ #include <fstream>
++#include <cstdlib>
+ 
+ #include "AsyncMessenger.h"
+ 
+@@ -186,7 +187,7 @@ void Processor::accept()
+       ConnectedSocket cli_socket;
+       Worker *w = worker;
+       if (!msgr->get_stack()->support_local_listen_table())
+-	w = msgr->get_stack()->get_worker();
++	w = msgr->t088_acquire_worker();
+       else
+ 	++w->references;
+       int r = listen_socket.accept(&cli_socket, opts, &addr, w);
+@@ -201,7 +202,7 @@ void Processor::accept()
+ 	accept_error_num = 0;
+ 	continue;
+       } else {
+-	--w->references;
++	msgr->t088_release_worker(w);
+ 	if (r == -EINTR) {
+ 	  continue;
+ 	} else if (r == -EAGAIN) {
+@@ -289,12 +290,28 @@ AsyncMessenger::AsyncMessenger(CephContext *cct, entity_name_t name,
+   else if (type.find("dpdk") != std::string::npos)
+     transport_type = "dpdk";
+ 
++  const auto env = [](const char *key) -> std::string_view {
++    const char *value = std::getenv(key);
++    return value ? value : "";
++  };
++  t088_policy = t088::config(env("CEPH_T088_WORKER_POLICY"),
++                             env("CEPH_T088_PUBLIC_WEIGHT"),
++                             env("CEPH_T088_OTHER_WEIGHT"));
++  t088_peer_role = t088::role(name.is_osd(), mname);
++  t088_local_role = t088::role(name.is_osd(), mname, true);
++  t088::validate(t088_policy, cct->get_module_type() == CEPH_ENTITY_TYPE_OSD,
++                 transport_type, cct->_conf->ms_async_op_threads);
+   auto single = &cct->lookup_or_create_singleton_object<StackSingleton>(
+     "AsyncMessenger::NetworkStack::" + transport_type, true, cct);
+   single->ready(transport_type);
+   stack = single->stack.get();
++  t088::validate(t088_policy, cct->get_module_type() == CEPH_ENTITY_TYPE_OSD,
++                 transport_type, stack->get_num_worker());
++  if (t088_policy.enabled) stack->t088_configure(t088_policy);
++  if (t088_policy.enabled && stack->get_num_worker() != cct->_conf->ms_async_op_threads)
++    throw std::invalid_argument("T088 configured and actual worker count differ");
+   stack->start();
+-  local_worker = stack->get_worker();
++  local_worker = t088_acquire_worker(true);
+   local_connection = ceph::make_ref<AsyncConnection>(cct, this, &dispatch_queue,
+ 					 local_worker, true, true);
+   init_local_connection();
+@@ -306,6 +323,31 @@ AsyncMessenger::AsyncMessenger(CephContext *cct, entity_name_t name,
+     processors.push_back(new Processor(this, stack->get_worker(i), cct));
+ }
+ 
++Worker *AsyncMessenger::t088_acquire_worker(bool local)
++{
++  if (!t088_policy.enabled) return stack->get_worker();
++  return stack->t088_get_worker(local ? t088_local_role : t088_peer_role);
++}
++
++void AsyncMessenger::t088_release_worker(Worker *worker, bool local)
++{
++  if (!t088_policy.enabled) {
++    worker->release_worker();
++    return;
++  }
++  stack->t088_release_worker(worker, local ? t088_local_role : t088_peer_role);
++}
++
++void AsyncMessenger::t088_transfer_worker(Worker *from, Worker *to, bool local)
++{
++  if (!t088_policy.enabled) {
++    --from->references;
++    ++to->references;
++    return;
++  }
++  stack->t088_transfer_worker(from, to, local ? t088_local_role : t088_peer_role);
++}
++
+ /**
+  * Destroy the AsyncMessenger. Pretty simple since all the work is done
+  * elsewhere.
+@@ -635,7 +677,7 @@ AsyncConnectionRef AsyncMessenger::create_connect(
+   }
+ 
+   // create connection
+-  Worker *w = stack->get_worker();
++  Worker *w = t088_acquire_worker();
+   auto conn = ceph::make_ref<AsyncConnection>(cct, this, &dispatch_queue, w,
+ 						target.is_msgr2(), false);
+   conn->anon = anon;
+diff --git a/src/msg/async/AsyncMessenger.h b/src/msg/async/AsyncMessenger.h
+index 0a3227dec5d313d53e8a534ce2ae9f47f56b271e..9089aa31eea8e66ecbcc41887e7d09e510b7412f 100644
+--- a/src/msg/async/AsyncMessenger.h
++++ b/src/msg/async/AsyncMessenger.h
+@@ -212,6 +212,13 @@ private:
+ 
+  private:
+   NetworkStack *stack;
++  t088::Config t088_policy;
++  t088::Role t088_peer_role = t088::Role::auxiliary;
++  t088::Role t088_local_role = t088::Role::auxiliary;
++  Worker *t088_acquire_worker(bool local = false);
++  void t088_release_worker(Worker *worker, bool local = false);
++  void t088_transfer_worker(Worker *from, Worker *to, bool local);
++  friend class AsyncConnection;
+   std::vector<Processor*> processors;
+   friend class Processor;
+   DispatchQueue dispatch_queue;
+diff --git a/src/msg/async/ProtocolV1.cc b/src/msg/async/ProtocolV1.cc
+index 8b893265b9dbfb68e8e496d7e24dd3a15fee3712..1265c9b83b55a7a49ef8b1b6eec53504014c817a 100644
+--- a/src/msg/async/ProtocolV1.cc
++++ b/src/msg/async/ProtocolV1.cc
+@@ -2405,8 +2405,7 @@ CtPtr ProtocolV1::replace(const AsyncConnectionRef& existing,
+             if (exproto->state == NONE) {
+               existing->shutdown_socket();
+               existing->cs = std::move(cs);
+-              existing->worker->references--;
+-              new_worker->references++;
++              existing->t088_transfer_worker(new_worker);
+               existing->logger = new_worker->get_perf_counter();
+               existing->worker = new_worker;
+               existing->center = new_center;
+diff --git a/src/msg/async/ProtocolV2.cc b/src/msg/async/ProtocolV2.cc
+index e73ae35c6051630f4e128e949c57dca3ec26ff38..bdef9489d31c3ee605690016d7fba4b3ba238fcf 100644
+--- a/src/msg/async/ProtocolV2.cc
++++ b/src/msg/async/ProtocolV2.cc
+@@ -2794,8 +2794,7 @@ CtPtr ProtocolV2::reuse_connection(const AsyncConnectionRef& existing,
+           if (exproto->state == NONE) {
+             existing->shutdown_socket();
+             existing->cs = std::move(cs);
+-            existing->worker->references--;
+-            new_worker->references++;
++            existing->t088_transfer_worker(new_worker);
+             existing->logger = new_worker->get_perf_counter();
+             existing->worker = new_worker;
+             existing->center = new_center;
+diff --git a/src/msg/async/Stack.cc b/src/msg/async/Stack.cc
+index 94a1bba53637009a284fc508aa9f7d206a54fdf0..41b7afb59cf29c98d9a811dce70fb94a4241eeb1 100644
+--- a/src/msg/async/Stack.cc
++++ b/src/msg/async/Stack.cc
+@@ -167,6 +167,43 @@ void NetworkStack::stop()
+   started = false;
+ }
+ 
++void NetworkStack::t088_configure(t088::Config policy)
++{
++  std::lock_guard<decltype(pool_spin)> guard(pool_spin);
++  t088_allocator.configure(policy, workers.size());
++}
++
++Worker* NetworkStack::t088_get_worker(t088::Role role)
++{
++  std::lock_guard<decltype(pool_spin)> guard(pool_spin);
++  std::array<unsigned, t088::max_workers> refs{};
++  for (unsigned i = 0; i < workers.size(); ++i)
++    refs[i] = workers[i]->references.load();
++  Worker *selected = workers[t088_allocator.acquire(role, refs)];
++  ++selected->references;
++  return selected;
++}
++
++void NetworkStack::t088_release_worker(Worker *worker, t088::Role role)
++{
++  std::lock_guard<decltype(pool_spin)> guard(pool_spin);
++  ceph_assert(worker->id < workers.size() && workers[worker->id] == worker);
++  t088_allocator.release(role, worker->id);
++  worker->release_worker();
++}
++
++void NetworkStack::t088_transfer_worker(Worker *from, Worker *to, t088::Role role)
++{
++  std::lock_guard<decltype(pool_spin)> guard(pool_spin);
++  ceph_assert(from->id < workers.size() && workers[from->id] == from);
++  ceph_assert(to->id < workers.size() && workers[to->id] == to);
++  t088_allocator.transfer(role, from->id, to->id);
++  if (from != to) {
++    from->release_worker();
++    ++to->references;
++  }
++}
++
+ class C_drain : public EventCallback {
+   ceph::mutex drain_lock = ceph::make_mutex("C_drain::drain_lock");
+   ceph::condition_variable drain_cond;
+diff --git a/src/msg/async/Stack.h b/src/msg/async/Stack.h
+index 97201787c73cbdacdfa329d79feb3a8f9cb30441..447d75bde73ab1f366ee4467b5dafc4da41d687e 100644
+--- a/src/msg/async/Stack.h
++++ b/src/msg/async/Stack.h
+@@ -21,6 +21,7 @@
+ #include "common/perf_counters.h"
+ #include "msg/msg_types.h"
+ #include "msg/async/Event.h"
++#include "msg/async/T088WorkerPolicy.h"
+ 
+ class Worker;
+ class ConnectedSocketImpl {
+@@ -294,6 +295,7 @@ class Worker {
+ 
+ class NetworkStack {
+   ceph::spinlock pool_spin;
++  t088::Allocator t088_allocator;
+   bool started = false;
+ 
+   std::function<void ()> add_thread(Worker* w);
+@@ -334,6 +336,10 @@ class NetworkStack {
+   void start();
+   void stop();
+   virtual Worker *get_worker();
++  void t088_configure(t088::Config policy);
++  Worker *t088_get_worker(t088::Role role);
++  void t088_release_worker(Worker *worker, t088::Role role);
++  void t088_transfer_worker(Worker *from, Worker *to, t088::Role role);
+   Worker *get_worker(unsigned worker_id) {
+     return workers[worker_id];
+   }
+diff --git a/src/msg/async/T088WorkerPolicy.h b/src/msg/async/T088WorkerPolicy.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd8b3a4bd7590c8bd1f29257a2a4ee65676ac1e4
+--- /dev/null
++++ b/src/msg/async/T088WorkerPolicy.h
+@@ -0,0 +1,130 @@
++// Configurable connection placement. No observers or live connection migration.
++#pragma once
++#include <algorithm>
++#include <array>
++#include <cstddef>
++#include <limits>
++#include <stdexcept>
++#include <string_view>
++#include <utility>
++
++namespace t088 {
++enum class Role : unsigned { public_data, cluster_data, auxiliary, public_local };
++constexpr unsigned max_workers = 24;
++constexpr unsigned roles = 4;
++
++struct Config {
++  bool enabled = false;
++  unsigned public_weight = 1;
++  unsigned other_weight = 2;
++  bool operator==(const Config& b) const {
++    return enabled == b.enabled && public_weight == b.public_weight &&
++           other_weight == b.other_weight;
++  }
++};
++
++inline unsigned weight(std::string_view text, unsigned fallback) {
++  if (text.empty()) return fallback;
++  unsigned result = 0;
++  for (char c : text) {
++    if (c < '0' || c > '9' || result > 1000)
++      throw std::invalid_argument("T088 weights must be integers in 1..1000");
++    result = result * 10 + unsigned(c - '0');
++  }
++  if (!result || result > 1000)
++    throw std::invalid_argument("T088 weights must be integers in 1..1000");
++  return result;
++}
++
++inline Config config(std::string_view mode, std::string_view pub = {},
++                     std::string_view other = {}) {
++  if (mode.empty() || mode == "0") return {};
++  if (mode != "1") throw std::invalid_argument("T088 policy must be unset, 0 or 1");
++  return {true, weight(pub, 1), weight(other, 2)};
++}
++
++inline void validate(Config c, bool osd, std::string_view transport, unsigned n) {
++  if (c.enabled && (!osd || transport != "posix" || n < 2 || n > max_workers ||
++                    !c.public_weight || c.public_weight > 1000 ||
++                    !c.other_weight || c.other_weight > 1000))
++    throw std::invalid_argument("T088 requires OSD/posix/2..24 workers and valid weights");
++}
++
++inline unsigned public_workers(Config c, unsigned n) {
++  validate(c, true, "posix", n);
++  if (!c.enabled) throw std::logic_error("T088 pools requested in baseline mode");
++  return std::clamp(n * c.public_weight / (c.public_weight + c.other_weight), 1u, n - 1);
++}
++
++inline Role role(bool osd_messenger, std::string_view name, bool local = false) {
++  if (osd_messenger && name == "client")
++    return local ? Role::public_local : Role::public_data;
++  if (!local && osd_messenger && name == "cluster") return Role::cluster_data;
++  return Role::auxiliary;
++}
++
++// All calls are serialized by NetworkStack::pool_spin. Counts are live worker
++// reservations, not byte/CPU load. Failed accepts must release their reservation.
++// Loopbacks/heartbeats/bootstrap do not inflate cluster_data/public_data counts.
++class Allocator {
++  Config policy;
++  unsigned count = 0, public_count = 0;
++  std::array<std::array<unsigned, max_workers>, roles> active{};
++  std::array<unsigned, roles> cursor{};
++
++  std::pair<unsigned, unsigned> range(Role r) const {
++    if (!count || static_cast<unsigned>(r) >= roles)
++      throw std::logic_error("T088 unconfigured allocator or invalid role");
++    return (r == Role::public_data || r == Role::public_local)
++      ? std::make_pair(0u, public_count) : std::make_pair(public_count, count);
++  }
++ public:
++  void configure(Config c, unsigned n) {
++    const unsigned p = public_workers(c, n);
++    if (count && (!(policy == c) || count != n))
++      throw std::logic_error("T088 shared stack policy cannot change in place");
++    policy = c; count = n; public_count = p;
++  }
++  unsigned acquire(Role r, const std::array<unsigned, max_workers>& references) {
++    auto [lo, hi] = range(r);
++    const auto k = static_cast<unsigned>(r);
++    unsigned best = lo + cursor[k] % (hi - lo);
++    for (unsigned step = 1; step < hi - lo; ++step) {
++      const unsigned i = lo + (cursor[k] + step) % (hi - lo);
++      if (active[k][i] < active[k][best] ||
++          (active[k][i] == active[k][best] && references[i] < references[best])) best = i;
++    }
++    if (active[k][best] == std::numeric_limits<unsigned>::max())
++      throw std::overflow_error("T088 reservation counter overflow");
++    ++active[k][best];
++    cursor[k] = (best - lo + 1) % (hi - lo);
++    return best;
++  }
++  void release(Role r, unsigned worker) {
++    auto [lo, hi] = range(r);
++    const auto k = static_cast<unsigned>(r);
++    if (worker < lo || worker >= hi || !active[k][worker])
++      throw std::logic_error("T088 invalid or duplicate reservation release");
++    --active[k][worker];
++  }
++  // Protocol replacement keeps the existing connection but adopts the new
++  // socket's worker. Its temporary connection has already released its own
++  // reservation. Move this surviving reservation, including same-worker cases.
++  void transfer(Role r, unsigned from, unsigned to) {
++    auto [lo, hi] = range(r);
++    const auto k = static_cast<unsigned>(r);
++    if (from < lo || from >= hi || to < lo || to >= hi || !active[k][from])
++      throw std::logic_error("T088 invalid reservation transfer");
++    if (from == to) return;
++    if (active[k][to] == std::numeric_limits<unsigned>::max())
++      throw std::overflow_error("T088 reservation transfer overflow");
++    --active[k][from];
++    ++active[k][to];
++  }
++  unsigned reservations(Role r, unsigned worker) const {
++    range(r);
++    if (worker >= count) throw std::out_of_range("T088 worker");
++    return active[static_cast<unsigned>(r)][worker];
++  }
++};
++} // namespace t088

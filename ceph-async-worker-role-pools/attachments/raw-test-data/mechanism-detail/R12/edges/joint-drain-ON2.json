@@ -1,0 +1,62 @@
+{
+  "status": "JOINT_DRAIN_AND_STOP_DEADLINE_PASS",
+  "window": "ON2",
+  "nodes": {
+    "0": {
+      "node_ns": [
+        8549790584984603,
+        8549790585053652
+      ],
+      "source": "before-first-stop-in-node-action"
+    },
+    "1": {
+      "node_ns": [
+        8549790585109166,
+        8549790585156776
+      ],
+      "source": "before-first-stop-in-node-action"
+    },
+    "2": {
+      "node_ns": [
+        11395177299346334,
+        11395177299430099
+      ],
+      "source": "before-first-stop-in-node-action"
+    },
+    "3": {
+      "node_ns": [
+        11395177299484422,
+        11395177299541762
+      ],
+      "source": "before-first-stop-in-node-action"
+    },
+    "4": {
+      "node_ns": [
+        11468147543870024,
+        11468147543940367
+      ],
+      "source": "before-first-stop-in-node-action"
+    },
+    "5": {
+      "node_ns": [
+        11468147544018623,
+        11468147544077070
+      ],
+      "source": "before-first-stop-in-node-action"
+    }
+  },
+  "drain_margin_ns": {
+    "0": 1158706077,
+    "1": 1158718304,
+    "2": 1160897152,
+    "3": 1160921390,
+    "4": 1168966580,
+    "5": 1168986955
+  },
+  "stop_send_second": 154,
+  "stop_completed_relative_seconds": 157.48777128756046,
+  "stop_complete_before_second": 159,
+  "minimum_drain_seconds": 5,
+  "standalone_stop_marker_rpc": false,
+  "logical_windows_unchanged": true
+}

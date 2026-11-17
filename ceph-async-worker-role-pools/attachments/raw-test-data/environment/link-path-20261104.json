@@ -1,0 +1,8 @@
+{
+  "rc": 0,
+  "stdout": "{\"routes\": {\"10.3.1.6\": [{\"dst\": \"10.3.1.6\", \"dev\": \"enp139s0f0np0\", \"prefsrc\": \"10.3.1.13\", \"flags\": [], \"uid\": 1002, \"cache\": []}], \"10.3.1.7\": [{\"dst\": \"10.3.1.7\", \"dev\": \"enp139s0f0np0\", \"prefsrc\": \"10.3.1.13\", \"flags\": [], \"uid\": 1002, \"cache\": []}], \"10.3.1.8\": [{\"dst\": \"10.3.1.8\", \"dev\": \"enp139s0f0np0\", \"prefsrc\": \"10.3.1.13\", \"flags\": [], \"uid\": 1002, \"cache\": []}]}, \"links\": {\"enp139s0f0np0\": {\"speed\": \"100000\", \"operstate\": \"up\", \"mtu\": \"4200\"}}, \"scope\": \"configuration read after restoration; not a during-load NIC rate\"}\n",
+  "stderr": "",
+  "observed_socket_source": "/home/lilingfeng/demo/production/prod-deploy/results/08-8-r12-revalidation-20261104/review-2/R12-REVALIDATED-UNIT.json",
+  "observed_socket_source_sha256": "7a9926750f9fa36df9483be637fc32f0163a4cb4b9bae74bb7f9f84588e73336",
+  "management_route_in_FIELD_FINAL_CHECK_is_not_the_Ceph_public_data_path": true
+}

@@ -1,0 +1,496 @@
+From 1c3f5805e399b1de174e55401f066fb02d85c02c Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <a1151488180@gmail.com>
+Date: Tue, 3 Nov 2026 15:28:52 +0800
+Subject: [RFC PATCH 5/5] debug ec completion events
+
+Correlate sampled EC shard operations and completion events with
+messenger events to identify the last required remote shard and its send
+waits. Requires patches 0003 and 0004.
+
+Assisted-by: GPT-6 (OpenAI)
+Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
+---
+ src/osd/ECBackend.cc | 305 ++++++++++++++++++++++++++++++++++++++++++-
+ src/osd/ECBackend.h  |   3 +-
+ src/tracing/osd.tp   |  12 ++
+ 3 files changed, 314 insertions(+), 6 deletions(-)
+
+diff --git a/src/osd/ECBackend.cc b/src/osd/ECBackend.cc
+index cd6de546b3b89f593d8ef44d7b9dde0f8fb915cd..3c6b06b0d35f46d282278c368ad7b98044272338 100644
+--- a/src/osd/ECBackend.cc
++++ b/src/osd/ECBackend.cc
+@@ -12,8 +12,21 @@
+  *
+  */
+ 
++#include "acconfig.h"
+ #include <iostream>
+ #include <sstream>
++#include <atomic>
++#include <cstdlib>
++#include <memory>
++#include <ctime>
++#include <unistd.h>
++#include "common/Formatter.h"
++
++#ifdef WITH_LTTNG
++#define TRACEPOINT_PROBE_DYNAMIC_LINKAGE
++#include "tracing/osd.h"
++#undef TRACEPOINT_PROBE_DYNAMIC_LINKAGE
++#endif
+ 
+ #include "ECBackend.h"
+ #include "messages/MOSDPGPush.h"
+@@ -56,6 +69,243 @@ static ostream& _prefix(std::ostream *_dout, ECBackend *pgb) {
+   return pgb->get_parent()->gen_dbg_prefix(*_dout);
+ }
+ 
++#include <sys/syscall.h>
++#include "msg/T085Trace.h"
++
++// T084 functional instrument only. No wire/storage changes; default OFF.
++// The external capture manifest binds FSID, boot, PID/start and binary hashes.
++namespace {
++struct T084Key {
++  string pg, object, reqid, version;
++  uint64_t tid, interval;
++  pg_shard_t primary;
++  ceph::t085::RequestRef observed;
++};
++using T084Ref = std::shared_ptr<const T084Key>;
++
++template<typename T> string t084_string(const T& value) {
++  std::ostringstream out;
++  out << value;
++  return out.str();
++}
++
++bool t085_enabled() noexcept {
++#ifdef WITH_LTTNG
++  return tracepoint_enabled(osd,t085_message);
++#else
++  return false;
++#endif
++}
++
++void t085_sink(const ceph::t085::Event& e,uint64_t seq) noexcept {
++#ifdef WITH_LTTNG
++  try {
++    ceph::JSONFormatter f(false);f.open_object_section("record");
++    f.dump_unsigned("schema",3);f.dump_string("stage",e.stage);f.dump_unsigned("seq",seq);
++    f.dump_string("sampling_rule",ceph::t085::sampling_rule);
++    f.dump_unsigned("sampling_denominator",ceph::t085::sampling_denominator);
++    f.dump_int("pid",getpid());f.dump_int("linux_tid",syscall(SYS_gettid));
++    f.dump_int("event_linux_tid",e.event_tid);
++    f.dump_unsigned("mono_low_ns",e.low);f.dump_unsigned("mono_high_ns",e.high);
++    f.dump_int("osd",e.osd);f.dump_int("shard",e.shard);
++    f.dump_int("peer_osd",e.peer_osd);f.dump_int("peer_shard",e.peer_shard);
++    f.dump_bool("local",e.osd==e.peer_osd && e.shard==e.peer_shard);
++    f.dump_bool("committed",e.committed);f.dump_bool("applied",e.applied);
++    if (e.request) {
++      const auto& r=*e.request;
++      f.dump_string("fsid",r.fsid);f.dump_int("pool",r.pool);f.dump_string("namespace",r.nspace);
++      f.dump_string("pg",r.pg);f.dump_string("object",r.object);f.dump_string("reqid",r.reqid);
++      f.dump_string("version",r.version);f.dump_unsigned("ec_tid",r.tid);f.dump_unsigned("interval",r.interval);
++      f.dump_int("primary_osd",r.primary_osd);f.dump_int("primary_shard",r.primary_shard);
++    }
++    auto socket=[&](const ceph::t085::SocketInfo& s) {
++      f.dump_unsigned("connection_id",s.connection);f.dump_unsigned("socket_epoch",s.epoch);
++      f.dump_unsigned("message_seq",s.seq);f.dump_int("protocol",s.protocol);f.dump_int("fd",s.fd);
++      f.dump_int("priority",s.priority);f.dump_string("local_endpoint",s.local);f.dump_string("peer_endpoint",s.peer);
++      f.dump_bool("tcp_info_valid",s.tcp_valid);f.dump_unsigned("tcp_rtt_us",s.rtt_us);
++      f.dump_unsigned("tcp_unacked",s.unacked);f.dump_unsigned("tcp_total_retrans",s.retrans);
++      f.dump_unsigned("tcp_snd_cwnd",s.cwnd);f.dump_int("socket_outq_bytes",s.outq_bytes);
++      f.dump_unsigned("socket_snapshot_low_ns",s.snapshot_low);f.dump_unsigned("socket_snapshot_high_ns",s.snapshot_high);
++      f.dump_unsigned("pending_send_calls",s.send_calls);f.dump_unsigned("pending_partial_calls",s.partial_calls);
++      f.dump_unsigned("pending_zero_calls",s.zero_calls);
++    };
++    if (e.message) {
++      socket(e.message->socket);f.dump_string("direction",e.message->reply?"reply":"request");
++    } else if (e.receive && e.receive->low) {
++      auto info=ceph::t085::inspect_socket(e.receive->fd);
++      info.connection=e.receive->connection;info.epoch=e.receive->epoch;
++      info.seq=e.receive->seq;info.protocol=e.receive->protocol;socket(info);
++      f.dump_unsigned("recv_complete_low_ns",e.receive->low);
++      f.dump_unsigned("recv_complete_high_ns",e.receive->high);
++      f.dump_int("recv_complete_linux_tid",e.receive->tid);
++    }
++    auto pending=[&](const char* name,const std::vector<ceph::t085::Shard>* shards) {
++      if (!shards) return;
++      f.open_array_section(name);
++      for (const auto& shard:*shards) {
++        f.open_object_section("shard");f.dump_int("osd",shard.osd);f.dump_int("shard",shard.shard);f.close_section();
++      }
++      f.close_section();
++    };
++    pending("pending_commit",e.pending_commit);pending("pending_apply",e.pending_apply);
++    f.close_section();std::ostringstream out;f.flush(out);const auto record=out.str();
++    if (record.size()>4096) {ceph::t085::fault("observer_record_too_large");return;}
++    tracepoint(osd,t085_message,record.c_str());
++  } catch (...) {ceph::t085::fault("observer_encode_error");}
++#endif
++}
++struct T085Register {
++  T085Register() {
++    ceph::t085::state().sink.store(t085_sink,std::memory_order_relaxed);
++    ceph::t085::state().enabled.store(t085_enabled,std::memory_order_relaxed);
++  }
++} t085_register;
++
++bool t084_enabled() noexcept {
++#ifdef WITH_LTTNG
++  return tracepoint_enabled(osd, t084_ec_write) || ceph::t085::enabled();
++#else
++  return false;
++#endif
++}
++
++T084Ref t084_key(ECBackend* backend, const hobject_t& object,
++                ceph_tid_t tid, const osd_reqid_t& reqid,
++                const eversion_t& version) noexcept {
++  if (!t084_enabled()) return {};
++  try {
++    if (ceph::t085::enabled() && ceph::t085::selected(object.pool,object.nspace,object.oid.name)) {
++      auto* parent=backend->get_parent();
++      auto r=std::make_shared<ceph::t085::Request>();
++      r->fsid=t084_string(backend->get_osdmap()->get_fsid());
++      r->pg=t084_string(parent->get_info().pgid.pgid);r->object=object.oid.name;
++      r->reqid=t084_string(reqid);r->version=t084_string(version);r->tid=tid;
++      r->interval=parent->get_interval_start_epoch();r->pool=object.pool;r->nspace=object.nspace;
++      r->primary_osd=parent->primary_shard().osd;r->primary_shard=parent->primary_shard().shard.id;
++      return std::make_shared<T084Key>(T084Key{r->pg,t084_string(object),r->reqid,r->version,
++        tid,r->interval,parent->primary_shard(),std::move(r)});
++    }
++    static const string ns = [] {
++      const char* value = std::getenv("CEPH_T084_TRACE_NAMESPACE");
++      return value ? string(value) : string();
++    }();
++    static const string prefix = [] {
++      const char* value = std::getenv("CEPH_T084_TRACE_PREFIX");
++      return value ? string(value) : string();
++    }();
++    if (ns.size() < 8 || prefix.size() < 16 || object.nspace != ns ||
++        object.oid.name.compare(0, prefix.size(), prefix) != 0) return {};
++    auto* parent = backend->get_parent();
++    return std::make_shared<T084Key>(T084Key{
++      t084_string(parent->get_info().pgid.pgid), t084_string(object),
++      t084_string(reqid), t084_string(version), tid,
++      parent->get_interval_start_epoch(), parent->primary_shard(), {}});
++  } catch (...) {
++    // An incomplete trace must fail capture acceptance, not the storage op.
++    if (ceph::t085::enabled()) ceph::t085::fault("observer_ec_identity_error");
++    return {};
++  }
++}
++
++void t084_emit(const T084Ref& key, const char* stage, pg_shard_t node,
++               pg_shard_t peer, const Message* message = nullptr,
++               const set<pg_shard_t>* commits = nullptr,
++               const set<pg_shard_t>* applies = nullptr,
++               bool committed = false, bool applied = false) noexcept {
++#ifdef WITH_LTTNG
++  if (!key || !t084_enabled()) return;
++  if (key->observed) {
++    try {
++      ceph::t085::Event e;e.stage=stage;e.request=key->observed.get();
++      e.osd=node.osd;e.shard=node.shard.id;e.peer_osd=peer.osd;e.peer_shard=peer.shard.id;
++      e.committed=committed;e.applied=applied;
++      if (message) e.receive=&message->t085_receive;
++      std::vector<ceph::t085::Shard> c,a;
++      if (commits) {for (auto shard:*commits) c.push_back({shard.osd,shard.shard.id});e.pending_commit=&c;}
++      if (applies) {for (auto shard:*applies) a.push_back({shard.osd,shard.shard.id});e.pending_apply=&a;}
++      ceph::t085::emit(e);
++    } catch (...) {ceph::t085::fault("observer_ec_event_error");}
++    return;
++  }
++  static std::atomic<uint64_t> sequence{0};
++  const auto seq = sequence.fetch_add(1, std::memory_order_relaxed);
++  if (seq >= 4096) {
++    if (seq == 4096)
++      tracepoint(osd, t084_ec_write, "{\"schema\":1,\"stage\":\"overflow\"}");
++    return;
++  }
++  try {
++    timespec mono{}, wall_before{}, wall_after{};
++    if (clock_gettime(CLOCK_REALTIME, &wall_before) ||
++        clock_gettime(CLOCK_MONOTONIC, &mono) ||
++        clock_gettime(CLOCK_REALTIME, &wall_after)) {
++      tracepoint(osd, t084_ec_write, "{\"schema\":1,\"stage\":\"clock_error\"}");
++      return;
++    }
++    auto ns = [](const timespec& ts) -> uint64_t {
++      return uint64_t(ts.tv_sec) * 1000000000ULL + ts.tv_nsec;
++    };
++    ceph::JSONFormatter f(false);
++    f.open_object_section("record");
++    f.dump_unsigned("schema", 1);
++    f.dump_string("stage", stage);
++    f.dump_unsigned("seq", seq);
++    f.dump_int("pid", getpid());
++    f.dump_string("pg", key->pg);
++    f.dump_string("object", key->object);
++    f.dump_string("reqid", key->reqid);
++    f.dump_string("version", key->version);
++    f.dump_unsigned("ec_tid", key->tid);
++    f.dump_unsigned("interval", key->interval);
++    f.dump_int("primary_osd", key->primary.osd);
++    f.dump_int("primary_shard", key->primary.shard.id);
++    f.dump_int("osd", node.osd);
++    f.dump_int("shard", node.shard.id);
++    f.dump_int("peer_osd", peer.osd);
++    f.dump_int("peer_shard", peer.shard.id);
++    f.dump_bool("local", peer == node);
++    f.dump_bool("committed", committed);
++    f.dump_bool("applied", applied);
++    f.dump_unsigned("mono_ns", ns(mono));
++    f.dump_unsigned("wall_before_ns", ns(wall_before));
++    f.dump_unsigned("wall_after_ns", ns(wall_after));
++    if (message) {
++      auto stamp = [](const utime_t& time) -> uint64_t {
++        return uint64_t(time.sec()) * 1000000000ULL + time.nsec();
++      };
++      f.dump_unsigned("recv_ns", stamp(message->get_recv_stamp()));
++      f.dump_unsigned("recv_complete_ns", stamp(message->get_recv_complete_stamp()));
++      f.dump_unsigned("dispatch_ns", stamp(message->get_dispatch_stamp()));
++    }
++    auto pending = [&](const char* name, const set<pg_shard_t>* shards) {
++      if (!shards) return;
++      f.open_array_section(name);
++      for (auto shard : *shards) {
++        f.open_object_section("shard");
++        f.dump_int("osd", shard.osd);
++        f.dump_int("shard", shard.shard.id);
++        f.close_section();
++      }
++      f.close_section();
++    };
++    pending("pending_commit", commits);
++    pending("pending_apply", applies);
++    f.close_section();
++    std::ostringstream out;
++    f.flush(out);
++    const string record = out.str();
++    if (record.size() > 8192) {
++      tracepoint(osd, t084_ec_write, "{\"schema\":1,\"stage\":\"record_too_large\"}");
++      return;
++    }
++    tracepoint(osd, t084_ec_write, record.c_str());
++  } catch (...) {
++    tracepoint(osd, t084_ec_write, "{\"schema\":1,\"stage\":\"encode_error\"}");
++  }
++#endif
++}
++} // anonymous namespace
++
+ struct ECRecoveryHandle : public PGBackend::RecoveryHandle {
+   list<ECBackend::RecoveryOp> ops;
+ };
+@@ -834,6 +1084,15 @@ bool ECBackend::_handle_message(
+   case MSG_OSD_EC_WRITE_REPLY: {
+     const MOSDECSubOpWriteReply *op = static_cast<const MOSDECSubOpWriteReply*>(
+       _op->get_req());
++    if (t084_enabled()) {
++      auto found = tid_to_op_map.find(op->op.tid);
++      if (found != tid_to_op_map.end()) {
++        const auto& saved = found->second;
++        t084_emit(t084_key(this, saved.hoid, saved.tid, saved.reqid, saved.version),
++                  "reply_dispatch", get_parent()->whoami_shard(), op->op.from,
++                  op, nullptr, nullptr, op->op.committed, op->op.applied);
++      }
++    }
+     handle_sub_write_reply(op->op.from, op->op, _op->pg_trace);
+     return true;
+   }
+@@ -895,24 +1154,29 @@ struct SubWriteCommitted : public Context {
+   eversion_t version;
+   eversion_t last_complete;
+   const ZTracer::Trace trace;
++  const T084Ref t084;
++  const pg_shard_t t084_node, t084_primary;
+   SubWriteCommitted(
+     ECBackend *pg,
+     OpRequestRef msg,
+     ceph_tid_t tid,
+     eversion_t version,
+     eversion_t last_complete,
+-    const ZTracer::Trace &trace)
++    const ZTracer::Trace &trace,
++    T084Ref t084, pg_shard_t t084_node, pg_shard_t t084_primary)
+     : pg(pg), msg(msg), tid(tid),
+-      version(version), last_complete(last_complete), trace(trace) {}
++      version(version), last_complete(last_complete), trace(trace),
++      t084(std::move(t084)), t084_node(t084_node), t084_primary(t084_primary) {}
+   void finish(int) override {
++    t084_emit(t084, "shard_commit", t084_node, t084_primary);
+     if (msg)
+       msg->mark_event("sub_op_committed");
+-    pg->sub_write_committed(tid, version, last_complete, trace);
++    pg->sub_write_committed(tid, version, last_complete, trace, t084?t084->observed:ceph::t085::RequestRef{});
+   }
+ };
+ void ECBackend::sub_write_committed(
+   ceph_tid_t tid, eversion_t version, eversion_t last_complete,
+-  const ZTracer::Trace &trace) {
++  const ZTracer::Trace &trace, ceph::t085::RequestRef observed) {
+   if (get_parent()->pgb_is_primary()) {
+     ECSubWriteReply reply;
+     reply.tid = tid;
+@@ -934,6 +1198,9 @@ void ECBackend::sub_write_committed(
+     r->op.committed = true;
+     r->op.applied = true;
+     r->op.from = get_parent()->whoami_shard();
++    r->t085_context=ceph::t085::message(std::move(observed),r->op.from.osd,r->op.from.shard.id,
++      get_parent()->primary_shard().osd,get_parent()->primary_shard().shard.id,true);
++    if (r->t085_context) {r->t085_context->committed=true;r->t085_context->applied=true;}
+     r->set_priority(CEPH_MSG_PRIO_HIGH);
+     r->trace = trace;
+     r->trace.event("sending sub op commit");
+@@ -948,6 +1215,10 @@ void ECBackend::handle_sub_write(
+   ECSubWrite &op,
+   const ZTracer::Trace &trace)
+ {
++  const auto t084 = t084_key(this, op.soid, op.tid, op.reqid, op.at_version);
++  const auto t084_node = get_parent()->whoami_shard();
++  t084_emit(t084, "shard_handle", t084_node, from,
++            msg && from != t084_node ? msg->get_req() : nullptr);
+   jspan span;
+   if (msg) {
+     msg->mark_event("sub_op_started");
+@@ -1009,11 +1280,12 @@ void ECBackend::handle_sub_write(
+       new SubWriteCommitted(
+ 	this, msg, op.tid,
+ 	op.at_version,
+-	get_parent()->get_info().last_complete, trace)));
++	get_parent()->get_info().last_complete, trace, t084, t084_node, from)));
+   vector<ObjectStore::Transaction> tls;
+   tls.reserve(2);
+   tls.push_back(std::move(op.t));
+   tls.push_back(std::move(localt));
++  t084_emit(t084, "store_queue", t084_node, from);
+   get_parent()->queue_transactions(tls, msg);
+   dout(30) << __func__ << " missing after" << get_parent()->get_log().get_missing().get_items() << dendl;
+   if (op.at_version != eversion_t()) {
+@@ -1164,6 +1436,12 @@ void ECBackend::handle_sub_write_reply(
+ {
+   map<ceph_tid_t, Op>::iterator i = tid_to_op_map.find(op.tid);
+   ceph_assert(i != tid_to_op_map.end());
++  const auto t084 = t084_key(this, i->second.hoid, op.tid,
++                             i->second.reqid, i->second.version);
++  const auto t084_node = get_parent()->whoami_shard();
++  t084_emit(t084, "reply_handle", t084_node, from, nullptr,
++            &i->second.pending_commit, &i->second.pending_apply,
++            op.committed, op.applied);
+   if (op.committed) {
+     trace.event("sub write committed");
+     ceph_assert(i->second.pending_commit.count(from));
+@@ -1178,12 +1456,17 @@ void ECBackend::handle_sub_write_reply(
+     i->second.pending_apply.erase(from);
+   }
+ 
++  t084_emit(t084, "reply_applied", t084_node, from, nullptr,
++            &i->second.pending_commit, &i->second.pending_apply,
++            op.committed, op.applied);
+   if (i->second.pending_commit.empty() &&
+       i->second.on_all_commit &&
+       // also wait for apply, to preserve ordering with luminous peers.
+       i->second.pending_apply.empty()) {
+     dout(10) << __func__ << " Calling on_all_commit on " << i->second << dendl;
++    t084_emit(t084, "callback_enter", t084_node, from);
+     i->second.on_all_commit->complete(0);
++    t084_emit(t084, "callback_exit", t084_node, from);
+     i->second.on_all_commit = 0;
+     i->second.trace.event("ec write all committed");
+   }
+@@ -1566,6 +1849,8 @@ void ECBackend::submit_transaction(
+   op->tid = tid;
+   op->reqid = reqid;
+   op->client_op = client_op;
++  t084_emit(t084_key(this, hoid, tid, reqid, at_version), "submit",
++            get_parent()->whoami_shard(), get_parent()->whoami_shard());
+   jspan span;
+   if (client_op) {
+     op->trace = client_op->pg_trace;
+@@ -2008,6 +2293,9 @@ bool ECBackend::try_reads_to_commit()
+     return false;
+   waiting_reads.pop_front();
+   waiting_commit.push_back(*op);
++  const auto t084 = t084_key(this, op->hoid, op->tid, op->reqid, op->version);
++  const auto t084_node = get_parent()->whoami_shard();
++  t084_emit(t084, "pipeline_ready", t084_node, t084_node);
+ 
+   dout(10) << __func__ << ": starting commit on " << *op << dendl;
+   dout(20) << __func__ << ": " << cache << dendl;
+@@ -2040,6 +2328,7 @@ bool ECBackend::try_reads_to_commit()
+   op->trace.event("start ec write");
+ 
+   map<hobject_t,extent_map> written;
++  t084_emit(t084, "generate_enter", t084_node, t084_node);
+   if (op->plan.t) {
+     ECTransaction::generate_transactions(
+       op->plan,
+@@ -2055,6 +2344,7 @@ bool ECBackend::try_reads_to_commit()
+       get_parent()->get_dpp(),
+       get_osdmap()->require_osd_release);
+   }
++  t084_emit(t084, "generate_exit", t084_node, t084_node);
+ 
+   dout(20) << __func__ << ": " << cache << dendl;
+   dout(20) << __func__ << ": written: " << written << dendl;
+@@ -2139,6 +2429,8 @@ bool ECBackend::try_reads_to_commit()
+       r->map_epoch = get_osdmap_epoch();
+       r->min_epoch = get_parent()->get_interval_start_epoch();
+       r->trace = trace;
++      r->t085_context=ceph::t085::message(t084?t084->observed:ceph::t085::RequestRef{},
++        t084_node.osd,t084_node.shard.id,i->osd,i->shard.id);
+       messages.push_back(std::make_pair(i->osd, r));
+     }
+   }
+@@ -2147,9 +2439,12 @@ bool ECBackend::try_reads_to_commit()
+     span = tracing::osd::tracer.add_span("EC sub write", op->client_op->osd_parent_span);
+   }
+ 
++  t084_emit(t084, "dispatch_begin", t084_node, t084_node, nullptr,
++            &op->pending_commit, &op->pending_apply);
+   if (!messages.empty()) {
+     get_parent()->send_message_osd_cluster(messages, get_osdmap_epoch());
+   }
++  t084_emit(t084, "dispatch_return", t084_node, t084_node);
+ 
+   if (should_write_local) {
+     handle_sub_write(
+diff --git a/src/osd/ECBackend.h b/src/osd/ECBackend.h
+index 296c1202afa37aa57aea146773b2cc6e8bba38d0..e8b0f8061797d7f7333c53f48f61025fd420ff2f 100644
+--- a/src/osd/ECBackend.h
++++ b/src/osd/ECBackend.h
+@@ -61,7 +61,8 @@ public:
+     ceph_tid_t tid,
+     eversion_t version,
+     eversion_t last_complete,
+-    const ZTracer::Trace &trace);
++    const ZTracer::Trace &trace,
++    ceph::t085::RequestRef observed = {});
+   void handle_sub_write(
+     pg_shard_t from,
+     OpRequestRef msg,
+diff --git a/src/tracing/osd.tp b/src/tracing/osd.tp
+index 661a0f2cf99e06163709b8dfe1c33a01abbced75..5ef1cf890af9d10ee4b85f213acfbd3a6b0795a3 100644
+--- a/src/tracing/osd.tp
++++ b/src/tracing/osd.tp
+@@ -1,5 +1,17 @@
+ #include "include/int_types.h"
+ 
++// T085: actual file-object EC/message boundaries, bounded and default OFF.
++TRACEPOINT_EVENT(osd, t085_message,
++    TP_ARGS(const char*, record),
++    TP_FIELDS(ctf_string(record, record))
++)
++
++// T084: namespace/prefix-filtered, bounded functional EC completion trace.
++TRACEPOINT_EVENT(osd, t084_ec_write,
++    TP_ARGS(const char*, record),
++    TP_FIELDS(ctf_string(record, record))
++)
++
+ TRACEPOINT_EVENT(osd, prepare_tx_enter,
+     TP_ARGS(
+         // osd_reqid_t

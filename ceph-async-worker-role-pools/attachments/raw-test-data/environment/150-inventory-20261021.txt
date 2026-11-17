@@ -1,0 +1,131 @@
+BEGIN	identity	2026-10-21T20:54:51+07:00
+ceph-node1
+END	identity	rc=0
+
+BEGIN	clock	2026-10-21T20:54:51+07:00
+2026-10-21T20:54:51+07:00
+END	clock	rc=0
+
+BEGIN	kernel	2026-10-21T20:54:51+07:00
+Linux ceph-node1 5.15.0-186-generic #196-Ubuntu SMP Sat Jun 20 16:09:34 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+END	kernel	rc=0
+
+BEGIN	memory	2026-10-21T20:54:51+07:00
+               total        used        free      shared  buff/cache   available
+Mem:     1081664651264 174825820160 222288515072 300632756224 684550316032 599234760704
+Swap:              0           0           0
+END	memory	rc=0
+
+BEGIN	devices	2026-10-21T20:54:51+07:00
+NAME                      TYPE          SIZE FSTYPE         MOUNTPOINTS
+loop0                     loop      77574144 squashfs       /snap/core22/2955
+loop1                     loop      66879488 squashfs       /snap/core20/2866
+loop2                     loop      46882816 squashfs       /snap/snapd/28254
+loop3                     loop      77586432 squashfs       /snap/core22/2437
+loop4                     loop     120717312 squashfs       /snap/lxd/40115
+loop5                     loop      52711424 squashfs       /snap/snapd/27738
+loop6                     loop      66883584 squashfs       /snap/core20/2922
+loop7                     loop    2147483648 xfs            /opt/weka/logs
+loop8                     loop     152363008 squashfs       
+loop9                     loop     298450944 squashfs       
+loop10                    loop      27656192 squashfs       
+loop11                    loop       7385088 squashfs       
+loop12                    loop      16703488 squashfs       
+loop13                    loop         77824 squashfs       
+loop14                    loop      16117760 squashfs       
+loop15                    loop       4030464 squashfs       
+loop16                    loop      87257088 squashfs       
+loop17                    loop         45056 squashfs       
+loop18                    loop        143360 squashfs       
+loop19                    loop    2097152000 xfs            
+loop20                    loop  137438953472 LVM2_member    
+`-ceph--vg--db1-osd--db   lvm   137434759168 ceph_bluestore 
+loop21                    loop   10737418240 LVM2_member    
+`-ceph--vg--wal1-osd--wal lvm    10733223936 ceph_bluestore 
+loop22                    loop  137438953472 LVM2_member    
+`-ceph--vg--db2-osd--db   lvm   137434759168 ceph_bluestore 
+loop23                    loop   10737418240 LVM2_member    
+`-ceph--vg--wal2-osd--wal lvm    10733223936 ceph_bluestore 
+nvme2n1                   disk 7681501126656 LVM2_member    
+`-ceph--vg--osd1-osd      lvm  7681498677248 ceph_bluestore 
+nvme3n1                   disk 7681501126656 LVM2_member    
+`-ceph--vg--osd2-osd      lvm  7681498677248 ceph_bluestore 
+nvme0n1                   disk  960197124096                
+|-nvme0n1p1               part    1127219200 vfat           /boot/efi
+`-nvme0n1p2               part  959067455488 ext4           /tmp/snap-private-tmp/snap.rootfs_96UxKl
+                                                            /tmp/snap-private-tmp/snap.rootfs_pY8uSN
+                                                            /tmp/snap-private-tmp/snap.rootfs_UNwWsQ
+                                                            /tmp/snap-private-tmp/snap.rootfs_lZ8dS8
+                                                            /tmp/snap-private-tmp/snap.rootfs_EQkWPV
+                                                            /tmp/snap-private-tmp/snap.rootfs_wux42y
+                                                            /tmp/snap-private-tmp/snap.rootfs_bU9fL2
+                                                            /tmp/snap-private-tmp/snap.rootfs_HA1tUM
+                                                            /tmp/snap-private-tmp/snap.rootfs_8lFUIa
+                                                            /tmp/snap-private-tmp/snap.rootfs_stDJmu
+                                                            /tmp/snap-private-tmp/snap.rootfs_FunQ8F
+                                                            /tmp/snap-private-tmp/snap.rootfs_DjVGIN
+                                                            /tmp/snap-private-tmp/snap.rootfs_PuNWNq
+                                                            /tmp/snap-private-tmp/snap.rootfs_hGxKqE
+                                                            /tmp/snap-private-tmp/snap.rootfs_xPe9NH
+                                                            /tmp/snap-private-tmp/snap.rootfs_jaadWU
+                                                            /tmp/snap-private-tmp/snap.rootfs_9e30ZD
+                                                            /tmp/snap-private-tmp/snap.rootfs_Zd0X1C
+                                                            /tmp/snap-private-tmp/snap.rootfs_rbKviZ
+                                                            /tmp/snap-private-tmp/snap.rootfs_eAsDov
+                                                            /tmp/snap-private-tmp/snap.rootfs_jOtMZb
+                                                            /tmp/snap-private-tmp/snap.rootfs_YX5iXD
+                                                            /tmp/snap-private-tmp/snap.rootfs_fFeX1y
+                                                            /var/lib/containers/storage/overlay
+                                                            /tmp/snap-private-tmp/snap.rootfs_2Rzx1q
+                                                            /
+nvme1n1                   disk  960197124096 ext4           /mnt/jfs-tikv
+END	devices	rc=0
+
+BEGIN	mounts	2026-10-21T20:54:51+07:00
+tmpfs /run tmpfs rw,nosuid,nodev,noexec,relatime,size=105631316k,mode=755,inode64
+/dev/nvme0n1p2 / ext4 rw,relatime,stripe=32
+tmpfs /dev/shm tmpfs rw,nosuid,nodev,inode64
+tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k,inode64
+tmpfs /mnt/dbwal tmpfs rw,relatime,size=209715200k,inode64
+tmpfs /var/lib/ceph/osd/ceph-1 tmpfs rw,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/cleanup tmpfs rw,nosuid,nodev,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/client-wtracer-tracing-area tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/mount-tokens tmpfs rw,nosuid,nodev,noexec,relatime,size=131072k,inode64
+tmpfs /opt/weka/data/agent/tmpfss/services-conf tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/cross-container-rpc-the-tmpfs tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/client-persistent-tmpfs tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/audit tmpfs rw,nosuid,nodev,noexec,relatime,size=131072k,inode64
+tmpfs /opt/weka/data/agent/tmpfss/cleanup_before_stop_and_delete tmpfs rw,nosuid,nodev,relatime,inode64
+tmpfs[/snapd/ns] /run/snapd/ns tmpfs rw,nosuid,nodev,noexec,relatime,size=105631316k,mode=755,inode64
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_2Rzx1q] /tmp/snap-private-tmp/snap.rootfs_2Rzx1q ext4 rw,relatime,stripe=32
+tmpfs /mnt/dbwal tmpfs rw,relatime,size=335544320k,inode64
+tmpfs[/netns] /run/netns tmpfs rw,nosuid,nodev,noexec,relatime,size=105631316k,mode=755,inode64
+/dev/nvme1n1 /mnt/jfs-tikv ext4 rw,noatime,stripe=32
+/dev/nvme0n1p2[/var/lib/containers/storage/overlay] /var/lib/containers/storage/overlay ext4 rw,relatime,stripe=32
+tmpfs /run/user/0 tmpfs rw,nosuid,nodev,relatime,size=105631312k,nr_inodes=26407828,mode=700,inode64
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_fFeX1y] /tmp/snap-private-tmp/snap.rootfs_fFeX1y ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_YX5iXD] /tmp/snap-private-tmp/snap.rootfs_YX5iXD ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_jOtMZb] /tmp/snap-private-tmp/snap.rootfs_jOtMZb ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_eAsDov] /tmp/snap-private-tmp/snap.rootfs_eAsDov ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_rbKviZ] /tmp/snap-private-tmp/snap.rootfs_rbKviZ ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_Zd0X1C] /tmp/snap-private-tmp/snap.rootfs_Zd0X1C ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_9e30ZD] /tmp/snap-private-tmp/snap.rootfs_9e30ZD ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_jaadWU] /tmp/snap-private-tmp/snap.rootfs_jaadWU ext4 rw,relatime,stripe=32
+tmpfs /run/user/1001 tmpfs rw,nosuid,nodev,relatime,size=105631312k,nr_inodes=26407828,mode=700,uid=1001,gid=1001,inode64
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_xPe9NH] /tmp/snap-private-tmp/snap.rootfs_xPe9NH ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_hGxKqE] /tmp/snap-private-tmp/snap.rootfs_hGxKqE ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_PuNWNq] /tmp/snap-private-tmp/snap.rootfs_PuNWNq ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_DjVGIN] /tmp/snap-private-tmp/snap.rootfs_DjVGIN ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_FunQ8F] /tmp/snap-private-tmp/snap.rootfs_FunQ8F ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_stDJmu] /tmp/snap-private-tmp/snap.rootfs_stDJmu ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_8lFUIa] /tmp/snap-private-tmp/snap.rootfs_8lFUIa ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_HA1tUM] /tmp/snap-private-tmp/snap.rootfs_HA1tUM ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_bU9fL2] /tmp/snap-private-tmp/snap.rootfs_bU9fL2 ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_wux42y] /tmp/snap-private-tmp/snap.rootfs_wux42y ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_EQkWPV] /tmp/snap-private-tmp/snap.rootfs_EQkWPV ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_lZ8dS8] /tmp/snap-private-tmp/snap.rootfs_lZ8dS8 ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_UNwWsQ] /tmp/snap-private-tmp/snap.rootfs_UNwWsQ ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_pY8uSN] /tmp/snap-private-tmp/snap.rootfs_pY8uSN ext4 rw,relatime,stripe=32
+/dev/nvme0n1p2[/tmp/snap-private-tmp/snap.rootfs_96UxKl] /tmp/snap-private-tmp/snap.rootfs_96UxKl ext4 rw,relatime,stripe=32
+tmpfs /run/user/1000 tmpfs rw,nosuid,nodev,relatime,size=105631312k,nr_inodes=26407828,mode=700,uid=1000,gid=1000,inode64
+END	mounts	rc=0

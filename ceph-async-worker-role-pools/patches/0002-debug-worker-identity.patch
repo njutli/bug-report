@@ -1,0 +1,96 @@
+From 9d9eb161fc5e35d94258101e388c0310aaa0bf38 Mon Sep 17 00:00:00 2001
+From: Li Lingfeng <a1151488180@gmail.com>
+Date: Tue, 3 Nov 2026 15:28:52 +0800
+Subject: [RFC PATCH 2/5] debug worker identity
+
+Expose worker thread IDs and epoll descriptors to associate connections
+with their messenger workers. This optional observation does not change
+connection placement.
+
+Assisted-by: GPT-6 (OpenAI)
+Signed-off-by: Li Lingfeng <a1151488180@gmail.com>
+---
+ src/msg/async/EventEpoll.h |  1 +
+ src/msg/async/Stack.cc     | 17 +++++++++++++++++
+ src/msg/async/Stack.h      |  7 +++++++
+ 3 files changed, 25 insertions(+)
+
+diff --git a/src/msg/async/EventEpoll.h b/src/msg/async/EventEpoll.h
+index 454ecbc34ff568dfa6f3df35412d89e4e3be34c3..66bfc3ea0880686e7cdc6b72e301d3bb0798f826 100644
+--- a/src/msg/async/EventEpoll.h
++++ b/src/msg/async/EventEpoll.h
+@@ -29,6 +29,7 @@ class EpollDriver : public EventDriver {
+   int nevent;
+ 
+  public:
++  int t086_get_epfd() const { return epfd; }
+   explicit EpollDriver(CephContext *c): epfd(-1), events(NULL), cct(c), nevent(0) {}
+   ~EpollDriver() override {
+     if (epfd != -1)
+diff --git a/src/msg/async/Stack.cc b/src/msg/async/Stack.cc
+index 41b7afb59cf29c98d9a811dce70fb94a4241eeb1..9e8f1a2beaf166a82f8f0d016ef15098ba71929e 100644
+--- a/src/msg/async/Stack.cc
++++ b/src/msg/async/Stack.cc
+@@ -20,6 +20,10 @@
+ #include "common/Cond.h"
+ #include "common/errno.h"
+ #include "PosixStack.h"
++#include "common/Thread.h"
++#ifdef HAVE_EPOLL
++#include "EventEpoll.h"
++#endif
+ #ifdef HAVE_RDMA
+ #include "rdma/RDMAStack.h"
+ #endif
+@@ -40,6 +44,18 @@ std::function<void ()> NetworkStack::add_thread(Worker* w)
+       rename_thread(w->id);
+       const unsigned EventMaxWaitUs = 30000000;
+       w->center.set_owner();
++      w->perf_logger->set(l_t086_owner_valid, 0);
++#ifdef HAVE_EPOLL
++      if (auto *epoll = dynamic_cast<EpollDriver*>(w->center.get_driver())) {
++        const auto tid = ceph_gettid();
++        const auto fd = epoll->t086_get_epfd();
++        if (tid > 0 && fd >= 0) {
++          w->perf_logger->set(l_t086_owner_tid, tid);
++          w->perf_logger->set(l_t086_epoll_fd, fd);
++          w->perf_logger->set(l_t086_owner_valid, 1);
++        }
++      }
++#endif
+       ldout(cct, 10) << __func__ << " starting" << dendl;
+       w->initialize();
+       w->init_done();
+@@ -55,6 +71,7 @@ std::function<void ()> NetworkStack::add_thread(Worker* w)
+         }
+         w->perf_logger->tinc(l_msgr_running_total_time, dur);
+       }
++      w->perf_logger->set(l_t086_owner_valid, 0);
+       w->reset();
+       w->destroy();
+   };
+diff --git a/src/msg/async/Stack.h b/src/msg/async/Stack.h
+index 447d75bde73ab1f366ee4467b5dafc4da41d687e..6dd2ec5813e56aa84fdc3c920d382f15d117f23e 100644
+--- a/src/msg/async/Stack.h
++++ b/src/msg/async/Stack.h
+@@ -204,6 +204,10 @@ enum {
+   l_msgr_send_messages_queue_lat,
+   l_msgr_handle_ack_lat,
+ 
++  l_t086_owner_tid,
++  l_t086_epoll_fd,
++  l_t086_owner_valid,
++
+   l_msgr_last,
+ };
+ 
+@@ -246,6 +250,9 @@ class Worker {
+ 
+     plb.add_time_avg(l_msgr_send_messages_queue_lat, "msgr_send_messages_queue_lat", "Network sent messages lat");
+     plb.add_time_avg(l_msgr_handle_ack_lat, "msgr_handle_ack_lat", "Connection handle ack lat");
++    plb.add_u64(l_t086_owner_tid, "t086_owner_tid", "Actual worker TID in its PID namespace");
++    plb.add_u64(l_t086_epoll_fd, "t086_epoll_fd", "Worker eventpoll descriptor");
++    plb.add_u64(l_t086_owner_valid, "t086_owner_valid", "Native worker owner fields initialized");
+ 
+     perf_logger = plb.create_perf_counters();
+     cct->get_perfcounters_collection()->add(perf_logger);

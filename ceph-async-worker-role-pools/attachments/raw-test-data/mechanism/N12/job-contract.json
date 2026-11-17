@@ -1,0 +1,157 @@
+{
+  "schema": "t087-explicit-dual-jobs-v1",
+  "mode": "field",
+  "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients",
+  "output": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2",
+  "bs": 16777216,
+  "runtime": 180,
+  "common": {
+    "rw": "write",
+    "ioengine": "psync",
+    "iodepth": "1",
+    "direct": "1",
+    "numjobs": "1",
+    "time_based": "0",
+    "loops": "1",
+    "create_on_open": "1",
+    "allow_file_create": "1",
+    "fallocate": "none",
+    "refill_buffers": "1",
+    "end_fsync": "1",
+    "group_reporting": "0",
+    "per_job_logs": "0",
+    "log_avg_msec": "0",
+    "log_unix_epoch": "1",
+    "log_offset": "1"
+  },
+  "jobs": [
+    {
+      "job": "t087-stream-00",
+      "file": "seq.0.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c0/mount/test_dir/08-7-20261104-095004/P2/c0",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-00",
+      "log": "job-00_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-01",
+      "file": "seq.1.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c0/mount/test_dir/08-7-20261104-095004/P2/c0",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-01",
+      "log": "job-01_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-02",
+      "file": "seq.2.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c1/mount/test_dir/08-7-20261104-095004/P2/c1",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-02",
+      "log": "job-02_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-03",
+      "file": "seq.3.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c1/mount/test_dir/08-7-20261104-095004/P2/c1",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-03",
+      "log": "job-03_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-04",
+      "file": "seq.4.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c2/mount/test_dir/08-7-20261104-095004/P2/c2",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-04",
+      "log": "job-04_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-05",
+      "file": "seq.5.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c2/mount/test_dir/08-7-20261104-095004/P2/c2",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-05",
+      "log": "job-05_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-06",
+      "file": "seq.6.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c3/mount/test_dir/08-7-20261104-095004/P2/c3",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-06",
+      "log": "job-06_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-07",
+      "file": "seq.7.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c3/mount/test_dir/08-7-20261104-095004/P2/c3",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-07",
+      "log": "job-07_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-08",
+      "file": "seq.8.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c4/mount/test_dir/08-7-20261104-095004/P2/c4",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-08",
+      "log": "job-08_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-09",
+      "file": "seq.9.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c4/mount/test_dir/08-7-20261104-095004/P2/c4",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-09",
+      "log": "job-09_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-10",
+      "file": "seq.10.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c5/mount/test_dir/08-7-20261104-095004/P2/c5",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-10",
+      "log": "job-10_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-11",
+      "file": "seq.11.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c5/mount/test_dir/08-7-20261104-095004/P2/c5",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-11",
+      "log": "job-11_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-12",
+      "file": "seq.12.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c6/mount/test_dir/08-7-20261104-095004/P2/c6",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-12",
+      "log": "job-12_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-13",
+      "file": "seq.13.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c6/mount/test_dir/08-7-20261104-095004/P2/c6",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-13",
+      "log": "job-13_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-14",
+      "file": "seq.14.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c7/mount/test_dir/08-7-20261104-095004/P2/c7",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-14",
+      "log": "job-14_bw.log",
+      "limit": 274877906944
+    },
+    {
+      "job": "t087-stream-15",
+      "file": "seq.15.0",
+      "directory": "/tmp/production/opencode-08-8-20261104-c7/N12/clients/P2/c7/mount/test_dir/08-7-20261104-095004/P2/c7",
+      "log_prefix": "/tmp/production/opencode-08-8-20261104-c7/N12/evidence/P2/job-15",
+      "log": "job-15_bw.log",
+      "limit": 274877906944
+    }
+  ]
+}

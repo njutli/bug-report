@@ -1,0 +1,89 @@
+BEGIN	identity	2026-10-21T20:52:51+07:00
+oneasia-c1-cpu-node10
+END	identity	rc=0
+
+BEGIN	clock	2026-10-21T20:52:51+07:00
+2026-10-21T20:52:51+07:00
+END	clock	rc=0
+
+BEGIN	kernel	2026-10-21T20:52:51+07:00
+Linux oneasia-c1-cpu-node10 5.15.0-170-generic #180-Ubuntu SMP Fri Jan 9 16:10:31 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+END	kernel	rc=0
+
+BEGIN	memory	2026-10-21T20:52:51+07:00
+               total        used        free      shared  buff/cache   available
+Mem:     1081664643072 126016479232 399778955264  7043960832 555869208576 938346369024
+Swap:              0           0           0
+END	memory	rc=0
+
+BEGIN	devices	2026-10-21T20:52:51+07:00
+NAME        TYPE            SIZE FSTYPE   MOUNTPOINTS
+loop0       loop        46882816 squashfs /snap/snapd/28254
+loop2       loop        66883584 squashfs /snap/core20/2922
+loop3       loop        77586432 squashfs /snap/core22/2437
+loop4       loop        77574144 squashfs /snap/core22/2955
+loop5       loop        66879488 squashfs /snap/core20/2866
+loop6       loop      2147483648 xfs      /opt/weka/logs
+loop7       loop       151023616 squashfs 
+loop8       loop       253153280 squashfs 
+loop9       loop        27742208 squashfs 
+loop10      loop         7188480 squashfs 
+loop11      loop        16695296 squashfs 
+loop12      loop           77824 squashfs 
+loop13      loop        16117760 squashfs 
+loop14      loop         4030464 squashfs 
+loop15      loop        87318528 squashfs 
+loop16      loop           45056 squashfs 
+loop17      loop      1048576000 xfs      
+loop18      loop       120909824 squashfs /snap/lxd/40575
+loop19      loop       120782848 squashfs /snap/lxd/40911
+loop20      loop        52711424 squashfs /snap/snapd/27738
+nvme3n1     disk   7681501126656          
+`-md0       raid0 15362731016192 ext4     
+nvme2n1     disk   7681501126656          
+`-md0       raid0 15362731016192 ext4     
+nvme1n1     disk    960197124096 ext4     /mnt/jfs-cache
+                                          /mnt/beegfs-meta
+nvme0n1     disk    960197124096          
+|-nvme0n1p1 part      1127219200 vfat     /boot/efi
+`-nvme0n1p2 part    959067455488 ext4     /var/lib/kubelet/pods/9042f5fe-a5e9-4f2c-be25-f418091cda86/volume-subpaths/exporter-metrics-volume/exporter/1
+                                          /
+END	devices	rc=0
+
+BEGIN	mounts	2026-10-21T20:52:51+07:00
+tmpfs /run tmpfs rw,nosuid,nodev,noexec,relatime,size=105631316k,mode=755,inode64
+/dev/nvme0n1p2 / ext4 rw,relatime,stripe=32
+tmpfs /dev/shm tmpfs rw,nosuid,nodev,inode64
+tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k,inode64
+tmpfs /opt/weka/data/agent/tmpfss/cleanup tmpfs rw,nosuid,nodev,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/cleanup_on_delete tmpfs rw,nosuid,nodev,relatime,inode64
+tmpfs[/snapd/ns] /run/snapd/ns tmpfs rw,nosuid,nodev,noexec,relatime,size=105631316k,mode=755,inode64
+tmpfs /var/lib/kubelet/pods/c1961cb7-96bc-484a-a45c-a84d06b43b19/volumes/kubernetes.io~projected/kube-api-access-jx2j2 tmpfs rw,relatime,size=1056210728k,inode64
+tmpfs /var/lib/kubelet/pods/baa7a92f-217c-46d5-8505-e3e86b4495fe/volumes/kubernetes.io~projected/kube-api-access-rkcd2 tmpfs rw,relatime,size=184320k,inode64
+tmpfs /var/lib/kubelet/pods/ac0f4d00-9b34-4f55-855b-e1ad75cad0a8/volumes/kubernetes.io~projected/kube-api-access-npt48 tmpfs rw,relatime,size=1056210728k,inode64
+tmpfs /var/lib/kubelet/pods/5bc24e1b-fec9-4b1c-a4c6-050a30f278c2/volumes/kubernetes.io~projected/kube-api-access-mvhnp tmpfs rw,relatime,size=1056210728k,inode64
+tmpfs /var/lib/kubelet/pods/9042f5fe-a5e9-4f2c-be25-f418091cda86/volumes/kubernetes.io~projected/kube-api-access-zjfkn tmpfs rw,relatime,size=1056210728k,inode64
+tmpfs /var/lib/kubelet/pods/b4c9b823-22d6-4d9a-8a38-a3a4bd909b7c/volumes/kubernetes.io~projected/kube-api-access-skm8z tmpfs rw,relatime,size=1056210728k,inode64
+shm /mnt/container/containerd-state/io.containerd.grpc.v1.cri/sandboxes/f0f9b7860d8807cdee0c2c553effa8760efa48752dbcd3b6b81b54d314f0cb3f/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=65536k,inode64
+shm /mnt/container/containerd-state/io.containerd.grpc.v1.cri/sandboxes/96d8c3142a7bcd722f769e0cb8c8f902b576890f731b49eec2ab0327b7a4b5e3/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=65536k,inode64
+shm /mnt/container/containerd-state/io.containerd.grpc.v1.cri/sandboxes/5ec010da4ee91fd4906aab6d8eda90b7bdbccaccc4a30fcd06c3e6c1b9f40aec/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=65536k,inode64
+shm /mnt/container/containerd-state/io.containerd.grpc.v1.cri/sandboxes/1451a4f68061fe1cc3ba3be27bd48ef199cbfe3e90807c8ebee952e7762e925f/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=65536k,inode64
+shm /mnt/container/containerd-state/io.containerd.grpc.v1.cri/sandboxes/938c866c85eee3bd9ec9729ef757e9521341933f891dbebd59af323211fe49b9/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=65536k,inode64
+shm /mnt/container/containerd-state/io.containerd.grpc.v1.cri/sandboxes/3b3aa863aa115943624c0de51a885d1490b40166a69f1dbb8014bf86f2ab81da/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=65536k,inode64
+/dev/nvme0n1p2[/var/lib/kubelet/pods/9042f5fe-a5e9-4f2c-be25-f418091cda86/volumes/kubernetes.io~configmap/exporter-metrics-volume/..2025_07_09_11_18_46.3956560655/default-counters.csv] /var/lib/kubelet/pods/9042f5fe-a5e9-4f2c-be25-f418091cda86/volume-subpaths/exporter-metrics-volume/exporter/1 ext4 rw,relatime,stripe=32
+tmpfs /run/user/1000 tmpfs rw,nosuid,nodev,relatime,size=105631312k,nr_inodes=26407828,mode=700,uid=1000,gid=1000,inode64
+tmpfs /run/user/1001 tmpfs rw,nosuid,nodev,relatime,size=105631312k,nr_inodes=26407828,mode=700,uid=1001,gid=1001,inode64
+tmpfs /opt/weka/data/agent/tmpfss/client-persistent-tmpfs tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/services-conf tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/cross-container-rpc-the-tmpfs tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/client-wtracer-tracing-area tmpfs rw,nosuid,nodev,noexec,relatime,inode64
+tmpfs /opt/weka/data/agent/tmpfss/audit tmpfs rw,nosuid,nodev,noexec,relatime,size=131072k,inode64
+tmpfs /opt/weka/data/agent/tmpfss/cleanup_before_stop_and_delete tmpfs rw,nosuid,nodev,relatime,inode64
+tmpfs /run/user/1002 tmpfs rw,nosuid,nodev,relatime,size=105631312k,nr_inodes=26407828,mode=700,uid=1002,gid=1002,inode64
+/dev/nvme1n1 /mnt/beegfs-meta ext4 rw,noatime,stripe=32
+/dev/nvme1n1 /mnt/jfs-cache ext4 rw,noatime,stripe=32
+JuiceFS:jfsportal-dirstats-20260911 /dev/shm/jfsportal-dirstats-20260911/mnt fuse.juicefs rw,nosuid,nodev,relatime,user_id=1002,group_id=1002,default_permissions,max_read=131072
+JuiceFS:juicefs-prod /mnt/juicefs fuse.juicefs rw,nosuid,nodev,relatime,user_id=1002,group_id=1002,default_permissions,max_read=262144
+JuiceFS:jfs-ltfile-20260929 /tmp/jfs-ltfile-20260929-mnt fuse.juicefs rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other,max_read=262144
+tmpfs /run/user/1003 tmpfs rw,nosuid,nodev,relatime,size=105631312k,nr_inodes=26407828,mode=700,uid=1003,gid=1003,inode64
+END	mounts	rc=0
